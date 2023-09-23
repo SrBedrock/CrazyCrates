@@ -2,6 +2,9 @@ package com.badbones69.crazycrates.paper.api;
 
 import com.Zrips.CMI.Modules.ModuleHandling.CMIModule;
 import com.badbones69.crazycrates.api.enums.types.CrateType;
+import com.badbones69.crazycrates.api.enums.types.KeyType;
+import com.badbones69.crazycrates.api.objects.CrateHologram;
+import com.badbones69.crazycrates.api.quadcrates.CrateSchematic;
 import com.badbones69.crazycrates.paper.CrazyCrates;
 import com.badbones69.crazycrates.paper.Methods;
 import com.badbones69.crazycrates.paper.api.FileManager.Files;
@@ -11,14 +14,22 @@ import com.badbones69.crazycrates.paper.api.events.PlayerReceiveKeyEvent;
 import com.badbones69.crazycrates.paper.api.events.PlayerReceiveKeyEvent.KeyReceiveReason;
 import com.badbones69.crazycrates.paper.api.interfaces.HologramController;
 import com.badbones69.crazycrates.paper.api.managers.QuadCrateManager;
-import com.badbones69.crazycrates.paper.api.objects.*;
-import com.badbones69.crazycrates.paper.cratetypes.*;
-import com.badbones69.crazycrates.api.enums.types.KeyType;
+import com.badbones69.crazycrates.paper.api.objects.Crate;
+import com.badbones69.crazycrates.paper.api.objects.CrateLocation;
+import com.badbones69.crazycrates.paper.api.objects.ItemBuilder;
+import com.badbones69.crazycrates.paper.api.objects.Prize;
+import com.badbones69.crazycrates.paper.api.objects.Tier;
+import com.badbones69.crazycrates.paper.cratetypes.CSGO;
+import com.badbones69.crazycrates.paper.cratetypes.Cosmic;
+import com.badbones69.crazycrates.paper.cratetypes.FireCracker;
+import com.badbones69.crazycrates.paper.cratetypes.QuickCrate;
+import com.badbones69.crazycrates.paper.cratetypes.Roulette;
+import com.badbones69.crazycrates.paper.cratetypes.War;
+import com.badbones69.crazycrates.paper.cratetypes.Wheel;
+import com.badbones69.crazycrates.paper.cratetypes.Wonder;
 import com.badbones69.crazycrates.paper.listeners.CrateControlListener;
 import com.badbones69.crazycrates.paper.listeners.MenuListener;
 import com.badbones69.crazycrates.paper.listeners.PreviewListener;
-import com.badbones69.crazycrates.api.objects.CrateHologram;
-import com.badbones69.crazycrates.api.quadcrates.CrateSchematic;
 import com.badbones69.crazycrates.paper.support.holograms.CMIHologramsSupport;
 import com.badbones69.crazycrates.paper.support.holograms.DecentHologramsSupport;
 import com.badbones69.crazycrates.paper.support.holograms.HolographicDisplaysSupport;
@@ -26,7 +37,11 @@ import com.badbones69.crazycrates.paper.support.libraries.PluginSupport;
 import com.badbones69.crazycrates.paper.support.structures.StructureHandler;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -34,9 +49,18 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+
 import static java.util.regex.Matcher.quoteReplacement;
 
 public class CrazyManager {
@@ -110,7 +134,8 @@ public class CrazyManager {
         } else if (PluginSupport.HOLOGRAPHIC_DISPLAYS.isPluginEnabled()) {
             hologramController = new HolographicDisplaysSupport();
             plugin.getLogger().info("Holographic Displays support has been enabled.");
-        } else plugin.getLogger().warning("No holograms plugin were found. If using CMI, make sure holograms module is enabled.");
+        } else
+            plugin.getLogger().warning("No holograms plugin were found. If using CMI, make sure holograms module is enabled.");
 
         if (fileManager.isLogging()) plugin.getLogger().info("Loading all crate information...");
 
@@ -121,7 +146,7 @@ public class CrazyManager {
                 ArrayList<Prize> prizes = new ArrayList<>();
                 String previewName = file.contains("Crate.Preview-Name") ? file.getString("Crate.Preview-Name") : file.getString("Crate.Name");
                 ArrayList<Tier> tiers = new ArrayList<>();
-                int maxMassOpen =  file.contains("Crate.Max-Mass-Open") ? file.getInt("Crate.Max-Mass-Open") : 10;
+                int maxMassOpen = file.contains("Crate.Max-Mass-Open") ? file.getInt("Crate.Max-Mass-Open") : 10;
                 int requiredKeys = file.contains("Crate.RequiredKeys") ? file.getInt("Crate.RequiredKeys") : 0;
 
                 if (file.contains("Crate.Tiers") && file.getConfigurationSection("Crate.Tiers") != null) {
@@ -148,14 +173,12 @@ public class CrazyManager {
                         }
                     }
 
-                    if (file.contains(path + ".Alternative-Prize")) {
-                        if (file.getBoolean(path + ".Alternative-Prize.Toggle")) {
-                            altPrize = new Prize("Alternative-Prize",
-                                    file.getStringList(path + ".Alternative-Prize.Messages"),
-                                    file.getStringList(path + ".Alternative-Prize.Commands"),
-                                    null, // No editor items
-                                    getItems(file, prize + ".Alternative-Prize"));
-                        }
+                    if (file.contains(path + ".Alternative-Prize") && (file.getBoolean(path + ".Alternative-Prize.Toggle"))) {
+                        altPrize = new Prize("Alternative-Prize",
+                                file.getStringList(path + ".Alternative-Prize.Messages"),
+                                file.getStringList(path + ".Alternative-Prize.Commands"),
+                                null, // No editor items
+                                getItems(file, prize + ".Alternative-Prize"));
                     }
 
                     ArrayList<ItemStack> editorItems = new ArrayList<>();
@@ -182,8 +205,8 @@ public class CrazyManager {
 
                 int newPlayersKeys = file.getInt("Crate.StartingKeys");
 
-                if (!giveNewPlayersKeys) {
-                    if (newPlayersKeys > 0) giveNewPlayersKeys = true;
+                if (!giveNewPlayersKeys && (newPlayersKeys > 0)) {
+                    giveNewPlayersKeys = true;
                 }
 
                 List<String> prizeMessage = file.contains("Crate.Prize-Message") ? file.getStringList("Crate.Prize-Message") : Collections.emptyList();
@@ -239,14 +262,12 @@ public class CrazyManager {
         }
 
         // Checking if all physical locations loaded
-        if (fileManager.isLogging()) {
-            if (loadedAmount > 0 || brokeAmount > 0) {
-                if (brokeAmount <= 0) {
-                    plugin.getLogger().info("All physical crate locations have been loaded.");
-                } else {
-                    plugin.getLogger().info("Loaded " + loadedAmount + " physical crate locations.");
-                    plugin.getLogger().info("Failed to load " + brokeAmount + " physical crate locations.");
-                }
+        if (fileManager.isLogging() && (loadedAmount > 0 || brokeAmount > 0)) {
+            if (brokeAmount <= 0) {
+                plugin.getLogger().info("All physical crate locations have been loaded.");
+            } else {
+                plugin.getLogger().info("Loaded " + loadedAmount + " physical crate locations.");
+                plugin.getLogger().info("Failed to load " + brokeAmount + " physical crate locations.");
             }
         }
 
@@ -259,7 +280,8 @@ public class CrazyManager {
             if (schematicName.endsWith(".nbt")) {
                 crateSchematics.add(new CrateSchematic(schematicName.replace(".nbt", ""), new File(plugin.getDataFolder() + "/schematics/" + schematicName)));
 
-                if (fileManager.isLogging()) plugin.getLogger().info(schematicName + " was successfully found and loaded.");
+                if (fileManager.isLogging())
+                    plugin.getLogger().info(schematicName + " was successfully found and loaded.");
             }
         }
 
@@ -309,7 +331,8 @@ public class CrazyManager {
             }
 
             if (removePlayers.size() > 0) {
-                if (logging) plugin.getLogger().info(removePlayers.size() + " player's data has been marked to be removed.");
+                if (logging)
+                    plugin.getLogger().info(removePlayers.size() + " player's data has been marked to be removed.");
 
                 removePlayers.forEach(uuid -> data.set("Players." + uuid, null));
 
@@ -324,19 +347,17 @@ public class CrazyManager {
     /**
      * Opens a crate for a player.
      *
-     * @param player The player that is having the crate opened for them.
-     * @param crate The crate that is being used.
-     * @param location The location that may be needed for some crate types.
+     * @param player    The player that is having the crate opened for them.
+     * @param crate     The crate that is being used.
+     * @param location  The location that may be needed for some crate types.
      * @param checkHand If it just checks the players hand or if it checks their inventory.
      */
     public void openCrate(Player player, Crate crate, KeyType keyType, Location location, boolean virtualCrate, boolean checkHand) {
-        if (crate.getCrateType() != CrateType.MENU) {
-            if (!crate.canWinPrizes(player)) {
-                player.sendMessage(Messages.NO_PRIZES_FOUND.getMessage());
-                removePlayerFromOpeningList(player);
-                removePlayerKeyType(player);
-                return;
-            }
+        if (crate.getCrateType() != CrateType.MENU && (!crate.canWinPrizes(player))) {
+            player.sendMessage(Messages.NO_PRIZES_FOUND.getMessage());
+            removePlayerFromOpeningList(player);
+            removePlayerKeyType(player);
+            return;
         }
 
         addPlayerToOpeningList(player, crate);
@@ -349,7 +370,8 @@ public class CrazyManager {
             case MENU -> {
                 boolean openMenu = config.getBoolean("Settings.Enable-Crate-Menu");
 
-                if (openMenu) MenuListener.openGUI(player); else player.sendMessage(Messages.FEATURE_DISABLED.getMessage());
+                if (openMenu) MenuListener.openGUI(player);
+                else player.sendMessage(Messages.FEATURE_DISABLED.getMessage());
             }
             case COSMIC -> Cosmic.openCosmic(player, crate, keyType, checkHand);
             case CSGO -> CSGO.openCSGO(player, crate, keyType, checkHand);
@@ -456,7 +478,7 @@ public class CrazyManager {
      * Add a quad crate task that is going on for a player.
      *
      * @param player The player opening the crate.
-     * @param task The task of the quad crate.
+     * @param task   The task of the quad crate.
      */
     public void addQuadCrateTask(Player player, BukkitTask task) {
         if (!currentQuadTasks.containsKey(player.getUniqueId())) {
@@ -480,7 +502,7 @@ public class CrazyManager {
      * Add a crate task that is going on for a player.
      *
      * @param player The player opening the crate.
-     * @param task The task of the crate.
+     * @param task   The task of the crate.
      */
     public void addCrateTask(Player player, BukkitTask task) {
         currentTasks.put(player.getUniqueId(), task);
@@ -559,7 +581,7 @@ public class CrazyManager {
      * Add a new physical crate location.
      *
      * @param location The location you wish to add.
-     * @param crate The crate which you would like to set it to.
+     * @param crate    The crate which you would like to set it to.
      */
     public void addCrateLocation(Location location, Crate crate) {
         FileConfiguration locations = Files.LOCATIONS.getFile();
@@ -659,7 +681,7 @@ public class CrazyManager {
      * Give a player a prize they have won.
      *
      * @param player The player you wish to give the prize to.
-     * @param prize The prize the player has won.
+     * @param prize  The prize the player has won.
      */
     public void givePrize(Player player, Prize prize, Crate crate) {
         if (prize != null) {
@@ -724,7 +746,8 @@ public class CrazyManager {
                     command = command.substring(0, command.length() - 1);
                 }
 
-                if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled()) command = PlaceholderAPI.setPlaceholders(player, command);
+                if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled())
+                    command = PlaceholderAPI.setPlaceholders(player, command);
 
                 Methods.sendCommand(command.replaceAll("%player%", player.getName()).replaceAll("%Player%", player.getName()).replaceAll("%reward%", quoteReplacement(prize.getDisplayItemBuilder().getUpdatedName())).replaceAll("%crate%", crate.getCrateInventoryName()));
             }
@@ -757,8 +780,8 @@ public class CrazyManager {
      * Give keys to an offline player.
      *
      * @param player The offline player you wish to give keys to.
-     * @param crate The Crate of which key you are giving to the player.
-     * @param keys The amount of keys you wish to give to the player.
+     * @param crate  The Crate of which key you are giving to the player.
+     * @param keys   The amount of keys you wish to give to the player.
      * @return Returns true if it successfully gave the offline player a key and false if there was an error.
      */
     public boolean addOfflineKeys(String player, Crate crate, int keys) {
@@ -784,8 +807,8 @@ public class CrazyManager {
      * Take keys from an offline player.
      *
      * @param player The player which you are taking keys from.
-     * @param crate The Crate of which key you are taking from the player.
-     * @param keys The amount of keys you wish to take.
+     * @param crate  The Crate of which key you are taking from the player.
+     * @param keys   The amount of keys you wish to take.
      * @return Returns true if it took the keys and false if an error occurred.
      */
     public boolean takeOfflineKeys(String player, Crate crate, int keys) {
@@ -838,7 +861,7 @@ public class CrazyManager {
      * Add a player to the list of players that are currently opening crates.
      *
      * @param player The player that is opening a crate.
-     * @param crate The crate the player is opening.
+     * @param crate  The crate the player is opening.
      */
     public void addPlayerToOpeningList(Player player, Crate crate) {
         playerOpeningCrates.put(player.getUniqueId(), crate);
@@ -892,10 +915,8 @@ public class CrazyManager {
     public Crate getCrateFromKey(ItemStack item) {
         if (item != null && item.getType() != Material.AIR) {
             for (Crate crate : getCrates()) {
-                if (crate.getCrateType() != CrateType.MENU) {
-                    if (isKeyFromCrate(item, crate)) {
-                        return crate;
-                    }
+                if (crate.getCrateType() != CrateType.MENU && (isKeyFromCrate(item, crate))) {
+                    return crate;
                 }
             }
         }
@@ -906,15 +927,13 @@ public class CrazyManager {
     /**
      * Check if a key is from a specific Crate.
      *
-     * @param item The key ItemStack you are checking.
+     * @param item  The key ItemStack you are checking.
      * @param crate The Crate you are checking.
      * @return Returns true if it belongs to that Crate and false if it does not.
      */
     public boolean isKeyFromCrate(ItemStack item, Crate crate) {
-        if (crate.getCrateType() != CrateType.MENU) {
-            if (item != null && item.getType() != Material.AIR) {
-                return Methods.isSimilar(item, crate);
-            }
+        if (crate.getCrateType() != CrateType.MENU && (item != null && item.getType() != Material.AIR)) {
+            return Methods.isSimilar(item, crate);
         }
 
         return false;
@@ -924,7 +943,7 @@ public class CrazyManager {
      * Set the type of key the player is opening a crate for.
      * This is only used in the Cosmic CrateType currently.
      *
-     * @param player The player that is opening the crate.
+     * @param player  The player that is opening the crate.
      * @param keyType The KeyType that they are using.
      */
     public void addPlayerKeyType(Player player, KeyType keyType) {
@@ -964,8 +983,8 @@ public class CrazyManager {
     /**
      * Checks to see if the player has a physical key of the crate in their main hand or inventory.
      *
-     * @param player The player being checked.
-     * @param crate The crate that has the key you are checking.
+     * @param player    The player being checked.
+     * @param crate     The crate that has the key you are checking.
      * @param checkHand If it just checks the players hand or if it checks their inventory.
      * @return True if they have the key and false if not.
      */
@@ -981,10 +1000,8 @@ public class CrazyManager {
         }
 
         for (ItemStack item : items) {
-            if (item != null) {
-                if (isKeyFromCrate(item, crate)) {
-                    return true;
-                }
+            if (item != null && (isKeyFromCrate(item, crate))) {
+                return true;
             }
         }
 
@@ -995,7 +1012,7 @@ public class CrazyManager {
      * Get a physical key from a players inventory.
      *
      * @param player The player you are checking.
-     * @param crate The Crate of whose key you are getting.
+     * @param crate  The Crate of whose key you are getting.
      * @return The ItemStack in the player's inventory. This will return null if not found.
      */
     public ItemStack getPhysicalKey(Player player, Crate crate) {
@@ -1016,7 +1033,7 @@ public class CrazyManager {
      * @param player The player you are checking.
      * @return The amount of virtual keys they own.
      */
-    public HashMap<Crate, Integer> getVirtualKeys(Player player) {
+    public Map<Crate, Integer> getVirtualKeys(Player player) {
         HashMap<Crate, Integer> keys = new HashMap<>();
 
         for (Crate crate : getCrates()) {
@@ -1032,7 +1049,7 @@ public class CrazyManager {
      * @param playerName The name of the player you are checking.
      * @return The amount of virtual keys the player by that name has.
      */
-    public HashMap<Crate, Integer> getVirtualKeys(String playerName) {
+    public Map<Crate, Integer> getVirtualKeys(String playerName) {
         HashMap<Crate, Integer> keys = new HashMap<>();
         FileConfiguration data = Files.DATA.getFile();
 
@@ -1052,7 +1069,7 @@ public class CrazyManager {
      *
      * @return The list of locations set by players.
      */
-    public HashMap<UUID, Location[]> getSchematicLocations() {
+    public Map<UUID, Location[]> getSchematicLocations() {
         return schemLocations;
     }
 
@@ -1089,10 +1106,10 @@ public class CrazyManager {
     /**
      * Take a key from a player.
      *
-     * @param amount The amount of keys you wish to take.
-     * @param player The player you wish to take keys from.
-     * @param crate The crate key you are taking.
-     * @param keyType The type of key you are taking from the player.
+     * @param amount    The amount of keys you wish to take.
+     * @param player    The player you wish to take keys from.
+     * @param crate     The crate key you are taking.
+     * @param keyType   The type of key you are taking from the player.
      * @param checkHand If it just checks the players hand or if it checks their inventory.
      * @return Returns true if successfully taken keys and false if not.
      */
@@ -1112,20 +1129,18 @@ public class CrazyManager {
                     }
 
                     for (ItemStack item : items) {
-                        if (item != null) {
-                            if (isKeyFromCrate(item, crate)) {
-                                int keyAmount = item.getAmount();
+                        if (item != null && (isKeyFromCrate(item, crate))) {
+                            int keyAmount = item.getAmount();
 
-                                if ((takeAmount - keyAmount) >= 0) {
-                                    Methods.removeItemAnySlot(player.getInventory(), item);
-                                    takeAmount -= keyAmount;
-                                } else {
-                                    item.setAmount(keyAmount - takeAmount);
-                                    takeAmount = 0;
-                                }
-
-                                if (takeAmount <= 0) return true;
+                            if ((takeAmount - keyAmount) >= 0) {
+                                Methods.removeItemAnySlot(player.getInventory(), item);
+                                takeAmount -= keyAmount;
+                            } else {
+                                item.setAmount(keyAmount - takeAmount);
+                                takeAmount = 0;
                             }
+
+                            if (takeAmount <= 0) return true;
                         }
                     }
 
@@ -1133,20 +1148,19 @@ public class CrazyManager {
                     if (takeAmount > 0) {
                         ItemStack item = player.getEquipment().getItemInOffHand();
 
-                        if (item != null) {
-                            if (isKeyFromCrate(item, crate)) {
-                                int keyAmount = item.getAmount();
+                        if (isKeyFromCrate(item, crate)) {
+                            int keyAmount = item.getAmount();
 
-                                if ((takeAmount - keyAmount) >= 0) {
-                                    player.getEquipment().setItemInOffHand(new ItemStack(Material.AIR, 1));
-                                    takeAmount -= keyAmount;
-                                } else {
-                                    item.setAmount(keyAmount - takeAmount);
-                                    takeAmount = 0;
-                                }
-
-                                if (takeAmount <= 0) return true;
+                            if ((takeAmount - keyAmount) >= 0) {
+                                player.getEquipment().setItemInOffHand(new ItemStack(Material.AIR, 1));
+                                takeAmount -= keyAmount;
+                            } else {
+                                item.setAmount(keyAmount - takeAmount);
+                                takeAmount = 0;
                             }
+
+                            if (takeAmount <= 0) return true;
+
                         }
                     }
                 } catch (Exception e) {
@@ -1191,9 +1205,9 @@ public class CrazyManager {
     /**
      * Give a player keys to a Crate.
      *
-     * @param amount The amount of keys you are giving them.
-     * @param player The player you want to give the keys to.
-     * @param crate The Crate of whose keys you are giving.
+     * @param amount  The amount of keys you are giving them.
+     * @param player  The player you want to give the keys to.
+     * @param crate   The Crate of whose keys you are giving.
      * @param keyType The type of key you are giving to the player.
      */
     public void addKeys(int amount, Player player, Crate crate, KeyType keyType) {
@@ -1205,7 +1219,8 @@ public class CrazyManager {
 
                         boolean fullMessage = Files.CONFIG.getFile().getBoolean("Settings.Give-Virtual-Keys-When-Inventory-Full-Message");
 
-                        if (fullMessage) player.sendMessage(Messages.CANNOT_GIVE_PLAYER_KEYS.getMessage().replaceAll("%amount%", String.valueOf(amount)).replaceAll("%key%", crate.getName()));
+                        if (fullMessage)
+                            player.sendMessage(Messages.CANNOT_GIVE_PLAYER_KEYS.getMessage().replaceAll("%amount%", String.valueOf(amount)).replaceAll("%key%", crate.getName()));
                     } else {
                         player.getWorld().dropItem(player.getLocation(), crate.getKey(amount));
                     }
@@ -1222,7 +1237,7 @@ public class CrazyManager {
      *
      * @param amount The amount the player will have.
      * @param player The player you are setting the keys to.
-     * @param crate The Crate of whose keys are being set.
+     * @param crate  The Crate of whose keys are being set.
      */
     public void setKeys(int amount, Player player, Crate crate) {
         String uuid = player.getUniqueId().toString();
@@ -1242,11 +1257,11 @@ public class CrazyManager {
 
             if (!player.hasPlayedBefore()) {
                 crates.stream()
-                .filter(Crate :: doNewPlayersGetKeys)
-                .forEach(crate -> {
-                    Files.DATA.getFile().set("Players." + uuid + "." + crate.getName(), crate.getNewPlayerKeys());
-                    Files.DATA.saveFile();
-                });
+                        .filter(Crate::doNewPlayersGetKeys)
+                        .forEach(crate -> {
+                            Files.DATA.getFile().set("Players." + uuid + "." + crate.getName(), crate.getNewPlayerKeys());
+                            Files.DATA.saveFile();
+                        });
             }
         }
     }
@@ -1307,11 +1322,11 @@ public class CrazyManager {
      * @return True if it is a display reward item and false if not.
      */
     public boolean isDisplayReward(Entity entity) {
-        if (entity instanceof Item) {
-            ItemStack item = ((Item) entity).getItemStack();
+        if (entity instanceof Item item) {
+            ItemStack stack = item.getItemStack();
 
-            if (item.getType() != Material.AIR) {
-                return new NBTItem(item).hasKey("crazycrates-item");
+            if (stack.getType() != Material.AIR) {
+                return new NBTItem(stack).hasTag("crazycrates-item");
             }
         }
 
@@ -1337,15 +1352,15 @@ public class CrazyManager {
 
         try {
             itemBuilder.setMaterial(file.getString(path + "DisplayItem"))
-            .setAmount(file.getInt(path + "DisplayAmount", 1))
-            .setName(file.getString(path + "DisplayName"))
-            .setLore(file.getStringList(path + "Lore"))
-            .setGlow(file.getBoolean(path + "Glowing"))
-            .setUnbreakable(file.getBoolean(path + "Unbreakable"))
-            .hideItemFlags(file.getBoolean(path + "HideItemFlags"))
-            .addItemFlags(file.getStringList(path + "Flags"))
-            .addPatterns(file.getStringList(path + "Patterns"))
-            .setPlayerName(file.getString(path + "Player"));
+                    .setAmount(file.getInt(path + "DisplayAmount", 1))
+                    .setName(file.getString(path + "DisplayName"))
+                    .setLore(file.getStringList(path + "Lore"))
+                    .setGlow(file.getBoolean(path + "Glowing"))
+                    .setUnbreakable(file.getBoolean(path + "Unbreakable"))
+                    .hideItemFlags(file.getBoolean(path + "HideItemFlags"))
+                    .addItemFlags(file.getStringList(path + "Flags"))
+                    .addPatterns(file.getStringList(path + "Patterns"))
+                    .setPlayerName(file.getString(path + "Player"));
 
             if (file.contains(path + "DisplayDamage") && file.getInt(path + "DisplayDamage") >= 1) {
                 itemBuilder.setDamage(file.getInt(path + "DisplayDamage"));
