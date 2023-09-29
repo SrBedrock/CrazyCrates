@@ -61,6 +61,7 @@ public class BaseKeyCommand extends BaseCommand {
                         HashMap<String, String> placeholders = new HashMap<>();
 
                         placeholders.put("%Crate%", crate.getName());
+                        placeholders.put("%Key%", crate.getKey().getItemMeta().getDisplayName());
                         placeholders.put("%Amount%", amount + "");
                         placeholders.put("%Player%", player.getName());
 
