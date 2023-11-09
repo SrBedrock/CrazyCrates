@@ -9,7 +9,8 @@ public enum PluginSupport {
     CMI("CMI"),
     PLACEHOLDERAPI("PlaceholderAPI"),
     ORAXEN("Oraxen"),
-    ITEMS_ADDER("ItemsAdder");
+    ITEMS_ADDER("ItemsAdder"),
+    ITEMEDIT("ItemEdit");
     
     private final String name;
 

@@ -5,8 +5,14 @@ import com.badbones69.crazycrates.paper.support.SkullCreator;
 import com.badbones69.crazycrates.paper.support.libraries.PluginSupport;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import dev.lone.itemsadder.api.CustomStack;
+import emanondev.itemedit.ItemEdit;
+import emanondev.itemedit.storage.ServerStorage;
 import io.th0rgal.oraxen.api.OraxenItems;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.block.Banner;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -14,14 +20,26 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ItemBuilder {
@@ -363,28 +381,39 @@ public class ItemBuilder {
 
         ItemStack item = referenceItem;
 
-        if (item == null) {
-            if (PluginSupport.ITEMS_ADDER.isPluginEnabled()) {
-                CustomStack customStack = CustomStack.getInstance("ia:" + this.customMaterial);
-
-                if (customStack != null) item = customStack.getItemStack();
-            } else if (PluginSupport.ORAXEN.isPluginEnabled()) {
-                io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(this.customMaterial);
-
-                if (oraxenItem != null) item = oraxenItem.build();
+        if (item == null && this.customMaterial != null) {
+            String customItem;
+            if (PluginSupport.ITEMS_ADDER.isPluginEnabled() && this.customMaterial.startsWith("ia:")) {
+                CustomStack customStack = CustomStack.getInstance(this.customMaterial);
+                if (customStack != null) {
+                    item = customStack.getItemStack();
+                    this.itemName = customStack.getDisplayName();
+                }
+            } else if (PluginSupport.ORAXEN.isPluginEnabled() && this.customMaterial.startsWith("or:")) {
+                customItem = this.customMaterial.replace("or:", "");
+                io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(customItem);
+                if (oraxenItem != null) {
+                    item = oraxenItem.build();
+                    this.itemName = oraxenItem.getReferenceClone().getItemMeta().getDisplayName();
+                }
+            } else if (PluginSupport.ITEMEDIT.isPluginEnabled() && this.customMaterial.startsWith("ie:")) {
+                ServerStorage serverStorage = ItemEdit.get().getServerStorage();
+                customItem = this.customMaterial.replace("ie:", "");
+                if (serverStorage != null) {
+                    item = serverStorage.getItem(customItem);
+                    this.itemName = item.getItemMeta().getDisplayName();
+                }
             }
         }
 
         if (item == null) item = new ItemStack(material);
 
         if (item.getType() != Material.AIR) {
-            if (isHead) { // Has to go 1st due to it removing all data when finished.
-                if (isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
-                    if (isURL) {
-                        SkullCreator.itemWithUrl(item, player);
-                    } else {
-                        SkullCreator.itemWithBase64(item, player);
-                    }
+            if (isHead && isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
+                if (isURL) {
+                    SkullCreator.itemWithUrl(item, player);
+                } else {
+                    SkullCreator.itemWithBase64(item, player);
                 }
             }
 
@@ -393,10 +422,8 @@ public class ItemBuilder {
             itemMeta.setDisplayName(getUpdatedName());
             itemMeta.setLore(getUpdatedLore());
 
-            if (isArmor()) {
-                if (this.trimPattern != null && this.trimMaterial != null) {
-                    ((ArmorMeta) itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
-                }
+            if (isArmor() && this.trimPattern != null && this.trimMaterial != null) {
+                ((ArmorMeta) itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
             }
 
             if (isMap) {
@@ -405,13 +432,11 @@ public class ItemBuilder {
                 if (mapColor != null) mapMeta.setColor(mapColor);
             }
 
-            if (itemMeta instanceof Damageable) {
-                if (damage >= 1) {
-                    if (damage >= item.getType().getMaxDurability()) {
-                        ((Damageable) itemMeta).setDamage(item.getType().getMaxDurability());
-                    } else {
-                        ((Damageable) itemMeta).setDamage(damage);
-                    }
+            if (itemMeta instanceof Damageable damageable && (damage >= 1)) {
+                if (damage >= item.getType().getMaxDurability()) {
+                    damageable.setDamage(item.getType().getMaxDurability());
+                } else {
+                    damageable.setDamage(damage);
                 }
             }
 
@@ -450,7 +475,7 @@ public class ItemBuilder {
 
             if (useCustomModelData) itemMeta.setCustomModelData(customModelData);
 
-            itemFlags.forEach(itemMeta :: addItemFlags);
+            itemFlags.forEach(itemMeta::addItemFlags);
             item.setItemMeta(itemMeta);
             hideItemFlags(item);
             item.addUnsafeEnchantments(enchantments);
@@ -459,8 +484,8 @@ public class ItemBuilder {
 
             if (isHead && !isHash) nbt.setString("SkullOwner", player);
 
-            if (isMobEgg) {
-                if (entityType != null) nbt.addCompound("EntityTag").setString("id", "minecraft:" + entityType.name());
+            if (isMobEgg && entityType != null) {
+                nbt.addCompound("EntityTag").setString("id", "minecraft:" + entityType.name());
             }
 
             if (!crateName.isEmpty()) nbt.setString("CrazyCrates-Crate", crateName);
@@ -581,7 +606,9 @@ public class ItemBuilder {
      * @return The ItemBuilder with an updated name.
      */
     public ItemBuilder setName(String itemName) {
-        if (itemName != null) this.itemName = Methods.color(itemName);
+        if (itemName != null) {
+            this.itemName = Methods.color(itemName);
+        }
 
         return this;
     }
@@ -599,7 +626,7 @@ public class ItemBuilder {
      * Add a placeholder to the name of the item.
      *
      * @param placeholder The placeholder that will be replaced.
-     * @param argument The argument you wish to replace the placeholder with.
+     * @param argument    The argument you wish to replace the placeholder with.
      * @return The ItemBuilder with updated info.
      */
     public ItemBuilder addNamePlaceholder(String placeholder, String argument) {
@@ -662,7 +689,7 @@ public class ItemBuilder {
      * Add a placeholder to the lore of the item.
      *
      * @param placeholder The placeholder you wish to replace.
-     * @param argument The argument that will replace the placeholder.
+     * @param argument    The argument that will replace the placeholder.
      * @return The ItemBuilder with updated info.
      */
     public ItemBuilder addLorePlaceholder(String placeholder, String argument) {
@@ -728,7 +755,8 @@ public class ItemBuilder {
                     break;
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -736,7 +764,7 @@ public class ItemBuilder {
      * @return The ItemBuilder with updated patterns.
      */
     public ItemBuilder addPatterns(List<String> patterns) {
-        patterns.forEach(this :: addPatterns);
+        patterns.forEach(this::addPatterns);
         return this;
     }
 
@@ -800,7 +828,7 @@ public class ItemBuilder {
      * Adds an enchantment to the item.
      *
      * @param enchantment The enchantment you wish to add.
-     * @param level The level of the enchantment ( Unsafe levels included )
+     * @param level       The level of the enchantment ( Unsafe levels included )
      * @return The ItemBuilder with updated enchantments.
      */
     public ItemBuilder addEnchantments(Enchantment enchantment, int level) {
@@ -844,7 +872,8 @@ public class ItemBuilder {
                 ItemFlag itemFlag = ItemFlag.valueOf(flagString.toUpperCase());
 
                 if (itemFlag != null) addItemFlag(itemFlag);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         return this;
@@ -944,7 +973,7 @@ public class ItemBuilder {
     /**
      * The text that will be displayed on the item.
      *
-     * @param texture The skull texture.
+     * @param texture     The skull texture.
      * @param profileUUID The uuid of the profile.
      * @return The ItemBuilder.
      */
@@ -984,9 +1013,10 @@ public class ItemBuilder {
             itemBuilder.setName(itemMeta.getDisplayName()).setLore(itemMeta.getLore());
             NBTItem nbt = new NBTItem(item);
 
-            if (nbt.hasKey("Unbreakable")) itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
+            if (nbt.hasTag("Unbreakable")) itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
 
-            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable) itemBuilder.setDamage(((org.bukkit.inventory.meta.Damageable) itemMeta).getDamage());
+            if (itemMeta instanceof Damageable damageable)
+                itemBuilder.setDamage(damageable.getDamage());
         }
 
         return itemBuilder;
@@ -1005,7 +1035,7 @@ public class ItemBuilder {
     /**
      * Converts a string to an ItemBuilder with a placeholder for errors.
      *
-     * @param itemString The String you wish to convert.
+     * @param itemString  The String you wish to convert.
      * @param placeHolder The placeholder to use if there is an error.
      * @return The String as an ItemBuilder.
      */
@@ -1122,7 +1152,8 @@ public class ItemBuilder {
                     meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     item.setItemMeta(meta);
                 }
-            } catch (NoClassDefFoundError ignored) {}
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 
@@ -1233,7 +1264,8 @@ public class ItemBuilder {
             try {
                 String[] rgb = color.split(",");
                 return Color.fromRGB(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
 
         return null;
@@ -1253,7 +1285,8 @@ public class ItemBuilder {
                 try {
                     String[] rgb = color.split(",");
                     return DyeColor.getByColor(Color.fromRGB(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2])));
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) {
+                }
             }
         }
 
@@ -1275,8 +1308,10 @@ public class ItemBuilder {
                 HashMap<String, String> enchantments = getEnchantmentList();
 
                 if (stripEnchantmentName(enchantment.getName()).equalsIgnoreCase(enchantmentName) || (enchantments.get(enchantment.getName()) != null &&
-                        stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName))) return enchantment;
-            } catch (Exception ignore) {}
+                                                                                                      stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName)))
+                    return enchantment;
+            } catch (Exception ignore) {
+            }
         }
 
         return null;
