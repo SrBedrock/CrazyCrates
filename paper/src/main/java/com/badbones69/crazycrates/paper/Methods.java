@@ -8,11 +8,14 @@ import com.badbones69.crazycrates.paper.api.events.PlayerPrizeEvent;
 import com.badbones69.crazycrates.paper.api.objects.Crate;
 import com.badbones69.crazycrates.paper.api.objects.ItemBuilder;
 import com.badbones69.crazycrates.paper.api.objects.Prize;
-import com.badbones69.crazycrates.api.enums.types.CrateType;
 import com.badbones69.crazycrates.paper.listeners.FireworkDamageListener;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
@@ -24,9 +27,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import static java.util.regex.Matcher.quoteReplacement;
 
 @SuppressWarnings("deprecation")
@@ -68,12 +77,16 @@ public class Methods {
         String prefix = getPrefix();
 
         if (commandSender instanceof Player player) {
-            if (!prefix.isEmpty() && prefixToggle) player.sendMessage(color(message.replaceAll("%prefix%", quoteReplacement(prefix))).replaceAll("%Prefix%", quoteReplacement(prefix))); else player.sendMessage(color(message));
+            if (!prefix.isEmpty() && prefixToggle)
+                player.sendMessage(color(message.replaceAll("%prefix%", quoteReplacement(prefix))).replaceAll("%Prefix%", quoteReplacement(prefix)));
+            else player.sendMessage(color(message));
 
             return;
         }
 
-        if (!prefix.isEmpty() && prefixToggle) commandSender.sendMessage(color(message.replaceAll("%prefix%", quoteReplacement(prefix))).replaceAll("%Prefix%", quoteReplacement(prefix))); else commandSender.sendMessage(color(message));
+        if (!prefix.isEmpty() && prefixToggle)
+            commandSender.sendMessage(color(message.replaceAll("%prefix%", quoteReplacement(prefix))).replaceAll("%Prefix%", quoteReplacement(prefix)));
+        else commandSender.sendMessage(color(message));
     }
 
     public static void sendCommand(String command) {
@@ -105,7 +118,8 @@ public class Methods {
             }
 
             try {
-                ItemStack item = new ItemBuilder().setMaterial(id).setName(name).build();
+                ItemBuilder itemBuilder = new ItemBuilder().setMaterial(id);
+                ItemStack item = itemBuilder.setName(name).build();
                 int num;
 
                 for (int counter = 1; counter <= 1; counter++) {
@@ -113,7 +127,8 @@ public class Methods {
 
                     if (num <= chance) items.put(item, "Crate.Prizes." + reward);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         return items;
@@ -127,7 +142,7 @@ public class Methods {
         fw.setFireworkMeta(fm);
         FireworkDamageListener.addFirework(fw);
 
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, fw :: detonate, 2);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, fw::detonate, 2);
     }
 
     public static void firework(Location loc, Color color) {
@@ -138,7 +153,7 @@ public class Methods {
         fw.setFireworkMeta(fm);
         FireworkDamageListener.addFirework(fw);
 
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, fw :: detonate, 2);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, fw::detonate, 2);
     }
 
     public static boolean isInt(String s) {
@@ -174,7 +189,8 @@ public class Methods {
             } else {
                 item.setAmount(item.getAmount() - 1);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     public static boolean permCheck(CommandSender sender, Permissions permissions, boolean tabComplete) {
@@ -213,8 +229,8 @@ public class Methods {
     public static boolean isSimilar(ItemStack itemStack, Crate crate) {
         NBTItem nbtItem = new NBTItem(itemStack);
         return itemStack.isSimilar(crate.getKey()) || itemStack.isSimilar(crate.getKeyNoNBT()) ||
-                itemStack.isSimilar(crate.getAdminKey()) || stripNBT(itemStack).isSimilar(crate.getKeyNoNBT()) ||
-                isSimilarCustom(crate.getKeyNoNBT(), itemStack) || (nbtItem.hasKey("CrazyCrates-Crate") && crate.getName().equals(nbtItem.getString("CrazyCrates-Crate")));
+               itemStack.isSimilar(crate.getAdminKey()) || stripNBT(itemStack).isSimilar(crate.getKeyNoNBT()) ||
+               isSimilarCustom(crate.getKeyNoNBT(), itemStack) || (nbtItem.hasKey("CrazyCrates-Crate") && crate.getName().equals(nbtItem.getString("CrazyCrates-Crate")));
     }
 
     private static boolean isSimilarCustom(ItemStack one, ItemStack two) {
@@ -292,10 +308,11 @@ public class Methods {
                 }
 
                 if (stripEnchantmentName(enchantment.getName()).equalsIgnoreCase(enchantmentName) || (enchantments.get(enchantment.getName()) != null &&
-                stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName))) {
+                                                                                                      stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName))) {
                     return enchantment;
                 }
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
 
         return null;
@@ -346,22 +363,22 @@ public class Methods {
 
     public static ItemBuilder getRandomPaneColor() {
         List<String> colors = Arrays.asList(
-        Material.WHITE_STAINED_GLASS_PANE.toString(),
-        Material.ORANGE_STAINED_GLASS_PANE.toString(),
-        Material.MAGENTA_STAINED_GLASS_PANE.toString(),
-        Material.LIGHT_BLUE_STAINED_GLASS_PANE.toString(),
-        Material.YELLOW_STAINED_GLASS_PANE.toString(),
-        Material.LIME_STAINED_GLASS_PANE.toString(),
-        Material.PINK_STAINED_GLASS_PANE.toString(),
-        Material.GRAY_STAINED_GLASS_PANE.toString(),
-        Material.CYAN_STAINED_GLASS_PANE.toString(),
-        Material.PURPLE_STAINED_GLASS_PANE.toString(),
-        Material.BLUE_STAINED_GLASS_PANE.toString(),
-        Material.BROWN_STAINED_GLASS_PANE.toString(),
-        Material.GREEN_STAINED_GLASS_PANE.toString(),
-        Material.RED_STAINED_GLASS_PANE.toString(),
-        Material.BLACK_STAINED_GLASS_PANE.toString(),
-        Material.LIGHT_GRAY_STAINED_GLASS_PANE.toString());
+                Material.WHITE_STAINED_GLASS_PANE.toString(),
+                Material.ORANGE_STAINED_GLASS_PANE.toString(),
+                Material.MAGENTA_STAINED_GLASS_PANE.toString(),
+                Material.LIGHT_BLUE_STAINED_GLASS_PANE.toString(),
+                Material.YELLOW_STAINED_GLASS_PANE.toString(),
+                Material.LIME_STAINED_GLASS_PANE.toString(),
+                Material.PINK_STAINED_GLASS_PANE.toString(),
+                Material.GRAY_STAINED_GLASS_PANE.toString(),
+                Material.CYAN_STAINED_GLASS_PANE.toString(),
+                Material.PURPLE_STAINED_GLASS_PANE.toString(),
+                Material.BLUE_STAINED_GLASS_PANE.toString(),
+                Material.BROWN_STAINED_GLASS_PANE.toString(),
+                Material.GREEN_STAINED_GLASS_PANE.toString(),
+                Material.RED_STAINED_GLASS_PANE.toString(),
+                Material.BLACK_STAINED_GLASS_PANE.toString(),
+                Material.LIGHT_GRAY_STAINED_GLASS_PANE.toString());
         return new ItemBuilder().setMaterial(colors.get(new Random().nextInt(colors.size())));
     }
 
@@ -386,9 +403,10 @@ public class Methods {
 
     /**
      * Picks the prize for the player.
+     *
      * @param player - The player who the prize is for.
-     * @param crate - The crate the player is opening.
-     * @param prize - The prize the player is being given.
+     * @param crate  - The crate the player is opening.
+     * @param prize  - The prize the player is being given.
      */
     public static void pickPrize(Player player, Crate crate, Prize prize) {
         if (prize != null) {
