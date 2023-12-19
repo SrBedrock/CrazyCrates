@@ -2,7 +2,22 @@ package com.badbones69.crazycrates.api.objects;
 
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.ryderbelserion.cluster.paper.utils.DyeUtils;
-import org.bukkit.*;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import emanondev.itemedit.ItemEdit;
+import emanondev.itemedit.storage.ServerStorage;
+import io.th0rgal.oraxen.api.OraxenItems;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.block.Banner;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -11,24 +26,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import us.crazycrew.crazycrates.CrazyCrates;
-import us.crazycrew.crazycrates.api.support.libraries.PluginSupport;
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import io.th0rgal.oraxen.api.OraxenItems;
-import org.bukkit.block.Banner;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import us.crazycrew.crazycrates.CrazyCrates;
+import us.crazycrew.crazycrates.api.support.libraries.PluginSupport;
 import us.crazycrew.crazycrates.other.MsgUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -384,14 +391,25 @@ public class ItemBuilder {
 
         ItemStack item = this.itemStack;
 
-        if (PluginSupport.ORAXEN.isPluginEnabled()) {
-            io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(this.customMaterial);
+        String[] split = this.customMaterial.split(":");
+        if (PluginSupport.ORAXEN.isPluginEnabled() && split[0].equals("or")) {
+            io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(split[1]);
 
             if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
                 item = oraxenItem.build();
                 this.itemMeta = item.getItemMeta();
             }
         }
+
+        if (PluginSupport.ITEM_EDIT.isPluginEnabled() && split[0].equals("ie")) {
+            ServerStorage serverStorage = ItemEdit.get().getServerStorage();
+            item = serverStorage.getItem(split[1]);
+
+            if (item != null) {
+                this.itemMeta = item.getItemMeta();
+            }
+        }
+
 
         if (item.getType() != Material.AIR) {
             if (this.isHead) { // Has to go 1st due to it removing all data when finished.
@@ -413,10 +431,8 @@ public class ItemBuilder {
             this.itemMeta.setDisplayName(getUpdatedName());
             this.itemMeta.setLore(getUpdatedLore());
 
-            if (isArmor()) {
-                if (this.trimPattern != null && this.trimMaterial != null) {
-                    ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
-                }
+            if (isArmor() && (this.trimPattern != null && this.trimMaterial != null)) {
+                ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
             }
 
             if (this.isMap) {
@@ -425,13 +441,11 @@ public class ItemBuilder {
                 if (this.mapColor != null) mapMeta.setColor(this.mapColor);
             }
 
-            if (this.itemMeta instanceof Damageable damageable) {
-                if (this.damage >= 1) {
-                    if (this.damage >= item.getType().getMaxDurability()) {
-                        damageable.setDamage(item.getType().getMaxDurability());
-                    } else {
-                        damageable.setDamage(this.damage);
-                    }
+            if (this.itemMeta instanceof Damageable damageable && (this.damage >= 1)) {
+                if (this.damage >= item.getType().getMaxDurability()) {
+                    damageable.setDamage(item.getType().getMaxDurability());
+                } else {
+                    damageable.setDamage(this.damage);
                 }
             }
 
@@ -480,8 +494,8 @@ public class ItemBuilder {
 
             if (this.isHead && !this.isHash) nbt.setString("SkullOwner", this.player);
 
-            if (this.isMobEgg) {
-                if (this.entityType != null) nbt.addCompound("EntityTag").setString("id", "minecraft:" + this.entityType.name());
+            if (this.isMobEgg && (this.entityType != null)) {
+                nbt.addCompound("EntityTag").setString("id", "minecraft:" + this.entityType.name());
             }
 
             if (!this.crateName.isEmpty()) nbt.setString("CrazyCrates-Crate", this.crateName);
@@ -556,7 +570,8 @@ public class ItemBuilder {
             } else { // Value is something else.
                 try {
                     this.potionType = getPotionType(PotionEffectType.getByName(metaData));
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 this.potionColor = DyeUtils.getColor(metaData);
                 this.armorColor = DyeUtils.getColor(metaData);
@@ -643,7 +658,7 @@ public class ItemBuilder {
      * Add a placeholder to the name of the item.
      *
      * @param placeholder The placeholder that will be replaced.
-     * @param argument The argument you wish to replace the placeholder with.
+     * @param argument    The argument you wish to replace the placeholder with.
      * @return The ItemBuilder with updated info.
      */
     public ItemBuilder addNamePlaceholder(String placeholder, String argument) {
@@ -706,7 +721,7 @@ public class ItemBuilder {
      * Add a placeholder to the lore of the item.
      *
      * @param placeholder The placeholder you wish to replace.
-     * @param argument The argument that will replace the placeholder.
+     * @param argument    The argument that will replace the placeholder.
      * @return The ItemBuilder with updated info.
      */
     public ItemBuilder addLorePlaceholder(String placeholder, String argument) {
@@ -772,7 +787,8 @@ public class ItemBuilder {
                     break;
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -780,7 +796,7 @@ public class ItemBuilder {
      * @return The ItemBuilder with updated patterns.
      */
     public ItemBuilder addPatterns(List<String> patterns) {
-        patterns.forEach(this :: addPatterns);
+        patterns.forEach(this::addPatterns);
         return this;
     }
 
@@ -844,7 +860,7 @@ public class ItemBuilder {
      * Adds an enchantment to the item.
      *
      * @param enchantment The enchantment you wish to add.
-     * @param level The level of the enchantment ( Unsafe levels included )
+     * @param level       The level of the enchantment ( Unsafe levels included )
      * @return The ItemBuilder with updated enchantments.
      */
     public ItemBuilder addEnchantments(Enchantment enchantment, int level) {
@@ -888,7 +904,8 @@ public class ItemBuilder {
                 ItemFlag itemFlag = ItemFlag.valueOf(flagString.toUpperCase());
 
                 addItemFlag(itemFlag);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         return this;
@@ -940,6 +957,7 @@ public class ItemBuilder {
     }
 
     /**
+     *
      */
     public void hideItemFlags() {
         if (this.hideItemFlags) {
@@ -999,7 +1017,7 @@ public class ItemBuilder {
 
             if (nbt.hasTag("Unbreakable")) itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
 
-            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable) itemBuilder.setDamage(((org.bukkit.inventory.meta.Damageable) itemMeta).getDamage());
+            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable damageable) itemBuilder.setDamage(damageable.getDamage());
         }
 
         return itemBuilder;
@@ -1018,7 +1036,7 @@ public class ItemBuilder {
     /**
      * Converts a string to an ItemBuilder with a placeholder for errors.
      *
-     * @param itemString The String you wish to convert.
+     * @param itemString  The String you wish to convert.
      * @param placeHolder The placeholder to use if there is an error.
      * @return The String as an ItemBuilder.
      */
@@ -1086,7 +1104,8 @@ public class ItemBuilder {
                                     break;
                                 }
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 }
             }
@@ -1123,7 +1142,6 @@ public class ItemBuilder {
 
     /**
      * Add glow to an item.
-     *
      */
     private void addGlow() {
         if (this.glowing) {
@@ -1131,7 +1149,8 @@ public class ItemBuilder {
                 this.itemMeta.addEnchant(Enchantment.LUCK, 1, false);
                 this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 this.itemStack.setItemMeta(this.itemMeta);
-            } catch (NoClassDefFoundError ignored) {}
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 
@@ -1192,8 +1211,10 @@ public class ItemBuilder {
                 HashMap<String, String> enchantments = getEnchantmentList();
 
                 if (stripEnchantmentName(enchantment.getName()).equalsIgnoreCase(enchantmentName) || (enchantments.get(enchantment.getName()) != null &&
-                        stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName))) return enchantment;
-            } catch (Exception ignore) {}
+                                                                                                      stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName)))
+                    return enchantment;
+            } catch (Exception ignore) {
+            }
         }
 
         return null;
