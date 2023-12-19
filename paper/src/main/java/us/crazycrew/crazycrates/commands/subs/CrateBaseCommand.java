@@ -1,6 +1,17 @@
 package us.crazycrew.crazycrates.commands.subs;
 
 import ch.jalu.configme.SettingsManager;
+import com.badbones69.crazycrates.api.EventLogger;
+import com.badbones69.crazycrates.api.FileManager;
+import com.badbones69.crazycrates.api.FileManager.Files;
+import com.badbones69.crazycrates.api.enums.Permissions;
+import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
+import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
+import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.objects.CrateLocation;
+import com.badbones69.crazycrates.api.objects.Prize;
+import dev.triumphteam.cmd.bukkit.annotation.Permission;
+import dev.triumphteam.cmd.core.BaseCommand;
 import dev.triumphteam.cmd.core.annotation.ArgName;
 import dev.triumphteam.cmd.core.annotation.Command;
 import dev.triumphteam.cmd.core.annotation.Default;
@@ -12,38 +23,28 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
-import org.bukkit.command.ConsoleCommandSender;
-import org.jetbrains.annotations.Nullable;
-import us.crazycrew.crazycrates.common.config.types.ConfigKeys;
-import us.crazycrew.crazycrates.CrazyCrates;
-import us.crazycrew.crazycrates.managers.crates.CrateManager;
-import com.badbones69.crazycrates.api.EventLogger;
-import com.badbones69.crazycrates.api.FileManager;
-import com.badbones69.crazycrates.api.FileManager.Files;
-import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
-import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
-import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.CrateLocation;
-import com.badbones69.crazycrates.api.objects.Prize;
-import com.badbones69.crazycrates.api.enums.Permissions;
-import us.crazycrew.crazycrates.managers.BukkitUserManager;
-import dev.triumphteam.cmd.bukkit.annotation.Permission;
-import dev.triumphteam.cmd.core.BaseCommand;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
-import us.crazycrew.crazycrates.api.enums.types.CrateType;
-import us.crazycrew.crazycrates.api.enums.types.KeyType;
+import org.jetbrains.annotations.Nullable;
+import us.crazycrew.crazycrates.CrazyCrates;
 import us.crazycrew.crazycrates.api.builders.types.CrateAdminMenu;
 import us.crazycrew.crazycrates.api.builders.types.CrateMainMenu;
 import us.crazycrew.crazycrates.api.enums.Messages;
+import us.crazycrew.crazycrates.api.enums.types.CrateType;
+import us.crazycrew.crazycrates.api.enums.types.KeyType;
+import us.crazycrew.crazycrates.common.config.types.ConfigKeys;
+import us.crazycrew.crazycrates.managers.BukkitUserManager;
+import us.crazycrew.crazycrates.managers.crates.CrateManager;
 import us.crazycrew.crazycrates.other.FileUtils;
 import us.crazycrew.crazycrates.other.MiscUtils;
 import us.crazycrew.crazycrates.other.MsgUtils;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -55,7 +56,7 @@ public class CrateBaseCommand extends BaseCommand {
 
     @NotNull
     private final CrazyCrates plugin = CrazyCrates.get();
-    
+
     @NotNull
     private final CrateManager crateManager = this.plugin.getCrateManager();
 
@@ -94,53 +95,6 @@ public class CrateBaseCommand extends BaseCommand {
         }
 
         sender.sendMessage(Messages.help.getString());
-    }
-
-    @SubCommand("transfer")
-    @Permission(value = "crazycrates.command.player.transfer", def = PermissionDefault.OP)
-    public void onPlayerTransferKeys(Player sender, @Suggestion("crates") String crateName, @Suggestion("online-players") Player player, @Suggestion("numbers") int amount) {
-        Crate crate = this.crateManager.getCrateFromName(crateName);
-
-        // If the crate is menu or null. we return
-        if (crate == null || crate.getCrateType() == CrateType.menu) {
-            sender.sendMessage(Messages.not_a_crate.getMessage("%crate%", crateName).toString());
-            return;
-        }
-
-        // If it's the same player, we return.
-        if (player.getName().equalsIgnoreCase(sender.getName())) {
-            sender.sendMessage(Messages.same_player.getString());
-            return;
-        }
-
-        // If they don't have enough keys, we return.
-        if (this.plugin.getCrazyHandler().getUserManager().getVirtualKeys(sender.getUniqueId(), crate.getName()) <= amount) {
-            sender.sendMessage(Messages.transfer_not_enough_keys.getMessage("%crate%", crate.getName()).toString());
-            return;
-        }
-
-        PlayerReceiveKeyEvent event = new PlayerReceiveKeyEvent(player, crate, PlayerReceiveKeyEvent.KeyReceiveReason.TRANSFER, amount);
-        this.plugin.getServer().getPluginManager().callEvent(event);
-
-        // If the event is cancelled, We return.
-        if (event.isCancelled()) return;
-
-        this.plugin.getCrazyHandler().getUserManager().takeKeys(amount, sender.getUniqueId(), crate.getName(), KeyType.virtual_key, false);
-        this.plugin.getCrazyHandler().getUserManager().addKeys(amount, player.getUniqueId(), crate.getName(), KeyType.virtual_key);
-
-        HashMap<String, String> placeholders = new HashMap<>();
-
-        placeholders.put("%crate%", crate.getName());
-        placeholders.put("%amount%", String.valueOf(amount));
-        placeholders.put("%player%", player.getName());
-
-        sender.sendMessage(Messages.transfer_sent_keys.getMessage(placeholders).toString());
-
-        placeholders.put("%player%", sender.getName());
-
-        player.sendMessage(Messages.transfer_received_keys.getMessage("%player%", sender.getName()).toString());
-
-        this.eventLogger.logKeyEvent(player, sender, crate, KeyType.virtual_key, EventLogger.KeyEventType.KEY_EVENT_RECEIVED, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
     }
 
     @SubCommand("reload")
@@ -393,7 +347,7 @@ public class CrateBaseCommand extends BaseCommand {
 
         if (!hasKey) {
             if (this.config.getProperty(ConfigKeys.need_key_sound_toggle)) {
-                player.playSound(player.getLocation(), Sound.valueOf(this.config.getProperty(ConfigKeys.need_key_sound)), SoundCategory.PLAYERS,1f, 1f);
+                player.playSound(player.getLocation(), Sound.valueOf(this.config.getProperty(ConfigKeys.need_key_sound)), SoundCategory.PLAYERS, 1f, 1f);
             }
 
             player.sendMessage(Messages.no_virtual_key.getString());
@@ -455,7 +409,7 @@ public class CrateBaseCommand extends BaseCommand {
             return;
         }
 
-        for (;keys > 0; keys--) {
+        for (; keys > 0; keys--) {
             if (MiscUtils.isInventoryFull(player)) break;
             if (keysUsed >= amount) break;
             if (keysUsed >= crate.getMaxMassOpen()) break;
@@ -630,7 +584,8 @@ public class CrateBaseCommand extends BaseCommand {
             boolean inventoryCheck = this.config.getProperty(ConfigKeys.give_virtual_keys_when_inventory_full);
 
             sender.sendMessage(Messages.gave_a_player_keys.getMessage(placeholders).toString());
-            if (!inventoryCheck || !fullMessage && !MiscUtils.isInventoryFull(player) && player.isOnline()) player.sendMessage(Messages.obtaining_keys.getMessage(placeholders).toString());
+            if (!inventoryCheck || !fullMessage && !MiscUtils.isInventoryFull(player) && player.isOnline())
+                player.sendMessage(Messages.obtaining_keys.getMessage(placeholders).toString());
 
             this.eventLogger.logKeyEvent(player, sender, crate, type, EventLogger.KeyEventType.KEY_EVENT_GIVEN, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
 
@@ -672,15 +627,15 @@ public class CrateBaseCommand extends BaseCommand {
             sender.sendMessage(Messages.not_a_number.getMessage("%number%", String.valueOf(amount)).toString());
             return;
         }
-        
+
         if (target.getPlayer() != null) {
             Player player = target.getPlayer();
-            
+
             takeKey(sender, player, null, crate, type, amount);
 
             return;
         }
-        
+
         takeKey(sender, null, target.getOfflinePlayer(), crate, type, amount);
     }
 
@@ -689,7 +644,8 @@ public class CrateBaseCommand extends BaseCommand {
             int totalKeys = this.plugin.getCrazyHandler().getUserManager().getTotalKeys(player.getUniqueId(), crate.getName());
 
             if (totalKeys < 1) {
-                if (this.plugin.isLogging()) this.plugin.getLogger().warning("The player " + player.getName() + " does not have enough keys to take.");
+                if (this.plugin.isLogging())
+                    this.plugin.getLogger().warning("The player " + player.getName() + " does not have enough keys to take.");
 
                 sender.sendMessage(Messages.cannot_take_keys.getMessage("%player%", player.getName()).toString());
                 return;
