@@ -1,6 +1,7 @@
 package com.badbones69.crazycrates.commands.subs.player;
 
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.google.common.collect.Lists;
 import dev.triumphteam.cmd.bukkit.annotation.Permission;
@@ -11,9 +12,8 @@ import dev.triumphteam.cmd.core.annotation.SubCommand;
 import dev.triumphteam.cmd.core.annotation.Suggestion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.api.enums.Messages;
+
 import java.util.HashMap;
 import java.util.List;
 

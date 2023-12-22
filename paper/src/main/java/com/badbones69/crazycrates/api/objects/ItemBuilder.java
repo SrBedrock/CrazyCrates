@@ -1,37 +1,13 @@
 package com.badbones69.crazycrates.api.objects;
 
-import com.badbones69.crazycrates.support.SkullCreator;
-import com.ryderbelserion.cluster.paper.utils.DyeUtils;
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import emanondev.itemedit.ItemEdit;
-import emanondev.itemedit.storage.ServerStorage;
-import io.th0rgal.oraxen.api.OraxenItems;
-import org.bukkit.Color;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.block.Banner;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ArmorMeta;
-import org.bukkit.inventory.meta.BannerMeta;
-import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.MapMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.other.MsgUtils;
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.ryderbelserion.cluster.paper.utils.DyeUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import emanondev.itemedit.ItemEdit;
+import emanondev.itemedit.storage.ServerStorage;
 import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -59,6 +35,9 @@ import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -415,37 +394,44 @@ public class ItemBuilder {
 
         ItemStack item = this.itemStack;
 
-        String[] split = this.customMaterial.split(":");
-        if (PluginSupport.ORAXEN.isPluginEnabled() && split[0].equals("or")) {
-            io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(split[1]);
+        // Custom Items (Oraxen, ItemEdit)
+        if (this.customMaterial.contains(":")) {
 
-            if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
-                item = oraxenItem.build();
-                this.itemMeta = item.getItemMeta();
-            }
-        }
+            String[] split = this.customMaterial.split(":");
+            String identifier = split[0];
+            String id = split[1];
 
-        if (PluginSupport.ITEM_EDIT.isPluginEnabled() && split[0].equals("ie")) {
-            ServerStorage serverStorage = ItemEdit.get().getServerStorage();
-            item = serverStorage.getItem(split[1]);
+            if (!identifier.isBlank() && !id.isBlank()) {
 
-            if (item != null) {
-                this.itemMeta = item.getItemMeta();
+                if (PluginSupport.ORAXEN.isPluginEnabled() && identifier.equals("or")) {
+                    io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(id);
+
+                    if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
+                        item = oraxenItem.build();
+                        this.itemMeta = item.getItemMeta();
+                    }
+                }
+
+                if (PluginSupport.ITEM_EDIT.isPluginEnabled() && identifier.equals("ie")) {
+                    ServerStorage serverStorage = ItemEdit.get().getServerStorage();
+                    item = serverStorage.getItem(id);
+
+                    if (item != null) {
+                        this.itemMeta = item.getItemMeta();
+                    }
+                }
             }
         }
 
 
         if (item.getType() != Material.AIR) {
-            if (this.isHead) { // Has to go 1st due to it removing all data when finished.
-                if (this.isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
-                    if (this.isURL) {
-                        item = SkullCreator.itemWithUrl(item, this.player);
-                        this.itemMeta = item.getItemMeta();
-                    } else {
-                        item = SkullCreator.itemWithBase64(item, this.player);
-                        this.itemMeta = item.getItemMeta();
-                    }
+            if (this.isHead && (this.isHash)) { // Sauce: https://github.com/deanveloper/SkullCreator
+                if (this.isURL) {
+                    item = SkullCreator.itemWithUrl(item, this.player);
+                } else {
+                    item = SkullCreator.itemWithBase64(item, this.player);
                 }
+                this.itemMeta = item.getItemMeta();
             }
 
             item.setAmount(this.itemAmount);
@@ -909,7 +895,7 @@ public class ItemBuilder {
      * @param flagStrings The flag names as string you wish to add to the item in the builder.
      * @return The ItemBuilder with updated info.
      */
-    public ItemBuilder setFlagsFromStrings(List<String> flagStrings) {
+    public ItemBuilder setFlagsFromStrings(@NotNull List<String> flagStrings) {
         this.itemFlags.clear();
 
         for (String flagString : flagStrings) {
@@ -922,7 +908,7 @@ public class ItemBuilder {
     }
 
     // Used for multiple Item Flags
-    public ItemBuilder addItemFlags(List<String> flagStrings) {
+    public ItemBuilder addItemFlags(@NotNull List<String> flagStrings) {
         for (String flagString : flagStrings) {
             try {
                 ItemFlag itemFlag = ItemFlag.valueOf(flagString.toUpperCase());
@@ -996,6 +982,7 @@ public class ItemBuilder {
      * @param referenceItem The item that is being referenced.
      * @return The ItemBuilder with updated info.
      */
+    @Contract("_ -> this")
     private ItemBuilder setReferenceItem(ItemStack referenceItem) {
         this.itemStack = referenceItem;
         this.itemMeta = this.itemStack.getItemMeta();
@@ -1053,7 +1040,7 @@ public class ItemBuilder {
      * @param itemString The String you wish to convert.
      * @return The String as an ItemBuilder.
      */
-    public static ItemBuilder convertString(String itemString) {
+    public static @NotNull ItemBuilder convertString(String itemString) {
         return convertString(itemString, null);
     }
 
@@ -1064,7 +1051,7 @@ public class ItemBuilder {
      * @param placeHolder The placeholder to use if there is an error.
      * @return The String as an ItemBuilder.
      */
-    public static ItemBuilder convertString(String itemString, String placeHolder) {
+    public static @NotNull ItemBuilder convertString(String itemString, String placeHolder) {
         ItemBuilder itemBuilder = new ItemBuilder();
 
         try {
@@ -1160,7 +1147,7 @@ public class ItemBuilder {
      * @param placeholder The placeholder for errors.
      * @return The list of ItemBuilders.
      */
-    public static List<ItemBuilder> convertStringList(List<String> itemStrings, String placeholder) {
+    public static List<ItemBuilder> convertStringList(@NotNull List<String> itemStrings, String placeholder) {
         return itemStrings.stream().map(itemString -> convertString(itemString, placeholder)).collect(Collectors.toList());
     }
 
@@ -1184,6 +1171,7 @@ public class ItemBuilder {
      * @param type The type of the potion effect.
      * @return The potion type.
      */
+    @Contract("null -> null")
     private PotionType getPotionType(PotionEffectType type) {
         if (type != null) {
             if (type.equals(PotionEffectType.FIRE_RESISTANCE)) {
@@ -1226,7 +1214,7 @@ public class ItemBuilder {
      * @param enchantmentName The string of the enchantment.
      * @return The enchantment from the string.
      */
-    private static Enchantment getEnchantment(String enchantmentName) {
+    private static @Nullable Enchantment getEnchantment(String enchantmentName) {
         enchantmentName = stripEnchantmentName(enchantmentName);
         for (Enchantment enchantment : Enchantment.values()) {
             try {
@@ -1250,6 +1238,7 @@ public class ItemBuilder {
      * @param enchantmentName The enchantment name.
      * @return The stripped enchantment name.
      */
+    @Contract("!null -> !null; null -> null")
     private static String stripEnchantmentName(String enchantmentName) {
         return enchantmentName != null ? enchantmentName.replace("-", "").replace("_", "").replace(" ", "") : null;
     }
@@ -1259,7 +1248,7 @@ public class ItemBuilder {
      *
      * @return The list of enchantments and their in-Game names.
      */
-    private static HashMap<String, String> getEnchantmentList() {
+    private static @NotNull HashMap<String, String> getEnchantmentList() {
         HashMap<String, String> enchantments = new HashMap<>();
         enchantments.put("ARROW_DAMAGE", "Power");
         enchantments.put("ARROW_FIRE", "Flame");
@@ -1299,6 +1288,7 @@ public class ItemBuilder {
         return enchantments;
     }
 
+    @Contract(pure = true)
     private boolean isInt(String s) {
         try {
             Integer.parseInt(s);
@@ -1309,7 +1299,7 @@ public class ItemBuilder {
         return true;
     }
 
-    private ItemFlag getFlag(String flagString) {
+    private @Nullable ItemFlag getFlag(String flagString) {
         for (ItemFlag flag : ItemFlag.values()) {
             if (flag.name().equalsIgnoreCase(flagString)) return flag;
         }
