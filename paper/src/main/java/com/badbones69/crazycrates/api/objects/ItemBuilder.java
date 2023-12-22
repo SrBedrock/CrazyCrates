@@ -1,5 +1,31 @@
 package com.badbones69.crazycrates.api.objects;
 
+import com.badbones69.crazycrates.support.SkullCreator;
+import com.ryderbelserion.cluster.paper.utils.DyeUtils;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import emanondev.itemedit.ItemEdit;
+import emanondev.itemedit.storage.ServerStorage;
+import io.th0rgal.oraxen.api.OraxenItems;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.block.Banner;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ArmorMeta;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.other.MsgUtils;
 import com.badbones69.crazycrates.support.SkullCreator;
@@ -389,14 +415,25 @@ public class ItemBuilder {
 
         ItemStack item = this.itemStack;
 
-        if (PluginSupport.ORAXEN.isPluginEnabled()) {
-            io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(this.customMaterial);
+        String[] split = this.customMaterial.split(":");
+        if (PluginSupport.ORAXEN.isPluginEnabled() && split[0].equals("or")) {
+            io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(split[1]);
 
             if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
                 item = oraxenItem.build();
                 this.itemMeta = item.getItemMeta();
             }
         }
+
+        if (PluginSupport.ITEM_EDIT.isPluginEnabled() && split[0].equals("ie")) {
+            ServerStorage serverStorage = ItemEdit.get().getServerStorage();
+            item = serverStorage.getItem(split[1]);
+
+            if (item != null) {
+                this.itemMeta = item.getItemMeta();
+            }
+        }
+
 
         if (item.getType() != Material.AIR) {
             if (this.isHead) { // Has to go 1st due to it removing all data when finished.
@@ -418,10 +455,8 @@ public class ItemBuilder {
             this.itemMeta.setDisplayName(getUpdatedName());
             this.itemMeta.setLore(getUpdatedLore());
 
-            if (isArmor()) {
-                if (this.trimPattern != null && this.trimMaterial != null) {
-                    ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
-                }
+            if (isArmor() && (this.trimPattern != null && this.trimMaterial != null)) {
+                ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
             }
 
             if (this.isMap) {
@@ -430,13 +465,11 @@ public class ItemBuilder {
                 if (this.mapColor != null) mapMeta.setColor(this.mapColor);
             }
 
-            if (this.itemMeta instanceof Damageable damageable) {
-                if (this.damage >= 1) {
-                    if (this.damage >= item.getType().getMaxDurability()) {
-                        damageable.setDamage(item.getType().getMaxDurability());
-                    } else {
-                        damageable.setDamage(this.damage);
-                    }
+            if (this.itemMeta instanceof Damageable damageable && (this.damage >= 1)) {
+                if (this.damage >= item.getType().getMaxDurability()) {
+                    damageable.setDamage(item.getType().getMaxDurability());
+                } else {
+                    damageable.setDamage(this.damage);
                 }
             }
 
@@ -485,8 +518,8 @@ public class ItemBuilder {
 
             if (this.isHead && !this.isHash) nbt.setString("SkullOwner", this.player);
 
-            if (this.isMobEgg) {
-                if (this.entityType != null) nbt.addCompound("EntityTag").setString("id", "minecraft:" + this.entityType.name());
+            if (this.isMobEgg && (this.entityType != null)) {
+                nbt.addCompound("EntityTag").setString("id", "minecraft:" + this.entityType.name());
             }
 
             if (!this.crateName.isEmpty()) nbt.setString("CrazyCrates-Crate", this.crateName);
@@ -1008,8 +1041,7 @@ public class ItemBuilder {
 
             if (nbt.hasTag("Unbreakable")) itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
 
-            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable damageable)
-                itemBuilder.setDamage(damageable.getDamage());
+            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable damageable) itemBuilder.setDamage(damageable.getDamage());
         }
 
         return itemBuilder;
