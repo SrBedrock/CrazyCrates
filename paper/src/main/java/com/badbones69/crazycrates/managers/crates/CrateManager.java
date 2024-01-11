@@ -1016,6 +1016,15 @@ public class CrateManager {
 
         if (!data.contains("Players")) return;
 
+        try {
+            var dataFile = new File(this.plugin.getDataFolder(), "data.yml");
+            var backupFile = new File(this.plugin.getDataFolder(), "data_%s.yml".formatted(String.valueOf(System.currentTimeMillis())));
+            com.google.common.io.Files.copy(dataFile, backupFile);
+            this.plugin.getLogger().info("Created a backup of the data.yml file.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if (this.plugin.isLogging()) this.plugin.getLogger().info("Cleaning up the data.yml file.");
 
         List<String> removePlayers = new ArrayList<>();
