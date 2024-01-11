@@ -4,7 +4,7 @@ import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.other.MsgUtils;
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
-import com.ryderbelserion.cluster.paper.utils.DyeUtils;
+import com.ryderbelserion.cluster.utils.DyeUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import emanondev.itemedit.ItemEdit;
 import emanondev.itemedit.storage.ServerStorage;

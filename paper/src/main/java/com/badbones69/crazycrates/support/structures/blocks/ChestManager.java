@@ -44,22 +44,27 @@ public class ChestManager implements ChestControl {
             case ENDER_CHEST -> {
                 EnderChest enderChest = (EnderChest) blockState;
 
-                if (enderChest.isOpen()) enderChest.close();
-                blockState.update(forceUpdate);
+                if (enderChest.isOpen()) {
+                    enderChest.close();
+
+                    blockState.update(forceUpdate);
+                }
             }
 
             case CHEST, TRAPPED_CHEST -> {
                 Chest chest = (Chest) blockState;
 
-                if (chest.isOpen()) chest.close();
-                blockState.update(forceUpdate);
+                if (chest.isOpen()) {
+                    chest.close();
+
+                    blockState.update(forceUpdate);
+                }
             }
         }
     }
 
     @Override
     public void rotateChest(Block block, int direction) {
-
         BlockFace blockFace = switch (direction) {
             case 0 -> // West
                     BlockFace.WEST;
@@ -79,5 +84,30 @@ public class ChestManager implements ChestControl {
         block.setBlockData(blockData);
 
         block.getState().update(true);
+    }
+
+    @Override
+    public boolean isChestOpen(Block block) {
+        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST) return false;
+
+        BlockState blockState = block.getState();
+
+        boolean isOpen = false;
+
+        switch (block.getType()) {
+            case ENDER_CHEST -> {
+                EnderChest enderChest = (EnderChest) blockState;
+
+                isOpen = enderChest.isOpen();
+            }
+
+            case CHEST, TRAPPED_CHEST -> {
+                Chest chest = (Chest) blockState;
+
+                isOpen = chest.isOpen();
+            }
+        }
+
+        return isOpen;
     }
 }
