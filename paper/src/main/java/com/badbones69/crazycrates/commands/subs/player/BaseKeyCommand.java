@@ -1,8 +1,13 @@
 package com.badbones69.crazycrates.commands.subs.player;
 
+import ch.jalu.configme.SettingsManager;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.EventLogger;
 import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+import com.badbones69.crazycrates.managers.crates.CrateManager;
 import com.google.common.collect.Lists;
 import dev.triumphteam.cmd.bukkit.annotation.Permission;
 import dev.triumphteam.cmd.core.BaseCommand;
@@ -13,6 +18,8 @@ import dev.triumphteam.cmd.core.annotation.Suggestion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import us.crazycrew.crazycrates.api.enums.types.CrateType;
+import us.crazycrew.crazycrates.api.enums.types.KeyType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +41,7 @@ public class BaseKeyCommand extends BaseCommand {
 
     @Default
     @Permission("crazycrates.command.player.key")
-    public void viewPersonal(Player player) {
+    public void viewPersonal(@NotNull Player player) {
         HashMap<String, String> placeholders = new HashMap<>();
         placeholders.put("%crates_opened%", String.valueOf(this.plugin.getCrazyHandler().getUserManager().getTotalCratesOpened(player.getUniqueId())));
 
