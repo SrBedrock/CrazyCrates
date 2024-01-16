@@ -39,7 +39,7 @@ public class FileManager {
         for (Files file : Files.values()) {
             File newFile = new File(this.plugin.getDataFolder(), file.getFileLocation());
 
-            if (this.plugin.isLogging()) this.plugin.getLogger().info("Loading the " + file.getFileName());
+            this.plugin.debug("Loading the " + file.getFileName(), Level.INFO);
 
             if (!newFile.exists()) {
                 try (InputStream jarFile = getClass().getResourceAsStream("/" + file.getFileJar())) {

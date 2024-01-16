@@ -395,7 +395,7 @@ public class ItemBuilder {
         ItemStack item = this.itemStack;
 
         // Custom Items (Oraxen, ItemEdit)
-        if (this.customMaterial.contains(":")) {
+        if (this.customMaterial != null && this.customMaterial.contains(":")) {
 
             String[] split = this.customMaterial.split(":");
             String identifier = split[0];
