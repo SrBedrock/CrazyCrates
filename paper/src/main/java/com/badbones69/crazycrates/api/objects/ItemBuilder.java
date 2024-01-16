@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -175,7 +176,7 @@ public class ItemBuilder {
      *
      * @param itemBuilder The item builder to deduplicate.
      */
-    public ItemBuilder(ItemBuilder itemBuilder) {
+    public ItemBuilder(@NotNull ItemBuilder itemBuilder) {
         this.nbtItem = itemBuilder.nbtItem;
         this.itemStack = itemBuilder.itemStack;
         this.itemMeta = itemBuilder.itemMeta;
@@ -310,7 +311,7 @@ public class ItemBuilder {
     /**
      * Returns the enchantments on the Item.
      */
-    public HashMap<Enchantment, Integer> getEnchantments() {
+    public Map<Enchantment, Integer> getEnchantments() {
         return this.enchantments;
     }
 
@@ -371,8 +372,10 @@ public class ItemBuilder {
     public String getUpdatedName() {
         String newName = this.itemName;
 
-        for (String placeholder : this.namePlaceholders.keySet()) {
-            newName = newName.replace(placeholder, this.namePlaceholders.get(placeholder)).replace(placeholder.toLowerCase(), this.namePlaceholders.get(placeholder));
+        for (Map.Entry<String, String> entry : this.namePlaceholders.entrySet()) {
+            String placeholder = entry.getKey();
+            String replacement = entry.getValue();
+            newName = newName.replace(placeholder, replacement).replace(placeholder.toLowerCase(), replacement);
         }
 
         return newName;
@@ -395,9 +398,9 @@ public class ItemBuilder {
         ItemStack item = this.itemStack;
 
         // Custom Items (Oraxen, ItemEdit)
-        if (this.customMaterial != null && this.customMaterial.contains(":")) {
+        if (this.itemName != null && this.itemName.contains(":")) {
 
-            String[] split = this.customMaterial.split(":");
+            String[] split = this.itemName.split(":");
             String identifier = split[0];
             String id = split[1];
 
@@ -406,7 +409,7 @@ public class ItemBuilder {
                 if (PluginSupport.ORAXEN.isPluginEnabled() && identifier.equals("or")) {
                     io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(id);
 
-                    if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
+                    if (oraxenItem != null && OraxenItems.exists(id)) {
                         item = oraxenItem.build();
                         this.itemMeta = item.getItemMeta();
                     }
@@ -555,7 +558,7 @@ public class ItemBuilder {
      * @param material The string must be in this form: %Material% or %Material%:%MetaData%
      * @return The ItemBuilder with updated info.
      */
-    public ItemBuilder setMaterial(String material) {
+    public ItemBuilder setMaterial(@NotNull String material) {
         String metaData;
         //Store material inside iaNamespace (e.g. ia:myblock)
         this.customMaterial = material;
@@ -747,12 +750,14 @@ public class ItemBuilder {
     public List<String> getUpdatedLore() {
         List<String> newLore = new ArrayList<>();
 
-        for (String item : this.itemLore) {
-            for (String placeholder : this.lorePlaceholders.keySet()) {
-                item = item.replace(placeholder, this.lorePlaceholders.get(placeholder)).replace(placeholder.toLowerCase(), this.lorePlaceholders.get(placeholder));
+        for (String lore : this.itemLore) {
+            for (Map.Entry<String, String> entry : this.lorePlaceholders.entrySet()) {
+                String placeholder = entry.getKey();
+                String replacement = entry.getValue();
+                lore = lore.replace(placeholder, replacement).replace(placeholder.toLowerCase(), replacement);
             }
 
-            newLore.add(item);
+            newLore.add(lore);
         }
 
         return newLore;

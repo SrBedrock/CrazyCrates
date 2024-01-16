@@ -1,18 +1,19 @@
 package com.badbones69.crazycrates.api.builders.types;
 
 import ch.jalu.configme.SettingsManager;
+import com.badbones69.crazycrates.CrazyHandler;
+import com.badbones69.crazycrates.api.builders.InventoryBuilder;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.ItemBuilder;
+import com.badbones69.crazycrates.common.config.ConfigManager;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
-import com.badbones69.crazycrates.common.config.ConfigManager;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
-import com.badbones69.crazycrates.CrazyHandler;
-import com.badbones69.crazycrates.api.builders.InventoryBuilder;
+
 import java.text.NumberFormat;
 import java.util.List;
 
@@ -71,7 +72,7 @@ public class CrateMainMenu extends InventoryBuilder {
                             option = option.replace("Lore:", "");
                             String[] lore = option.split(",");
 
-                            for (String line : lore) {
+                            for (String ignored : lore) {
                                 option = getCrates(option);
 
                                 item.addLore(option.replaceAll("%player%", getPlayer().getName()));
@@ -100,28 +101,27 @@ public class CrateMainMenu extends InventoryBuilder {
         for (Crate crate : this.plugin.getCrateManager().getCrates()) {
             FileConfiguration file = crate.getFile();
 
-            if (file != null) {
-                if (file.getBoolean("Crate.InGUI")) {
-                    String path = "Crate.";
-                    int slot = file.getInt(path + "Slot");
+            if (file != null && (file.getBoolean("Crate.InGUI"))) {
+                String path = "Crate.";
+                int slot = file.getInt(path + "Slot");
 
-                    if (slot > getSize()) continue;
+                if (slot > getSize()) continue;
 
-                    slot--;
-                    inventory.setItem(slot, new ItemBuilder()
-                            .setMaterial(file.getString(path + "Item"))
-                            .setName(file.getString(path + "Name"))
-                            .setLore(file.getStringList(path + "Lore"))
-                            .setCrateName(crate.getName())
-                            .setPlayerName(file.getString(path + "Player"))
-                            .setGlow(file.getBoolean(path + "Glowing"))
-                            .addLorePlaceholder("%Keys%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Keys_Physical%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Player%", getPlayer().getName())
-                            .build());
-                }
+                slot--;
+                inventory.setItem(slot, new ItemBuilder()
+                        .setMaterial(file.getString(path + "Item"))
+                        .setName(file.getString(path + "Name"))
+                        .setLore(file.getStringList(path + "Lore"))
+                        .setCrateName(crate.getName())
+                        .setPlayerName(file.getString(path + "Player"))
+                        .setGlow(file.getBoolean(path + "Glowing"))
+                        .addLorePlaceholder("%Keys%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Keys_Physical%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Player%", getPlayer().getName())
+                        .build());
+
             }
         }
 

@@ -1,8 +1,11 @@
 package com.badbones69.crazycrates.api.builders;
 
+import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.builders.types.CratePrizeMenu;
+import com.badbones69.crazycrates.api.events.CrateOpenEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.ItemBuilder;
+import com.badbones69.crazycrates.other.MiscUtils;
 import com.google.common.base.Preconditions;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,9 +17,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.events.CrateOpenEvent;
-import com.badbones69.crazycrates.other.MiscUtils;
+
 import java.util.List;
 
 public abstract class CrateBuilder {
@@ -35,11 +36,11 @@ public abstract class CrateBuilder {
     /**
      * Create a crate with no inventory size.
      *
-     * @param crate opened by player
+     * @param crate  opened by player
      * @param player opening crate
-     * @param size of inventory
+     * @param size   of inventory
      */
-    public CrateBuilder(Crate crate, Player player, int size) {
+    protected CrateBuilder(Crate crate, Player player, int size) {
         Preconditions.checkNotNull(crate, "Crate can't be null.");
         Preconditions.checkNotNull(player, "Player can't be null.");
 
@@ -57,7 +58,7 @@ public abstract class CrateBuilder {
         this.inventory = this.menu.build().getInventory();
     }
 
-    public CrateBuilder(Crate crate, Player player) {
+    protected CrateBuilder(Crate crate, Player player) {
         Preconditions.checkNotNull(crate, "Crate can't be null.");
         Preconditions.checkNotNull(player, "Player can't be null.");
 
@@ -77,12 +78,12 @@ public abstract class CrateBuilder {
     /**
      * Create a crate with no inventory size.
      *
-     * @param crate opened by player
-     * @param player opening crate
-     * @param size of inventory
+     * @param crate     opened by player
+     * @param player    opening crate
+     * @param size      of inventory
      * @param crateName of crate
      */
-    public CrateBuilder(Crate crate, Player player, int size, String crateName) {
+    protected CrateBuilder(Crate crate, Player player, int size, String crateName) {
         Preconditions.checkNotNull(crate, "Crate can't be null.");
         Preconditions.checkNotNull(player, "Player can't be null.");
 
@@ -103,12 +104,12 @@ public abstract class CrateBuilder {
     /**
      * Create a crate with no inventory size.
      *
-     * @param crate opened by player
-     * @param player opening crate
-     * @param size of inventory
+     * @param crate    opened by player
+     * @param player   opening crate
+     * @param size     of inventory
      * @param location of player
      */
-    public CrateBuilder(Crate crate, Player player, int size, Location location) {
+    protected CrateBuilder(Crate crate, Player player, int size, Location location) {
         Preconditions.checkNotNull(crate, "Crate can't be null.");
         Preconditions.checkNotNull(player, "Player can't be null.");
         Preconditions.checkNotNull(location, "Location can't be null.");
@@ -130,11 +131,11 @@ public abstract class CrateBuilder {
     /**
      * Create a crate with no inventory size.
      *
-     * @param crate opened by player
-     * @param player opening crate
+     * @param crate    opened by player
+     * @param player   opening crate
      * @param location of player
      */
-    public CrateBuilder(Crate crate, Player player, Location location) {
+    protected CrateBuilder(Crate crate, Player player, Location location) {
         Preconditions.checkNotNull(crate, "Crate can't be null.");
         Preconditions.checkNotNull(player, "Player can't be null.");
         Preconditions.checkNotNull(location, "Location can't be null.");
@@ -156,7 +157,7 @@ public abstract class CrateBuilder {
     /**
      * The open method for crates
      *
-     * @param type of key
+     * @param type      of key
      * @param checkHand whether to check hands or not
      */
     public abstract void open(KeyType type, boolean checkHand);
@@ -291,10 +292,10 @@ public abstract class CrateBuilder {
     /**
      * Sets an item to a slot
      *
-     * @param slot to set at
+     * @param slot     to set at
      * @param material to use
-     * @param name of item
-     * @param lore of item
+     * @param name     of item
+     * @param lore     of item
      */
     public void setItem(int slot, Material material, String name, List<String> lore) {
         ItemBuilder builder = new ItemBuilder().setMaterial(material).setName(name).setLore(lore);
@@ -305,9 +306,9 @@ public abstract class CrateBuilder {
     /**
      * Sets an item to a slot
      *
-     * @param slot to set at
+     * @param slot     to set at
      * @param material to use
-     * @param name of item
+     * @param name     of item
      */
     public void setItem(int slot, Material material, String name) {
         ItemBuilder builder = new ItemBuilder().setMaterial(material).setName(name);
@@ -328,7 +329,7 @@ public abstract class CrateBuilder {
     /**
      * Calls the crate open event and returns true/false if successful or not.
      *
-     * @param keyType virtual or physical key
+     * @param keyType   virtual or physical key
      * @param checkHand true or false
      * @return true if cancelled otherwise false.
      */
