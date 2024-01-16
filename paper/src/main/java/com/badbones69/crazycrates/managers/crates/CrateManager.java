@@ -962,16 +962,16 @@ public class CrateManager {
         return new ItemBuilder().setMaterial(id).setName(name).setLore(lore).setGlow(glowing).build();
     }
 
-    private ItemBuilder getDisplayItem(FileConfiguration file, String prize) {
+    private ItemBuilder getDisplayItem(@NotNull FileConfiguration file, String prize) {
         String path = "Crate.Prizes." + prize + ".";
         ItemBuilder itemBuilder = new ItemBuilder();
-        String displayName = file.getString(path + "DisplayItem");
-        if (displayName == null) {
+        String displayItem = file.getString(path + "DisplayItem");
+        if (displayItem == null) {
             this.plugin.getLogger().warning("The display item for the prize " + prize + " is null. Please check your config.yml file.");
-            displayName = "RED_TERRACOTTA";
+            displayItem = "RED_TERRACOTTA";
         }
         try {
-            itemBuilder.setMaterial(displayName)
+            itemBuilder.setMaterial(displayItem)
                     .setAmount(file.getInt(path + "DisplayAmount", 1))
                     .setName(file.getString(path + "DisplayName"))
                     .setLore(file.getStringList(path + "Lore"))
@@ -1011,36 +1011,20 @@ public class CrateManager {
     }
 
     // Cleans the data file.
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void cleanDataFile() {
         FileConfiguration data = FileManager.Files.DATA.getFile();
 
         if (!data.contains("Players")) return;
 
-        try {
-            File dataFolder = this.plugin.getDataFolder();
-            File backupFolder = new File(dataFolder, "backup");
+        backupDataFile();
 
-            if (!backupFolder.exists()) {
-                backupFolder.mkdirs();
-            }
-
-            File dataFile = new File(dataFolder, "data.yml");
-            File backupFile = new File(backupFolder, "data_%s.yml".formatted(String.valueOf(System.currentTimeMillis())));
-
-            com.google.common.io.Files.copy(dataFile, backupFile);
-            this.plugin.getLogger().info("Created a backup of the data.yml file.");
-        } catch (IOException e) {
-            this.plugin.getLogger().log(Level.WARNING, "Failed to create a backup of the data.yml file.", e);
-        }
-
-        if (this.plugin.isLogging()) this.plugin.getLogger().info("Cleaning up the data.yml file.");
+        this.plugin.debug("Cleaning up the data.yml file.", Level.INFO);
 
         List<String> removePlayers = new ArrayList<>();
 
         ConfigurationSection playersSection = data.getConfigurationSection("Players");
         if (playersSection == null) {
-            this.plugin.getLogger().info("The configuration section Players is null.");
+            this.plugin.debug("The configuration section Players is null.", Level.INFO);
             return;
         }
 
@@ -1067,15 +1051,35 @@ public class CrateManager {
         }
 
         if (!removePlayers.isEmpty()) {
-            if (this.plugin.isLogging()) this.plugin.getLogger().info(removePlayers.size() + " player's data has been marked to be removed.");
+            this.plugin.debug(removePlayers.size() + " player's data has been marked to be removed.", Level.INFO);
 
             removePlayers.forEach(uuid -> data.set("Players." + uuid, null));
 
-            if (this.plugin.isLogging()) this.plugin.getLogger().info("All empty player data has been removed.");
+            this.plugin.debug("All empty player data has been removed.", Level.INFO);
         }
 
-        if (this.plugin.isLogging()) this.plugin.getLogger().info("The data.yml file has been cleaned.");
+        this.plugin.debug("The data.yml file has been cleaned.", Level.INFO);
         FileManager.Files.DATA.saveFile();
+    }
+
+    private void backupDataFile() {
+        try {
+            File dataFolder = this.plugin.getDataFolder();
+            File backupFolder = new File(dataFolder, "backup");
+
+            if (!backupFolder.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                backupFolder.mkdirs();
+            }
+
+            File dataFile = new File(dataFolder, "data.yml");
+            File backupFile = new File(backupFolder, "data_%s.yml".formatted(String.valueOf(System.currentTimeMillis())));
+
+            com.google.common.io.Files.copy(dataFile, backupFile);
+            this.plugin.getLogger().info("Created a backup of the data.yml file.");
+        } catch (IOException e) {
+            this.plugin.getLogger().log(Level.WARNING, "Failed to create a backup of the data.yml file.", e);
+        }
     }
 
     private List<ItemBuilder> getItems(@NotNull FileConfiguration file, String prize) {
