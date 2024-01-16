@@ -1011,18 +1011,27 @@ public class CrateManager {
     }
 
     // Cleans the data file.
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void cleanDataFile() {
         FileConfiguration data = FileManager.Files.DATA.getFile();
 
         if (!data.contains("Players")) return;
 
         try {
-            var dataFile = new File(this.plugin.getDataFolder(), "data.yml");
-            var backupFile = new File(this.plugin.getDataFolder(), "data_%s.yml".formatted(String.valueOf(System.currentTimeMillis())));
+            File dataFolder = this.plugin.getDataFolder();
+            File backupFolder = new File(dataFolder, "backup");
+
+            if (!backupFolder.exists()) {
+                backupFolder.mkdirs();
+            }
+
+            File dataFile = new File(dataFolder, "data.yml");
+            File backupFile = new File(backupFolder, "data_%s.yml".formatted(String.valueOf(System.currentTimeMillis())));
+
             com.google.common.io.Files.copy(dataFile, backupFile);
             this.plugin.getLogger().info("Created a backup of the data.yml file.");
         } catch (IOException e) {
-            e.printStackTrace();
+            this.plugin.getLogger().log(Level.WARNING, "Failed to create a backup of the data.yml file.", e);
         }
 
         if (this.plugin.isLogging()) this.plugin.getLogger().info("Cleaning up the data.yml file.");
