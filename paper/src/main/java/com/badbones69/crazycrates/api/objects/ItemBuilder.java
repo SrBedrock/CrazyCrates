@@ -393,14 +393,16 @@ public class ItemBuilder {
      * @return The result of all the info that was given to the builder as an ItemStack.
      */
     public ItemStack build() {
-        if (this.nbtItem != null) this.itemStack = this.nbtItem.getItem();
+        if (this.nbtItem != null) {
+            this.itemStack = this.nbtItem.getItem();
+        }
 
         ItemStack item = this.itemStack;
 
         // Custom Items (Oraxen, ItemEdit)
-        if (this.itemName != null && this.itemName.contains(":")) {
+        if (this.customMaterial != null && this.customMaterial.contains(":")) {
 
-            String[] split = this.itemName.split(":");
+            String[] split = this.customMaterial.split(":");
             String identifier = split[0];
             String id = split[1];
 
@@ -411,23 +413,26 @@ public class ItemBuilder {
 
                     if (oraxenItem != null && OraxenItems.exists(id)) {
                         item = oraxenItem.build();
+                        this.itemStack = item;
                         this.itemMeta = item.getItemMeta();
+                        this.itemName = item.getItemMeta().getDisplayName();
                     }
                 }
 
                 if (PluginSupport.ITEM_EDIT.isPluginEnabled() && identifier.equals("ie")) {
                     ServerStorage serverStorage = ItemEdit.get().getServerStorage();
                     item = serverStorage.getItem(id);
-
                     if (item != null) {
+                        this.itemStack = item;
                         this.itemMeta = item.getItemMeta();
+                        this.itemName = item.getItemMeta().getDisplayName();
                     }
                 }
             }
         }
 
 
-        if (item.getType() != Material.AIR) {
+        if (item != null && item.getType() != Material.AIR) {
             if (this.isHead && (this.isHash)) { // Sauce: https://github.com/deanveloper/SkullCreator
                 if (this.isURL) {
                     item = SkullCreator.itemWithUrl(item, this.player);
