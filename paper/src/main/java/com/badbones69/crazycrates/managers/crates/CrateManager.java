@@ -47,6 +47,8 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -240,6 +242,18 @@ public class CrateManager {
 
                 CrateHologram holo = new CrateHologram(file.getBoolean("Crate.Hologram.Toggle"), file.getDouble("Crate.Hologram.Height", 0.0), file.getStringList("Crate.Hologram.Message"));
                 addCrate(new Crate(crateName, previewName, crateType, getKey(file), prizes, file, newPlayersKeys, tiers, maxMassOpen, requiredKeys, prizeMessage, holo));
+
+                Permission doesExist = this.plugin.getServer().getPluginManager().getPermission("crazycrates.open." + crateName);
+
+                if (doesExist == null) {
+                    Permission permission = new Permission(
+                            "crazycrates.open." + crateName,
+                            "Allows you to open " + crateName,
+                            PermissionDefault.TRUE
+                    );
+
+                    this.plugin.getServer().getPluginManager().addPermission(permission);
+                }
             } catch (Exception exception) {
                 this.brokeCrates.add(crateName);
                 this.plugin.getLogger().log(Level.WARNING, "There was an error while loading the " + crateName + ".yml file.", exception);
