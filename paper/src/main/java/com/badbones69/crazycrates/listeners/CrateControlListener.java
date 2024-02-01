@@ -173,7 +173,9 @@ public class CrateControlListener implements Listener {
                             return;
                         }
 
-                        if (useQuickCrateAgain) this.plugin.getCrateManager().endQuickCrate(player, crateLocation.getLocation(), crate, true);
+                        if (useQuickCrateAgain) {
+                            this.plugin.getCrateManager().endQuickCrate(player, crateLocation.getLocation(), crate, true);
+                        }
 
                         KeyType keyType = isPhysical ? KeyType.physical_key : KeyType.virtual_key;
 
@@ -203,11 +205,17 @@ public class CrateControlListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
 
-        if (this.crateManager.hasCrateTask(player)) this.crateManager.endCrate(player);
+        if (this.crateManager.hasCrateTask(player)) {
+            this.crateManager.endCrate(player);
+        }
 
-        if (this.crateManager.hasQuadCrateTask(player)) this.crateManager.endQuadCrate(player);
+        if (this.crateManager.hasQuadCrateTask(player)) {
+            this.crateManager.endQuadCrate(player);
+        }
 
-        if (this.crateManager.isInOpeningList(player)) this.crateManager.removePlayerFromOpeningList(player);
+        if (this.crateManager.isInOpeningList(player)) {
+            this.crateManager.removePlayerFromOpeningList(player);
+        }
     }
     
     private void knockBack(Player player, Location location) {

@@ -18,7 +18,9 @@ public class DecentHologramsSupport extends HologramHandler {
     public void createHologram(Block block, Crate crate) {
         CrateHologram crateHologram = crate.getHologram();
 
-        if (!crateHologram.isEnabled()) return;
+        if (!crateHologram.isEnabled()) {
+            return;
+        }
 
         double height = crateHologram.getHeight();
 
@@ -31,7 +33,9 @@ public class DecentHologramsSupport extends HologramHandler {
 
     @Override
     public void removeHologram(Block block) {
-        if (!this.holograms.containsKey(block)) return;
+        if (!this.holograms.containsKey(block)) {
+            return;
+        }
 
         Hologram hologram = this.holograms.get(block);
 

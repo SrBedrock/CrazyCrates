@@ -319,7 +319,8 @@ public class CrateManager {
                 if (schematicName.endsWith(".nbt")) {
                     this.crateSchematics.add(new CrateSchematic(schematicName, new File(plugin.getDataFolder() + "/schematics/" + schematicName)));
 
-                    if (this.plugin.isLogging()) this.plugin.getLogger().info(schematicName + " was successfully found and loaded.");
+                    if (this.plugin.isLogging())
+                        this.plugin.getLogger().info(schematicName + " was successfully found and loaded.");
                 }
             }
         }
@@ -1175,8 +1176,9 @@ public class CrateManager {
 
         if (!useQuickCrateAgain) {
             HologramHandler handler = this.plugin.getCrateManager().getHolograms();
-
-            if (handler != null && crate != null) handler.createHologram(location.getBlock(), crate);
+            if (handler != null && crate != null && crate.getHologram().isEnabled() && crate.getHologram() == null) {
+                handler.createHologram(location.getBlock(), crate);
+            }
         }
     }
 
