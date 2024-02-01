@@ -86,7 +86,7 @@ public class BaseKeyCommand extends BaseCommand {
 
         // If they don't have enough keys, we return.
         if (this.plugin.getCrazyHandler().getUserManager().getVirtualKeys(sender.getUniqueId(), crate.getName()) <= amount) {
-            sender.sendMessage(Messages.transfer_not_enough_keys.getMessage("%crate%", crate.getName()).toString());
+            sender.sendMessage(Messages.transfer_not_enough_keys.getMessage("%key%", crate.getKey().getItemMeta().getDisplayName()).toString());
             return;
         }
 
@@ -94,7 +94,9 @@ public class BaseKeyCommand extends BaseCommand {
         this.plugin.getServer().getPluginManager().callEvent(event);
 
         // If the event is cancelled, We return.
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) {
+            return;
+        }
 
         this.plugin.getCrazyHandler().getUserManager().takeKeys(amount, sender.getUniqueId(), crate.getName(), KeyType.virtual_key, false);
         this.plugin.getCrazyHandler().getUserManager().addKeys(amount, player.getUniqueId(), crate.getName(), KeyType.virtual_key);
@@ -110,7 +112,7 @@ public class BaseKeyCommand extends BaseCommand {
 
         placeholders.put("%player%", sender.getName());
 
-        player.sendMessage(Messages.transfer_received_keys.getMessage("%player%", sender.getName()).toString());
+        player.sendMessage(Messages.transfer_received_keys.getMessage(placeholders).toString());
 
         this.eventLogger.logKeyEvent(player, sender, crate, KeyType.virtual_key, EventLogger.KeyEventType.KEY_EVENT_RECEIVED, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
     }
