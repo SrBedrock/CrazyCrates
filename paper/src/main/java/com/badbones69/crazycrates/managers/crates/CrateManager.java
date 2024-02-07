@@ -759,7 +759,9 @@ public class CrateManager {
 
         addLocation(new CrateLocation(id, crate, location));
 
-        if (this.holograms != null) this.holograms.createHologram(location.getBlock(), crate);
+        if (this.holograms != null) {
+            this.holograms.createHologram(location.getBlock(), crate);
+        }
     }
 
     /**
