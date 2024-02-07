@@ -11,6 +11,7 @@ import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.other.MsgUtils;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public enum Messages {
@@ -145,7 +146,7 @@ public enum Messages {
 
         if (!placeholders.isEmpty()) {
             for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
-                message = message.replace(placeholder.getKey(), placeholder.getValue()).replace(placeholder.getKey().toLowerCase(), placeholder.getValue());
+                message = message.replace(placeholder.getKey(), placeholder.getValue());
             }
         }
 
