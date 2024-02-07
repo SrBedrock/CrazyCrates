@@ -154,19 +154,19 @@ public class CrateManager {
 
         if (PluginSupport.DECENT_HOLOGRAMS.isPluginEnabled()) {
             this.holograms = new DecentHologramsSupport();
-            this.plugin.debug("DecentHolograms support has been enabled.", Level.INFO);
+            this.plugin.debug(() -> "DecentHolograms support has been enabled.", Level.INFO);
         } else if (PluginSupport.CMI.isPluginEnabled() && CMIModule.holograms.isEnabled()) {
             this.holograms = new CMIHologramsSupport();
-            this.plugin.debug("CMI Hologram support has been enabled.", Level.INFO);
+            this.plugin.debug(() -> "CMI Hologram support has been enabled.", Level.INFO);
         } else if (PluginSupport.HOLOGRAPHIC_DISPLAYS.isPluginEnabled()) {
             this.holograms = new HolographicDisplaysSupport();
-            this.plugin.debug("Holographic Displays support has been enabled.", Level.INFO);
+            this.plugin.debug(() -> "Holographic Displays support has been enabled.", Level.INFO);
         } else {
-            this.plugin.debug("No holograms plugin were found. If using CMI, make sure holograms module is enabled.", Level.WARNING);
+            this.plugin.debug(() -> "No holograms plugin were found. If using CMI, make sure holograms module is enabled.", Level.WARNING);
         }
 
 
-        this.plugin.debug("Loading all crate information...", Level.INFO);
+        this.plugin.debug(() -> "Loading all crate information...", Level.INFO);
 
         for (String crateName : this.fileManager.getAllCratesNames()) {
             try {
@@ -187,7 +187,7 @@ public class CrateManager {
 
                 if (crateType == CrateType.cosmic && tiers.isEmpty()) {
                     this.brokeCrates.add(crateName);
-                    this.plugin.debug("No tiers were found for this cosmic crate " + crateName + ".yml file.", Level.WARNING);
+                    this.plugin.debug(() -> "No tiers were found for this cosmic crate " + crateName + ".yml file.", Level.WARNING);
                     continue;
                 }
 
@@ -262,7 +262,8 @@ public class CrateManager {
 
         addCrate(new Crate("Menu", "Menu", CrateType.menu, new ItemStack(Material.AIR), new ArrayList<>(), null, 0, null, 0, 0, Collections.emptyList(), null));
 
-        List.of("All crate information has been loaded.", "Loading all the physical crate locations.").forEach(line -> this.plugin.debug(line, Level.INFO));
+        List.of("All crate information has been loaded.", "Loading all the physical crate locations.")
+                .forEach(line -> this.plugin.debug(() -> line, Level.INFO));
 
         FileConfiguration locations = FileManager.Files.LOCATIONS.getFile();
         int loadedAmount = 0;
@@ -1032,13 +1033,13 @@ public class CrateManager {
 
         backupDataFile();
 
-        this.plugin.debug("Cleaning up the data.yml file.", Level.INFO);
+        this.plugin.debug(() -> "Cleaning up the data.yml file.", Level.INFO);
 
         List<String> removePlayers = new ArrayList<>();
 
         ConfigurationSection playersSection = data.getConfigurationSection("Players");
         if (playersSection == null) {
-            this.plugin.debug("The configuration section Players is null.", Level.INFO);
+            this.plugin.debug(() -> "The configuration section Players is null.", Level.INFO);
             return;
         }
 
@@ -1065,14 +1066,14 @@ public class CrateManager {
         }
 
         if (!removePlayers.isEmpty()) {
-            this.plugin.debug(removePlayers.size() + " player's data has been marked to be removed.", Level.INFO);
+            this.plugin.debug(() -> removePlayers.size() + " player's data has been marked to be removed.", Level.INFO);
 
             removePlayers.forEach(uuid -> data.set("Players." + uuid, null));
 
-            this.plugin.debug("All empty player data has been removed.", Level.INFO);
+            this.plugin.debug(() -> "All empty player data has been removed.", Level.INFO);
         }
 
-        this.plugin.debug("The data.yml file has been cleaned.", Level.INFO);
+        this.plugin.debug(() -> "The data.yml file has been cleaned.", Level.INFO);
         FileManager.Files.DATA.saveFile();
     }
 

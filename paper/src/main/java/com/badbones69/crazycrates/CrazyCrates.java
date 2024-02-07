@@ -23,6 +23,7 @@ import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.support.placeholders.PlaceholderAPISupport;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import java.util.Timer;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class CrazyCrates extends JavaPlugin {
@@ -82,11 +83,11 @@ public class CrazyCrates extends JavaPlugin {
         }
 
         if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled()) {
-            debug("PlaceholderAPI support is enabled!", Level.INFO);
+            debug(() -> "PlaceholderAPI support is enabled!", Level.INFO);
             new PlaceholderAPISupport().register();
         }
 
-        debug("You can disable logging by going to the plugin-config.yml and setting verbose to false.", Level.INFO);
+        debug(() -> "You can disable logging by going to the plugin-config.yml and setting verbose to false.", Level.INFO);
     }
 
     @Override
@@ -150,7 +151,7 @@ public class CrazyCrates extends JavaPlugin {
         return getConfigManager().getConfig().getProperty(ConfigKeys.verbose_logging);
     }
 
-    public void debug(String message, Level level) {
-        if (isLogging()) getLogger().log(level, message);
+    public void debug(Supplier<String> message, Level level) {
+        if (isLogging()) getLogger().log(level, message.get());
     }
 }
