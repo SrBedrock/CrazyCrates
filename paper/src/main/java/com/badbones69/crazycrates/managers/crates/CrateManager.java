@@ -150,7 +150,9 @@ public class CrateManager {
         purge();
 
         // Removes all holograms so that they can be replaced.
-        if (this.holograms != null) this.holograms.removeAllHolograms();
+        if (this.holograms != null) {
+            this.holograms.removeAllHolograms();
+        }
 
         if (PluginSupport.DECENT_HOLOGRAMS.isPluginEnabled()) {
             this.holograms = new DecentHologramsSupport();
@@ -988,6 +990,7 @@ public class CrateManager {
             this.plugin.getLogger().warning("The display item for the prize " + prize + " is null. Please check your config.yml file.");
             displayItem = "RED_TERRACOTTA";
         }
+
         try {
             itemBuilder.setMaterial(displayItem)
                     .setAmount(file.getInt(path + "DisplayAmount", 1))
@@ -998,7 +1001,8 @@ public class CrateManager {
                     .hideItemFlags(file.getBoolean(path + "HideItemFlags"))
                     .addItemFlags(file.getStringList(path + "Flags"))
                     .addPatterns(file.getStringList(path + "Patterns"))
-                    .setPlayerName(file.getString(path + "Player"));
+                    .setPlayerName(file.getString(path + "Player"))
+                    .setCustomItem();
 
             if (file.contains(path + "DisplayDamage") && file.getInt(path + "DisplayDamage") >= 1) {
                 itemBuilder.setDamage(file.getInt(path + "DisplayDamage"));
