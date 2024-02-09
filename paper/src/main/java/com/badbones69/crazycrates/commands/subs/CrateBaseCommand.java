@@ -1,27 +1,8 @@
 package com.badbones69.crazycrates.commands.subs;
 
 import ch.jalu.configme.SettingsManager;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.EventLogger;
-import com.badbones69.crazycrates.api.FileManager;
-import com.badbones69.crazycrates.api.FileManager.Files;
-import com.badbones69.crazycrates.api.builders.types.CrateAdminMenu;
-import com.badbones69.crazycrates.api.builders.types.CrateMainMenu;
-import com.badbones69.crazycrates.api.enums.Messages;
-import com.badbones69.crazycrates.api.enums.Permissions;
-import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
-import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
-import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.CrateLocation;
-import com.badbones69.crazycrates.api.objects.Prize;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
-import com.badbones69.crazycrates.managers.BukkitUserManager;
-import com.badbones69.crazycrates.managers.crates.CrateManager;
-import com.badbones69.crazycrates.other.FileUtils;
-import com.badbones69.crazycrates.other.MiscUtils;
-import com.badbones69.crazycrates.other.MsgUtils;
-import dev.triumphteam.cmd.bukkit.annotation.Permission;
-import dev.triumphteam.cmd.core.BaseCommand;
+import com.badbones69.crazycrates.api.builders.types.CrateTierMenu;
+import com.badbones69.crazycrates.api.objects.Tier;
 import dev.triumphteam.cmd.core.annotation.ArgName;
 import dev.triumphteam.cmd.core.annotation.Command;
 import dev.triumphteam.cmd.core.annotation.Default;
@@ -33,6 +14,23 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
+import org.bukkit.command.ConsoleCommandSender;
+import org.jetbrains.annotations.Nullable;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.tasks.crates.CrateManager;
+import com.badbones69.crazycrates.api.EventLogger;
+import com.badbones69.crazycrates.api.FileManager;
+import com.badbones69.crazycrates.api.FileManager.Files;
+import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
+import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
+import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.objects.CrateLocation;
+import com.badbones69.crazycrates.api.objects.Prize;
+import com.badbones69.crazycrates.api.enums.Permissions;
+import com.badbones69.crazycrates.tasks.BukkitUserManager;
+import dev.triumphteam.cmd.bukkit.annotation.Permission;
+import dev.triumphteam.cmd.core.BaseCommand;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -44,8 +42,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-
+import com.badbones69.crazycrates.api.builders.types.CrateAdminMenu;
+import com.badbones69.crazycrates.api.builders.types.CrateMainMenu;
+import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.utils.FileUtils;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -290,7 +294,7 @@ public class CrateBaseCommand extends BaseCommand {
         }
 
         this.plugin.getCrazyHandler().getInventoryManager().addViewer(player);
-        this.plugin.getCrazyHandler().getInventoryManager().openNewCratePreview(player, crate);
+        this.plugin.getCrazyHandler().getInventoryManager().openNewCratePreview(player, crate,crate.getCrateType() == CrateType.cosmic || crate.getCrateType() == CrateType.casino);
     }
 
     @SubCommand("open-others")
