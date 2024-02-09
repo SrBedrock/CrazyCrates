@@ -7,7 +7,6 @@ import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.ryderbelserion.cluster.utils.DyeUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import emanondev.itemedit.ItemEdit;
-import emanondev.itemedit.storage.ServerStorage;
 import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -45,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class ItemBuilder {
 
@@ -91,7 +89,7 @@ public class ItemBuilder {
     private boolean isLeatherArmor;
 
     // Enchantments
-    private HashMap<Enchantment, Integer> enchantments;
+    private Map<Enchantment, Integer> enchantments;
 
     // Shields
     private boolean isShield;
@@ -399,38 +397,7 @@ public class ItemBuilder {
 
         ItemStack item = this.itemStack;
 
-        // Custom Items (Oraxen, ItemEdit)
-        if (this.customMaterial != null && this.customMaterial.contains(":")) {
-
-            String[] split = this.customMaterial.split(":");
-            String identifier = split[0];
-            String id = split[1];
-
-            if (!identifier.isBlank() && !id.isBlank()) {
-
-                if (PluginSupport.ORAXEN.isPluginEnabled() && identifier.equals("or")) {
-                    io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(id);
-
-                    if (oraxenItem != null && OraxenItems.exists(id)) {
-                        item = oraxenItem.build();
-                        this.itemStack = item;
-                        this.itemMeta = item.getItemMeta();
-                        this.itemName = item.getItemMeta().getDisplayName();
-                    }
-                }
-
-                if (PluginSupport.ITEM_EDIT.isPluginEnabled() && identifier.equals("ie")) {
-                    ServerStorage serverStorage = ItemEdit.get().getServerStorage();
-                    item = serverStorage.getItem(id);
-                    if (item != null) {
-                        this.itemStack = item;
-                        this.itemMeta = item.getItemMeta();
-                        this.itemName = item.getItemMeta().getDisplayName();
-                    }
-                }
-            }
-        }
-
+        setCustomItem();
 
         if (item != null && item.getType() != Material.AIR) {
             if (this.isHead && (this.isHash)) { // Sauce: https://github.com/deanveloper/SkullCreator
@@ -444,7 +411,9 @@ public class ItemBuilder {
 
             item.setAmount(this.itemAmount);
 
-            if (this.itemMeta == null) this.itemMeta = item.getItemMeta();
+            if (this.itemMeta == null) {
+                this.itemMeta = item.getItemMeta();
+            }
 
             this.itemMeta.setDisplayName(getUpdatedName());
             this.itemMeta.setLore(getUpdatedLore());
@@ -456,7 +425,9 @@ public class ItemBuilder {
             if (this.isMap) {
                 MapMeta mapMeta = (MapMeta) this.itemMeta;
 
-                if (this.mapColor != null) mapMeta.setColor(this.mapColor);
+                if (this.mapColor != null) {
+                    mapMeta.setColor(this.mapColor);
+                }
             }
 
             if (this.itemMeta instanceof Damageable damageable && (this.damage >= 1)) {
@@ -470,16 +441,22 @@ public class ItemBuilder {
             if (this.isPotion && (this.potionType != null || this.potionColor != null)) {
                 PotionMeta potionMeta = (PotionMeta) this.itemMeta;
 
-                if (this.potionType != null) potionMeta.setBasePotionData(new PotionData(this.potionType));
+                if (this.potionType != null) {
+                    potionMeta.setBasePotionData(new PotionData(this.potionType));
+                }
 
-                if (this.potionColor != null) potionMeta.setColor(this.potionColor);
+                if (this.potionColor != null) {
+                    potionMeta.setColor(this.potionColor);
+                }
             }
 
             if (this.material == Material.TIPPED_ARROW && this.potionType != null) {
                 PotionMeta potionMeta = (PotionMeta) this.itemMeta;
                 potionMeta.setBasePotionData(new PotionData(this.potionType));
 
-                if (this.potionColor != null) potionMeta.setColor(this.potionColor);
+                if (this.potionColor != null) {
+                    potionMeta.setColor(this.potionColor);
+                }
             }
 
             if (this.isLeatherArmor && this.armorColor != null) {
@@ -500,7 +477,9 @@ public class ItemBuilder {
                 shieldMeta.setBlockState(banner);
             }
 
-            if (this.useCustomModelData) this.itemMeta.setCustomModelData(this.customModelData);
+            if (this.useCustomModelData) {
+                this.itemMeta.setCustomModelData(this.customModelData);
+            }
 
             this.itemFlags.forEach(this.itemMeta::addItemFlags);
             item.setItemMeta(this.itemMeta);
@@ -510,17 +489,75 @@ public class ItemBuilder {
 
             NBTItem nbt = new NBTItem(item);
 
-            if (this.isHead && !this.isHash) nbt.setString("SkullOwner", this.player);
+            if (this.isHead && !this.isHash) {
+                nbt.setString("SkullOwner", this.player);
+            }
 
             if (this.isMobEgg && (this.entityType != null)) {
                 nbt.addCompound("EntityTag").setString("id", "minecraft:" + this.entityType.name());
             }
 
-            if (!this.crateName.isEmpty()) nbt.setString("CrazyCrates-Crate", this.crateName);
+            if (!this.crateName.isEmpty()) {
+                nbt.setString("CrazyCrates-Crate", this.crateName);
+            }
 
             return nbt.getItem();
         } else {
             return item;
+        }
+    }
+
+    public boolean isCustomItem() {
+        if (this.customMaterial == null || !this.customMaterial.contains(":")) {
+            return false;
+        }
+
+        String[] split = this.customMaterial.split(":");
+        if (split.length < 2 || split[0].isBlank() || split[1].isBlank()) {
+            return false;
+        }
+
+        String identifier = split[0];
+        String id = split[1];
+
+        return (PluginSupport.ORAXEN.isPluginEnabled() && "or".equals(identifier) && OraxenItems.exists(id)) ||
+                (PluginSupport.ITEM_EDIT.isPluginEnabled() && "ie".equals(identifier) && ItemEdit.get().getServerStorage().getIds().contains(id));
+    }
+
+    public void setCustomItem() {
+        if (!isCustomItem()) {
+            return;
+        }
+
+        String[] split = this.customMaterial.split(":");
+        String identifier = split[0];
+        String id = split[1];
+
+        if ("or".equals(identifier) && PluginSupport.ORAXEN.isPluginEnabled()) {
+            configureOraxenItem(id);
+        } else if ("ie".equals(identifier) && PluginSupport.ITEM_EDIT.isPluginEnabled()) {
+            configureItemEditItem(id);
+        }
+    }
+
+    private void configureOraxenItem(String id) {
+        io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(id);
+        if (oraxenItem != null) {
+            updateItemStack(oraxenItem.build());
+        }
+    }
+
+    private void configureItemEditItem(String id) {
+        ItemStack item = ItemEdit.get().getServerStorage().getItem(id);
+        updateItemStack(item);
+    }
+
+    private void updateItemStack(ItemStack item) {
+        if (item != null) {
+            this.itemStack = item;
+            this.itemMeta = item.getItemMeta();
+            this.itemName = item.getItemMeta().getDisplayName();
+            this.enchantments = item.getEnchantments();
         }
     }
 
@@ -618,13 +655,16 @@ public class ItemBuilder {
         switch (this.material.name()) {
             case "PLAYER_HEAD" -> this.isHead = true;
             case "POTION", "SPLASH_POTION" -> this.isPotion = true;
-            case "LEATHER_HELMET", "LEATHER_CHESTPLATE", "LEATHER_LEGGINGS", "LEATHER_BOOTS", "LEATHER_HORSE_ARMOR" -> this.isLeatherArmor = true;
+            case "LEATHER_HELMET", "LEATHER_CHESTPLATE", "LEATHER_LEGGINGS", "LEATHER_BOOTS", "LEATHER_HORSE_ARMOR" ->
+                    this.isLeatherArmor = true;
             case "BANNER" -> this.isBanner = true;
             case "SHIELD" -> this.isShield = true;
             case "FILLED_MAP" -> this.isMap = true;
         }
 
-        if (this.material.name().contains("BANNER")) this.isBanner = true;
+        if (this.material.name().contains("BANNER")) {
+            this.isBanner = true;
+        }
 
         return this;
     }
@@ -871,7 +911,9 @@ public class ItemBuilder {
      * @return The ItemBuilder with a list of updated enchantments.
      */
     public ItemBuilder setEnchantments(HashMap<Enchantment, Integer> enchantment) {
-        if (enchantment != null) this.enchantments = enchantment;
+        if (enchantment != null) {
+            this.enchantments = enchantment;
+        }
 
         return this;
     }
@@ -1031,14 +1073,22 @@ public class ItemBuilder {
         if (item.hasItemMeta() && item.getItemMeta() != null) {
             ItemMeta itemMeta = item.getItemMeta();
 
-            if (itemMeta.hasDisplayName()) itemBuilder.setName(itemMeta.getDisplayName());
-            if (itemMeta.hasLore()) itemBuilder.setLore(itemMeta.getLore());
+            if (itemMeta.hasDisplayName()) {
+                itemBuilder.setName(itemMeta.getDisplayName());
+            }
+            if (itemMeta.hasLore()) {
+                itemBuilder.setLore(itemMeta.getLore());
+            }
 
             NBTItem nbt = new NBTItem(item);
 
-            if (nbt.hasTag("Unbreakable")) itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
+            if (nbt.hasTag("Unbreakable")) {
+                itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
+            }
 
-            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable damageable) itemBuilder.setDamage(damageable.getDamage());
+            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable damageable) {
+                itemBuilder.setDamage(damageable.getDamage());
+            }
         }
 
         return itemBuilder;
@@ -1063,7 +1113,6 @@ public class ItemBuilder {
      */
     public static @NotNull ItemBuilder convertString(String itemString, String placeHolder) {
         ItemBuilder itemBuilder = new ItemBuilder();
-
         try {
             for (String optionString : itemString.split(", ")) {
                 String option = optionString.split(":")[0];
@@ -1092,10 +1141,12 @@ public class ItemBuilder {
                         if (value.isEmpty() || value.equalsIgnoreCase("true")) itemBuilder.setUnbreakable(true);
                     }
                     case "trim-pattern" -> {
-                        if (!value.isEmpty()) itemBuilder.setTrimPattern(Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(value.toLowerCase())));
+                        if (!value.isEmpty())
+                            itemBuilder.setTrimPattern(Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(value.toLowerCase())));
                     }
                     case "trim-material" -> {
-                        if (!value.isEmpty()) itemBuilder.setTrimMaterial(Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(value.toLowerCase())));
+                        if (!value.isEmpty())
+                            itemBuilder.setTrimMaterial(Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(value.toLowerCase())));
                     }
                     default -> {
                         Enchantment enchantment = getEnchantment(option);
@@ -1158,7 +1209,7 @@ public class ItemBuilder {
      * @return The list of ItemBuilders.
      */
     public static List<ItemBuilder> convertStringList(@NotNull List<String> itemStrings, String placeholder) {
-        return itemStrings.stream().map(itemString -> convertString(itemString, placeholder)).collect(Collectors.toList());
+        return itemStrings.stream().map(itemString -> convertString(itemString, placeholder)).toList();
     }
 
     /**
@@ -1225,15 +1276,20 @@ public class ItemBuilder {
      * @return The enchantment from the string.
      */
     private static @Nullable Enchantment getEnchantment(String enchantmentName) {
+        if (enchantmentName == null || enchantmentName.isBlank()) {
+            return null;
+        }
+
         enchantmentName = stripEnchantmentName(enchantmentName);
         for (Enchantment enchantment : Enchantment.values()) {
             try {
-                if (stripEnchantmentName(enchantment.getKey().getKey()).equalsIgnoreCase(enchantmentName)) return enchantment;
+                if (stripEnchantmentName(enchantment.getKey().getKey()).equalsIgnoreCase(enchantmentName))
+                    return enchantment;
 
                 HashMap<String, String> enchantments = getEnchantmentList();
 
                 if (stripEnchantmentName(enchantment.getName()).equalsIgnoreCase(enchantmentName) || (enchantments.get(enchantment.getName()) != null &&
-                                                                                                      stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName)))
+                        stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName)))
                     return enchantment;
             } catch (Exception ignore) {
             }
