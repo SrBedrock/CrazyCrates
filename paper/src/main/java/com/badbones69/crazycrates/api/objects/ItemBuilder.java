@@ -1,7 +1,6 @@
 package com.badbones69.crazycrates.api.objects;
 
 import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.other.MsgUtils;
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.ryderbelserion.cluster.utils.DyeUtils;
