@@ -3,11 +3,7 @@ package com.badbones69.crazycrates.commands.subs;
 import ch.jalu.configme.SettingsManager;
 import com.badbones69.crazycrates.api.builders.types.CrateTierMenu;
 import com.badbones69.crazycrates.api.objects.Tier;
-import dev.triumphteam.cmd.core.annotation.ArgName;
-import dev.triumphteam.cmd.core.annotation.Command;
-import dev.triumphteam.cmd.core.annotation.Default;
-import dev.triumphteam.cmd.core.annotation.SubCommand;
-import dev.triumphteam.cmd.core.annotation.Suggestion;
+import dev.triumphteam.cmd.core.annotation.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -242,7 +238,7 @@ public class CrateBaseCommand extends BaseCommand {
 
     @SubCommand("additem")
     @Permission(value = "crazycrates.command.admin.additem", def = PermissionDefault.OP)
-    public void onAdminCrateAddItem(Player player, @Suggestion("crates") String crateName, @Suggestion("prizes") String prize) {
+    public void onAdminCrateAddItem(Player player, @Suggestion("crates") String crateName, @Suggestion("prizes") String prize, @Suggestion("numbers") int chance, @Optional @Suggestion("tiers") String tier) {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (item.getType() == Material.AIR) {
@@ -257,13 +253,12 @@ public class CrateBaseCommand extends BaseCommand {
             return;
         }
 
-        if (crate.getCrateType() == CrateType.cosmic) {
-            player.sendMessage(Messages.failed_to_add_item.getString());
-            return;
-        }
-
         try {
-            crate.addEditorItem(prize, item);
+            if (tier == null) {
+                crate.addEditorItem(prize, item, chance);
+            } else {
+                crate.addEditorItem(prize, item, crate.getTier(tier), chance);
+            }
         } catch (Exception exception) {
             this.plugin.getServer().getLogger().log(Level.WARNING, "Failed to add a new prize to the " + crate.getName() + " crate.", exception);
 
