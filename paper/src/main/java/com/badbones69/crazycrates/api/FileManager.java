@@ -21,12 +21,12 @@ public class FileManager {
     @NotNull
     private final CrazyCrates plugin = CrazyCrates.get();
 
-    private final HashMap<Files, File> files = new HashMap<>();
+    private final Map<Files, File> files = new HashMap<>();
     private final List<String> homeFolders = new ArrayList<>();
     private final List<CustomFile> customFiles = new ArrayList<>();
-    private final HashMap<String, String> jarHomeFolders = new HashMap<>();
-    private final HashMap<String, String> autoGenerateFiles = new HashMap<>();
-    private final HashMap<Files, FileConfiguration> configurations = new HashMap<>();
+    private final Map<String, String> jarHomeFolders = new HashMap<>();
+    private final Map<String, String> autoGenerateFiles = new HashMap<>();
+    private final Map<Files, FileConfiguration> configurations = new HashMap<>();
 
     /**
      * Sets up the plugin and loads all necessary files.
@@ -91,8 +91,7 @@ public class FileManager {
                 } else {
                     homeFile.mkdir();
 
-                    if (this.plugin.isLogging())
-                        this.plugin.getLogger().info("The folder " + homeFolder + "/ was not found so it was created.");
+                    this.plugin.debug(() -> "The folder " + homeFolder + "/ was not found so it was created.", Level.INFO);
 
                     for (Map.Entry<String, String> entry : this.autoGenerateFiles.entrySet()) {
                         String fileName = entry.getKey();
@@ -108,7 +107,7 @@ public class FileManager {
                                     this.customFiles.add(new CustomFile(fileName, homeFolder));
                                 }
 
-                                if (this.plugin.isLogging()) this.plugin.getLogger().info("Created new default file: " + homeFolder + "/" + fileName + ".");
+                                this.plugin.debug(() -> "Created new default file: " + homeFolder + "/" + fileName + ".", Level.INFO);
                             } catch (Exception exception) {
                                 this.plugin.getLogger().log(Level.SEVERE, "Failed to create new default file: " + homeFolder + "/" + fileName + "!", exception);
                             }
@@ -146,7 +145,7 @@ public class FileManager {
     /**
      * Register a file that needs to be generated when it's home folder doesn't exist. Make sure to have a "/" in front of the home folder's name.
      *
-     * @param fileName the name of the file you want to auto-generate when the folder doesn't exist.
+     * @param fileName   the name of the file you want to auto-generate when the folder doesn't exist.
      * @param homeFolder the folder that has custom files in it.
      */
     public FileManager registerDefaultGenerateFiles(String fileName, String homeFolder) {
@@ -157,8 +156,8 @@ public class FileManager {
     /**
      * Register a file that needs to be generated when it's home folder doesn't exist. Make sure to have a "/" in front of the home folder's name.
      *
-     * @param fileName the name of the file you want to auto-generate when the folder doesn't exist.
-     * @param homeFolder the folder that has custom files in it.
+     * @param fileName      the name of the file you want to auto-generate when the folder doesn't exist.
+     * @param homeFolder    the folder that has custom files in it.
      * @param jarHomeFolder the folder that the file is found in the jar.
      */
     public FileManager registerDefaultGenerateFiles(String fileName, String homeFolder, String jarHomeFolder) {
@@ -216,7 +215,7 @@ public class FileManager {
     /**
      * Add a file by name.
      *
-     * @param name name to use.
+     * @param name   name to use.
      * @param folder folder to add to.
      */
     public void addFile(String name, String folder) {
@@ -364,7 +363,7 @@ public class FileManager {
         /**
          * The files that the server will try and load.
          *
-         * @param fileName the file name that will be in the plugin's folder.
+         * @param fileName     the file name that will be in the plugin's folder.
          * @param fileLocation the location the file in the plugin's folder.
          */
         Files(String fileName, String fileLocation) {
@@ -374,9 +373,9 @@ public class FileManager {
         /**
          * The files that the server will try and load.
          *
-         * @param fileName the file name that will be in the plugin's folder.
+         * @param fileName     the file name that will be in the plugin's folder.
          * @param fileLocation the location of the file will be in the plugin's folder.
-         * @param fileJar the location of the file in the jar.
+         * @param fileJar      the location of the file in the jar.
          */
         Files(String fileName, String fileLocation, String fileJar) {
             this.fileName = fileName;
@@ -431,7 +430,9 @@ public class FileManager {
          * Overrides the loaded state file and loads the file systems file.
          */
         public void reloadFile() {
-            if (this.getFileName().endsWith(".yml")) this.fileManager.reloadFile(this);
+            if (this.getFileName().endsWith(".yml")) {
+                this.fileManager.reloadFile(this);
+            }
         }
     }
 
@@ -448,7 +449,7 @@ public class FileManager {
         /**
          * A custom file that is being made.
          *
-         * @param name name of the file.
+         * @param name       name of the file.
          * @param homeFolder the home folder of the file.
          */
         public CustomFile(String name, String homeFolder) {
@@ -510,6 +511,7 @@ public class FileManager {
 
         /**
          * Check if the file actually exists in the file system.
+         *
          * @return true if it does and false if it doesn't.
          */
         public boolean exists() {
