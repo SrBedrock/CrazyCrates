@@ -172,7 +172,7 @@ public class ItemBuilder {
     /**
      * Deduplicate an item builder.
      *
-     * @param itemBuilder The item builder to deduplicate.
+     * @param itemBuilder the item builder to deduplicate.
      */
     public ItemBuilder(@NotNull ItemBuilder itemBuilder) {
         this.nbtItem = itemBuilder.nbtItem;
@@ -228,16 +228,24 @@ public class ItemBuilder {
         this.customMaterial = itemBuilder.customMaterial;
     }
 
+    /**
+     * Updates the item meta
+     *
+     * @param itemMeta the new item meta
+     */
     public void setItemMeta(ItemMeta itemMeta) {
         this.itemMeta = itemMeta;
     }
 
+    /**
+     * @return the item meta
+     */
     public ItemMeta getItemMeta() {
         return this.itemMeta;
     }
 
     /**
-     * Gets the material.
+     * @return the material.
      */
     public Material getMaterial() {
         return this.material;
@@ -251,105 +259,105 @@ public class ItemBuilder {
     }
 
     /**
-     * Checks if the item is a banner.
+     * @return if the item is a banner.
      */
     public boolean isBanner() {
         return this.isBanner;
     }
 
     /**
-     * Checks if an item is a shield.
+     * @return if an item is a shield.
      */
     public boolean isShield() {
         return this.isShield;
     }
 
     /**
-     * Checks if the item is a spawn mob egg.
+     * @return if the item is a spawn mob egg.
      */
     public boolean isMobEgg() {
         return this.isMobEgg;
     }
 
     /**
-     * Returns the player name.
+     * @return the player name.
      */
     public String getPlayerName() {
         return this.player;
     }
 
     /**
-     * Get the entity type of the spawn mob egg.
+     * @return the entity type of the spawn mob egg.
      */
     public EntityType getEntityType() {
         return this.entityType;
     }
 
     /**
-     * Get the name of the item.
+     * @return the name of the item.
      */
     public String getName() {
         return this.itemName;
     }
 
     /**
-     * Get the lore on the item.
+     * @return the lore on the item.
      */
     public List<String> getLore() {
         return this.itemLore;
     }
 
     /**
-     * Returns the crate name.
+     * @return the crate name.
      */
     public String getCrateName() {
         return this.crateName;
     }
 
     /**
-     * Returns the enchantments on the Item.
+     * @return the enchantments on the item.
      */
     public Map<Enchantment, Integer> getEnchantments() {
         return this.enchantments;
     }
 
     /**
-     * Return a list of Item Flags.
+     * @return a list of ItemFlags.
      */
     public List<ItemFlag> getItemFlags() {
         return this.itemFlags;
     }
 
     /**
-     * Checks if flags are hidden.
+     * @return checks if flags are hidden.
      */
     public boolean isItemFlagsHidden() {
         return this.hideItemFlags;
     }
 
     /**
-     * Check if item is Leather Armor
+     * @return check if item is Leather Armor
      */
     public boolean isLeatherArmor() {
         return this.isLeatherArmor;
     }
 
     /**
-     * Checks if item is glowing.
+     * @return checks if item is glowing.
      */
     public boolean isGlowing() {
         return this.glowing;
     }
 
     /**
-     * Checks if the item is unbreakable.
+     * @return checks if the item is unbreakable.
      */
     public boolean isUnbreakable() {
         return this.unbreakable;
     }
 
     /**
-     * Returns the amount of the item stack.
+     * @return the amount of the item stack.
      */
     public Integer getAmount() {
         return this.itemAmount;
@@ -388,7 +396,7 @@ public class ItemBuilder {
     /**
      * Builder the item from all the information that was given to the builder.
      *
-     * @return The result of all the info that was given to the builder as an ItemStack.
+     * @return the result of all the info that was given to the builder as an ItemStack.
      */
     public ItemStack build() {
         if (this.nbtItem != null) {
@@ -568,8 +576,8 @@ public class ItemBuilder {
     /**
      * Set the type of item the builder is set to.
      *
-     * @param material The material you wish to set.
-     * @return The ItemBuilder with updated info.
+     * @param material the material you wish to set.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setMaterial(Material material) {
         this.material = material;
@@ -582,23 +590,29 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setTrimMaterial(TrimMaterial trimMaterial) {
+    /**
+     * Set trim material
+     *
+     * @param trimMaterial pattern to set.
+     */
+    public void setTrimMaterial(TrimMaterial trimMaterial) {
         this.trimMaterial = trimMaterial;
-
-        return this;
     }
 
-    public ItemBuilder setTrimPattern(TrimPattern trimPattern) {
+    /**
+     * Set trim pattern
+     *
+     * @param trimPattern pattern to set.
+     */
+    public void setTrimPattern(TrimPattern trimPattern) {
         this.trimPattern = trimPattern;
-
-        return this;
     }
 
     /**
      * Set the type of item and its metadata in the builder.
      *
-     * @param material The string must be in this form: %Material% or %Material%:%MetaData%
-     * @return The ItemBuilder with updated info.
+     * @param material the string must be in this form: %Material% or %Material%:%MetaData%
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setMaterial(@NotNull String material) {
         String metaData;
@@ -669,33 +683,36 @@ public class ItemBuilder {
         return this;
     }
 
-    // Sets the "Crate Name" for the item.
+    /**
+     * Sets the crate name
+     *
+     * @param crateName the crate name to set.
+     * @return the ItemBuilder with updated info.
+     */
     public ItemBuilder setCrateName(String crateName) {
         this.crateName = crateName;
         return this;
     }
 
     /**
-     * @param damage The damage value of the item.
-     * @return The ItemBuilder with an updated damage value.
+     * @param damage the damage value of the item.
      */
-    public ItemBuilder setDamage(int damage) {
+    public void setDamage(int damage) {
         this.damage = damage;
-        return this;
     }
 
     /**
      * Get the damage to the item.
      *
-     * @return The damage to the item as an int.
+     * @return the damage to the item as an int.
      */
     public int getDamage() {
         return this.damage;
     }
 
     /**
-     * @param itemName The name of the item.
-     * @return The ItemBuilder with an updated name.
+     * @param itemName the name of the item.
+     * @return the ItemBuilder with an updated name.
      */
     public ItemBuilder setName(String itemName) {
         if (itemName != null) this.itemName = MsgUtils.color(itemName);
@@ -704,8 +721,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param placeholders The placeholders that will be used.
-     * @return The ItemBuilder with updated placeholders.
+     * @param placeholders the placeholders that will be used.
+     * @return the ItemBuilder with updated placeholders.
      */
     public ItemBuilder setNamePlaceholders(HashMap<String, String> placeholders) {
         this.namePlaceholders = placeholders;
@@ -715,9 +732,9 @@ public class ItemBuilder {
     /**
      * Add a placeholder to the name of the item.
      *
-     * @param placeholder The placeholder that will be replaced.
-     * @param argument    The argument you wish to replace the placeholder with.
-     * @return The ItemBuilder with updated info.
+     * @param placeholder the placeholder that will be replaced.
+     * @param argument the argument you wish to replace the placeholder with.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addNamePlaceholder(String placeholder, String argument) {
         this.namePlaceholders.put(placeholder, argument);
@@ -727,8 +744,8 @@ public class ItemBuilder {
     /**
      * Remove a placeholder from the list.
      *
-     * @param placeholder The placeholder you wish to remove.
-     * @return The ItemBuilder with updated info.
+     * @param placeholder the placeholder you wish to remove.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder removeNamePlaceholder(String placeholder) {
         this.namePlaceholders.remove(placeholder);
@@ -738,8 +755,8 @@ public class ItemBuilder {
     /**
      * Set the lore of the item in the builder. This will auto force color in all the lores that contains color code. (&a, &c, &7, etc...)
      *
-     * @param lore The lore of the item in the builder.
-     * @return The ItemBuilder with updated info.
+     * @param lore the lore of the item in the builder.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setLore(List<String> lore) {
         if (lore != null) {
@@ -756,8 +773,8 @@ public class ItemBuilder {
     /**
      * Add a line to the current lore of the item. This will auto force color in the lore that contains color code. (&a, &c, &7, etc...)
      *
-     * @param lore The new line you wish to add.
-     * @return The ItemBuilder with updated info.
+     * @param lore the new line you wish to add.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addLore(String lore) {
         if (lore != null) this.itemLore.add(MsgUtils.color(lore));
@@ -767,8 +784,8 @@ public class ItemBuilder {
     /**
      * Set the placeholders that are in the lore of the item.
      *
-     * @param placeholders The placeholders that you wish to use.
-     * @return The ItemBuilder with updated info.
+     * @param placeholders the placeholders that you wish to use.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setLorePlaceholders(HashMap<String, String> placeholders) {
         this.lorePlaceholders = placeholders;
@@ -778,9 +795,9 @@ public class ItemBuilder {
     /**
      * Add a placeholder to the lore of the item.
      *
-     * @param placeholder The placeholder you wish to replace.
-     * @param argument    The argument that will replace the placeholder.
-     * @return The ItemBuilder with updated info.
+     * @param placeholder the placeholder you wish to replace.
+     * @param argument the argument that will replace the placeholder.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addLorePlaceholder(String placeholder, String argument) {
         this.lorePlaceholders.put(placeholder, argument);
@@ -790,7 +807,7 @@ public class ItemBuilder {
     /**
      * Get the lore with all the placeholders added to it.
      *
-     * @return The lore with all placeholders in it.
+     * @return the lore with all placeholders in it.
      */
     public List<String> getUpdatedLore() {
         List<String> newLore = new ArrayList<>();
@@ -811,8 +828,8 @@ public class ItemBuilder {
     /**
      * Remove a placeholder from the lore.
      *
-     * @param placeholder The placeholder you wish to remove.
-     * @return The ItemBuilder with updated info.
+     * @param placeholder the placeholder you wish to remove.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder removeLorePlaceholder(String placeholder) {
         this.lorePlaceholders.remove(placeholder);
@@ -820,8 +837,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param entityType The entity type the mob spawn egg will be.
-     * @return The ItemBuilder with an updated mob spawn egg.
+     * @param entityType the entity type the mob spawn egg will be.
+     * @return the ItemBuilder with an updated mob spawn egg.
      */
     public ItemBuilder setEntityType(EntityType entityType) {
         this.entityType = entityType;
@@ -831,7 +848,7 @@ public class ItemBuilder {
     /**
      * Add patterns to the item.
      *
-     * @param stringPattern The pattern you wish to add.
+     * @param stringPattern the pattern you wish to add.
      */
     private void addPatterns(String stringPattern) {
         try {
@@ -852,8 +869,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param patterns The list of Patterns to add.
-     * @return The ItemBuilder with updated patterns.
+     * @param patterns the list of Patterns to add.
+     * @return the ItemBuilder with updated patterns.
      */
     public ItemBuilder addPatterns(List<String> patterns) {
         patterns.forEach(this::addPatterns);
@@ -861,8 +878,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param pattern A pattern to add.
-     * @return The ItemBuilder with an updated pattern.
+     * @param pattern a pattern to add.
+     * @return the ItemBuilder with an updated pattern.
      */
     public ItemBuilder addPattern(Pattern pattern) {
         this.patterns.add(pattern);
@@ -870,8 +887,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param patterns Set a list of Patterns.
-     * @return The ItemBuilder with an updated list of patterns.
+     * @param patterns set a list of Patterns.
+     * @return the ItemBuilder with an updated list of patterns.
      */
     public ItemBuilder setPattern(List<Pattern> patterns) {
         this.patterns = patterns;
@@ -879,8 +896,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param amount The amount of the item stack.
-     * @return The ItemBuilder with an updated item count.
+     * @param amount the amount of the item stack.
+     * @return the ItemBuilder with an updated item count.
      */
     public ItemBuilder setAmount(Integer amount) {
         this.itemAmount = amount;
@@ -890,8 +907,8 @@ public class ItemBuilder {
     /**
      * Set the player that will be displayed on the head.
      *
-     * @param playerName The player being displayed on the head.
-     * @return The ItemBuilder with an updated Player Name.
+     * @param playerName the player being displayed on the head.
+     * @return the ItemBuilder with an updated Player Name.
      */
     public ItemBuilder setPlayerName(String playerName) {
         this.player = playerName;
@@ -907,8 +924,8 @@ public class ItemBuilder {
     /**
      * It will override any enchantments used in ItemBuilder.addEnchantment() below.
      *
-     * @param enchantment A list of enchantments to add to the item.
-     * @return The ItemBuilder with a list of updated enchantments.
+     * @param enchantment a list of enchantments to add to the item.
+     * @return the ItemBuilder with a list of updated enchantments.
      */
     public ItemBuilder setEnchantments(HashMap<Enchantment, Integer> enchantment) {
         if (enchantment != null) {
@@ -921,9 +938,9 @@ public class ItemBuilder {
     /**
      * Adds an enchantment to the item.
      *
-     * @param enchantment The enchantment you wish to add.
-     * @param level       The level of the enchantment ( Unsafe levels included )
-     * @return The ItemBuilder with updated enchantments.
+     * @param enchantment the enchantment you wish to add.
+     * @param level the level of the enchantment ( Unsafe levels included )
+     * @return the ItemBuilder with updated enchantments.
      */
     public ItemBuilder addEnchantments(Enchantment enchantment, int level) {
         this.enchantments.put(enchantment, level);
@@ -933,8 +950,8 @@ public class ItemBuilder {
     /**
      * Remove an enchantment from the item.
      *
-     * @param enchantment The enchantment you wish to remove.
-     * @return The ItemBuilder with updated enchantments.
+     * @param enchantment the enchantment you wish to remove.
+     * @return the ItemBuilder with updated enchantments.
      */
     public ItemBuilder removeEnchantments(Enchantment enchantment) {
         this.enchantments.remove(enchantment);
@@ -944,8 +961,8 @@ public class ItemBuilder {
     /**
      * Set the flags that will be on the item in the builder.
      *
-     * @param flagStrings The flag names as string you wish to add to the item in the builder.
-     * @return The ItemBuilder with updated info.
+     * @param flagStrings the flag names as string you wish to add to the item in the builder.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setFlagsFromStrings(@NotNull List<String> flagStrings) {
         this.itemFlags.clear();
@@ -959,7 +976,12 @@ public class ItemBuilder {
         return this;
     }
 
-    // Used for multiple Item Flags
+    /**
+     * Adds a list of item flags to an item.
+     *
+     * @param flagStrings list of items to add.
+     * @return the ItemBuilder with updated info.
+     */
     public ItemBuilder addItemFlags(@NotNull List<String> flagStrings) {
         for (String flagString : flagStrings) {
             try {
@@ -976,8 +998,8 @@ public class ItemBuilder {
     /**
      * Add a flag to the item in the builder.
      *
-     * @param flagString The name of the flag you wish to add.
-     * @return The ItemBuilder with updated info.
+     * @param flagString the name of the flag you wish to add.
+     * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addFlags(String flagString) {
         ItemFlag flag = getFlag(flagString);
@@ -989,8 +1011,8 @@ public class ItemBuilder {
     /**
      * Adds an ItemFlag to a map which is added to an item.
      *
-     * @param itemFlag The flag to add.
-     * @return The ItemBuilder with an updated ItemFlag.
+     * @param itemFlag the flag to add.
+     * @return the ItemBuilder with an updated ItemFlag.
      */
     public ItemBuilder addItemFlag(ItemFlag itemFlag) {
         if (itemFlag != null) this.itemFlags.add(itemFlag);
@@ -1001,8 +1023,8 @@ public class ItemBuilder {
     /**
      * Adds multiple ItemFlags in a list to a map which get added to an item.
      *
-     * @param itemFlags The list of flags to add.
-     * @return The ItemBuilder with a list of ItemFlags.
+     * @param itemFlags the list of flags to add.
+     * @return the ItemBuilder with a list of ItemFlags.
      */
     public ItemBuilder setItemFlags(List<ItemFlag> itemFlags) {
         this.itemFlags = itemFlags;
@@ -1010,8 +1032,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param hideItemFlags Hide item flags based on a boolean.
-     * @return The ItemBuilder with an updated Boolean.
+     * @param hideItemFlags hide item flags based on a boolean.
+     * @return the ItemBuilder with an updated Boolean.
      */
     public ItemBuilder hideItemFlags(boolean hideItemFlags) {
         this.hideItemFlags = hideItemFlags;
@@ -1019,7 +1041,7 @@ public class ItemBuilder {
     }
 
     /**
-     *
+     * Hides item flags
      */
     public void hideItemFlags() {
         if (this.hideItemFlags) {
@@ -1031,8 +1053,8 @@ public class ItemBuilder {
     /**
      * Sets the converted item as a reference to try and save NBT tags and stuff.
      *
-     * @param referenceItem The item that is being referenced.
-     * @return The ItemBuilder with updated info.
+     * @param referenceItem the item that is being referenced.
+     * @return the ItemBuilder with updated info.
      */
     @Contract("_ -> this")
     private ItemBuilder setReferenceItem(ItemStack referenceItem) {
@@ -1042,8 +1064,8 @@ public class ItemBuilder {
     }
 
     /**
-     * @param unbreakable Sets the item to be unbreakable.
-     * @return The ItemBuilder with an updated Boolean.
+     * @param unbreakable sets the item to be unbreakable.
+     * @return the ItemBuilder with an updated Boolean.
      */
     public ItemBuilder setUnbreakable(boolean unbreakable) {
         this.unbreakable = unbreakable;
@@ -1051,21 +1073,19 @@ public class ItemBuilder {
     }
 
     /**
-     * @param glow Sets whether to make an item to glow or not.
-     * @return The ItemBuilder with an updated Boolean.
+     * @param glow sets whether to make an item to glow or not.
+     * @return the ItemBuilder with an updated Boolean.
      */
     public ItemBuilder setGlow(boolean glow) {
         this.glowing = glow;
         return this;
     }
 
-    // Other misc shit
-
     /**
      * Convert an ItemStack to an ItemBuilder to allow easier editing of the ItemStack.
      *
-     * @param item The ItemStack you wish to convert into an ItemBuilder.
-     * @return The ItemStack as an ItemBuilder with all the info from the item.
+     * @param item the ItemStack you wish to convert into an ItemBuilder.
+     * @return the ItemStack as an ItemBuilder with all the info from the item.
      */
     public static ItemBuilder convertItemStack(ItemStack item) {
         ItemBuilder itemBuilder = new ItemBuilder().setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
@@ -1097,8 +1117,8 @@ public class ItemBuilder {
     /**
      * Converts a String to an ItemBuilder.
      *
-     * @param itemString The String you wish to convert.
-     * @return The String as an ItemBuilder.
+     * @param itemString the string you wish to convert.
+     * @return the string as an ItemBuilder.
      */
     public static @NotNull ItemBuilder convertString(String itemString) {
         return convertString(itemString, null);
@@ -1107,9 +1127,9 @@ public class ItemBuilder {
     /**
      * Converts a string to an ItemBuilder with a placeholder for errors.
      *
-     * @param itemString  The String you wish to convert.
-     * @param placeHolder The placeholder to use if there is an error.
-     * @return The String as an ItemBuilder.
+     * @param itemString the string you wish to convert.
+     * @param placeHolder the placeholder to use if there is an error.
+     * @return the string as an ItemBuilder.
      */
     public static @NotNull ItemBuilder convertString(String itemString, String placeHolder) {
         ItemBuilder itemBuilder = new ItemBuilder();
@@ -1132,7 +1152,7 @@ public class ItemBuilder {
                         try {
                             itemBuilder.setDamage(Integer.parseInt(value));
                         } catch (NumberFormatException e) {
-                            itemBuilder.setDamage(itemBuilder.material.getMaxDurability());
+                            itemBuilder.setDamage(0);
                         }
                     }
                     case "lore" -> itemBuilder.setLore(Arrays.asList(value.split(",")));
@@ -1194,8 +1214,8 @@ public class ItemBuilder {
     /**
      * Converts a list of Strings to a list of ItemBuilders.
      *
-     * @param itemStrings The list of Strings.
-     * @return The list of ItemBuilders.
+     * @param itemStrings the list of Strings.
+     * @return the list of ItemBuilders.
      */
     public static List<ItemBuilder> convertStringList(List<String> itemStrings) {
         return convertStringList(itemStrings, null);
@@ -1204,9 +1224,9 @@ public class ItemBuilder {
     /**
      * Converts a list of Strings to a list of ItemBuilders with a placeholder for errors.
      *
-     * @param itemStrings The list of Strings.
-     * @param placeholder The placeholder for errors.
-     * @return The list of ItemBuilders.
+     * @param itemStrings the list of strings.
+     * @param placeholder the placeholder for errors.
+     * @return the list of ItemBuilders.
      */
     public static List<ItemBuilder> convertStringList(@NotNull List<String> itemStrings, String placeholder) {
         return itemStrings.stream().map(itemString -> convertString(itemString, placeholder)).toList();
@@ -1229,8 +1249,8 @@ public class ItemBuilder {
     /**
      * Get the PotionEffect from a PotionEffectType.
      *
-     * @param type The type of the potion effect.
-     * @return The potion type.
+     * @param type the type of the potion effect.
+     * @return the potion type.
      */
     @Contract("null -> null")
     private PotionType getPotionType(PotionEffectType type) {
@@ -1272,8 +1292,8 @@ public class ItemBuilder {
     /**
      * Get the enchantment from a string.
      *
-     * @param enchantmentName The string of the enchantment.
-     * @return The enchantment from the string.
+     * @param enchantmentName the string of the enchantment.
+     * @return the enchantment from the string.
      */
     private static @Nullable Enchantment getEnchantment(String enchantmentName) {
         if (enchantmentName == null || enchantmentName.isBlank()) {
@@ -1301,8 +1321,8 @@ public class ItemBuilder {
     /**
      * Strip extra characters from an enchantment name.
      *
-     * @param enchantmentName The enchantment name.
-     * @return The stripped enchantment name.
+     * @param enchantmentName the enchantment name.
+     * @return the stripped enchantment name.
      */
     @Contract("!null -> !null; null -> null")
     private static String stripEnchantmentName(String enchantmentName) {
@@ -1312,7 +1332,7 @@ public class ItemBuilder {
     /**
      * Get the list of enchantments and their in-Game names.
      *
-     * @return The list of enchantments and their in-Game names.
+     * @return the hashmap of enchantments and their in-game names.
      */
     private static @NotNull HashMap<String, String> getEnchantmentList() {
         HashMap<String, String> enchantments = new HashMap<>();
@@ -1354,10 +1374,15 @@ public class ItemBuilder {
         return enchantments;
     }
 
-    @Contract(pure = true)
-    private boolean isInt(String s) {
+    /**
+     * Check if the parameter is an integer.
+     *
+     * @param value string to check.
+     * @return true if integer or false if not.
+     */
+    private boolean isInt(String value) {
         try {
-            Integer.parseInt(s);
+            Integer.parseInt(value);
         } catch (NumberFormatException nfe) {
             return false;
         }
@@ -1365,7 +1390,13 @@ public class ItemBuilder {
         return true;
     }
 
-    private @Nullable ItemFlag getFlag(String flagString) {
+    /**
+     * Get an item flag from string.
+     *
+     * @param flagString string to check.
+     * @return item flag or null.
+     */
+    private ItemFlag getFlag(String flagString) {
         for (ItemFlag flag : ItemFlag.values()) {
             if (flag.name().equalsIgnoreCase(flagString)) return flag;
         }

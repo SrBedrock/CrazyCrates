@@ -126,7 +126,7 @@ public class FileManager {
     /**
      * Register a folder that has custom files in it. Make sure to have a "/" in front of the folder name.
      *
-     * @param homeFolder The folder that has custom files in it.
+     * @param homeFolder the folder that has custom files in it.
      */
     public FileManager registerCustomFilesFolder(String homeFolder) {
         this.homeFolders.add(homeFolder);
@@ -136,7 +136,7 @@ public class FileManager {
     /**
      * Unregister a folder that has custom files in it. Make sure to have a "/" in front of the folder name.
      *
-     * @param homeFolder The folder with custom files in it.
+     * @param homeFolder the folder with custom files in it.
      */
     public FileManager unregisterCustomFilesFolder(String homeFolder) {
         this.homeFolders.remove(homeFolder);
@@ -146,8 +146,8 @@ public class FileManager {
     /**
      * Register a file that needs to be generated when it's home folder doesn't exist. Make sure to have a "/" in front of the home folder's name.
      *
-     * @param fileName   The name of the file you want to auto-generate when the folder doesn't exist.
-     * @param homeFolder The folder that has custom files in it.
+     * @param fileName the name of the file you want to auto-generate when the folder doesn't exist.
+     * @param homeFolder the folder that has custom files in it.
      */
     public FileManager registerDefaultGenerateFiles(String fileName, String homeFolder) {
         this.autoGenerateFiles.put(fileName, homeFolder);
@@ -157,9 +157,9 @@ public class FileManager {
     /**
      * Register a file that needs to be generated when it's home folder doesn't exist. Make sure to have a "/" in front of the home folder's name.
      *
-     * @param fileName      The name of the file you want to auto-generate when the folder doesn't exist.
-     * @param homeFolder    The folder that has custom files in it.
-     * @param jarHomeFolder The folder that the file is found in the jar.
+     * @param fileName the name of the file you want to auto-generate when the folder doesn't exist.
+     * @param homeFolder the folder that has custom files in it.
+     * @param jarHomeFolder the folder that the file is found in the jar.
      */
     public FileManager registerDefaultGenerateFiles(String fileName, String homeFolder, String jarHomeFolder) {
         this.autoGenerateFiles.put(fileName, homeFolder);
@@ -170,7 +170,7 @@ public class FileManager {
     /**
      * Unregister a file that doesn't need to be generated when it's home folder doesn't exist. Make sure to have a "/" in front of the home folder's name.
      *
-     * @param fileName The file that you want to remove from auto-generating.
+     * @param fileName the file that you want to remove from auto-generating.
      */
     public FileManager unregisterDefaultGenerateFiles(String fileName) {
         this.autoGenerateFiles.remove(fileName);
@@ -181,7 +181,7 @@ public class FileManager {
     /**
      * Gets the file from the system.
      *
-     * @return The file from the system.
+     * @return the file from the system.
      */
     public FileConfiguration getFile(Files file) {
         return this.configurations.get(file);
@@ -191,8 +191,8 @@ public class FileManager {
      * Get a custom file from the loaded custom files instead of a hardcoded one.
      * This allows you to get custom files like Per player data files.
      *
-     * @param name Name of the crate you want. (Without the .yml)
-     * @return The custom file you wanted otherwise if not found will return null.
+     * @param name name of the crate you want. (Without the .yml)
+     * @return the custom file you wanted otherwise if not found will return null.
      */
     public CustomFile getFile(String name) {
         for (CustomFile file : this.customFiles) {
@@ -204,10 +204,21 @@ public class FileManager {
         return null;
     }
 
+    /**
+     * Remove a file by name.
+     *
+     * @param name name to use.
+     */
     public void removeFile(String name) {
         this.customFiles.remove(getFile(name));
     }
 
+    /**
+     * Add a file by name.
+     *
+     * @param name name to use.
+     * @param folder folder to add to.
+     */
     public void addFile(String name, String folder) {
         this.customFiles.add(new CustomFile(name, folder));
     }
@@ -226,7 +237,7 @@ public class FileManager {
     /**
      * Save a custom file.
      *
-     * @param name The name of the custom file.
+     * @param name the name of the custom file.
      */
     public void saveFile(String name) {
         CustomFile file = getFile(name);
@@ -250,7 +261,7 @@ public class FileManager {
     /**
      * Save a custom file.
      *
-     * @param file The custom file you are saving.
+     * @param file the custom file you are saving.
      */
     public void saveFile(CustomFile file) {
         file.saveFile();
@@ -353,8 +364,8 @@ public class FileManager {
         /**
          * The files that the server will try and load.
          *
-         * @param fileName     The file name that will be in the plugin's folder.
-         * @param fileLocation The location the file in the plugin's folder.
+         * @param fileName the file name that will be in the plugin's folder.
+         * @param fileLocation the location the file in the plugin's folder.
          */
         Files(String fileName, String fileLocation) {
             this(fileName, fileLocation, fileLocation);
@@ -363,9 +374,9 @@ public class FileManager {
         /**
          * The files that the server will try and load.
          *
-         * @param fileName     The file name that will be in the plugin's folder.
-         * @param fileLocation The location of the file will be in the plugin's folder.
-         * @param fileJar      The location of the file in the jar.
+         * @param fileName the file name that will be in the plugin's folder.
+         * @param fileLocation the location of the file will be in the plugin's folder.
+         * @param fileJar the location of the file in the jar.
          */
         Files(String fileName, String fileLocation, String fileJar) {
             this.fileName = fileName;
@@ -376,7 +387,7 @@ public class FileManager {
         /**
          * Get the name of the file.
          *
-         * @return The name of the file.
+         * @return the name of the file.
          */
         public String getFileName() {
             return this.fileName;
@@ -385,7 +396,7 @@ public class FileManager {
         /**
          * The location the jar it is at.
          *
-         * @return The location in the jar the file is in.
+         * @return the location in the jar the file is in.
          */
         public String getFileLocation() {
             return this.fileLocation;
@@ -394,7 +405,7 @@ public class FileManager {
         /**
          * Get the location of the file in the jar.
          *
-         * @return The location of the file in the jar.
+         * @return the location of the file in the jar.
          */
         public String getFileJar() {
             return this.fileJar;
@@ -403,7 +414,7 @@ public class FileManager {
         /**
          * Gets the file from the system.
          *
-         * @return The file from the system.
+         * @return the file from the system.
          */
         public FileConfiguration getFile() {
             return this.fileManager.getFile(this);
@@ -437,8 +448,8 @@ public class FileManager {
         /**
          * A custom file that is being made.
          *
-         * @param name       Name of the file.
-         * @param homeFolder The home folder of the file.
+         * @param name name of the file.
+         * @param homeFolder the home folder of the file.
          */
         public CustomFile(String name, String homeFolder) {
             this.name = name.replace(".yml", "");
@@ -464,7 +475,7 @@ public class FileManager {
         /**
          * Get the name of the file without the .yml part.
          *
-         * @return The name of the file without the .yml.
+         * @return the name of the file without the .yml.
          */
         public String getName() {
             return this.name;
@@ -473,7 +484,7 @@ public class FileManager {
         /**
          * Get the full name of the file.
          *
-         * @return Full name of the file.
+         * @return full name of the file.
          */
         public String getFileName() {
             return this.fileName;
@@ -482,7 +493,7 @@ public class FileManager {
         /**
          * Get the name of the home folder of the file.
          *
-         * @return The name of the home folder the files are in.
+         * @return the name of the home folder the files are in.
          */
         public String getHomeFolder() {
             return this.homeFolder;
@@ -491,7 +502,7 @@ public class FileManager {
         /**
          * Get the ConfigurationFile.
          *
-         * @return The ConfigurationFile of this file.
+         * @return the ConfigurationFile of this file.
          */
         public FileConfiguration getFile() {
             return this.file;
@@ -499,8 +510,7 @@ public class FileManager {
 
         /**
          * Check if the file actually exists in the file system.
-         *
-         * @return True if it does and false if it doesn't.
+         * @return true if it does and false if it doesn't.
          */
         public boolean exists() {
             return this.file != null;

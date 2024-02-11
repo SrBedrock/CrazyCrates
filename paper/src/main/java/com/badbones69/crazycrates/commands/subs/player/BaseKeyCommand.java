@@ -117,6 +117,14 @@ public class BaseKeyCommand extends BaseCommand {
         this.eventLogger.logKeyEvent(player, sender, crate, KeyType.virtual_key, EventLogger.KeyEventType.KEY_EVENT_RECEIVED, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
     }
 
+    /**
+     * Get keys from player or sender or other player.
+     *
+     * @param player player to get keys.
+     * @param sender sender to send message to.
+     * @param header header of the message.
+     * @param messageContent content of the message.
+     */
     private void getKeys(Player player, CommandSender sender, String header, String messageContent) {
         List<String> message = Lists.newArrayList();
 
