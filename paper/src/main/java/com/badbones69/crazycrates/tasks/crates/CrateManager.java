@@ -5,6 +5,7 @@ import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.FileManager;
 import com.badbones69.crazycrates.api.FileManager.Files;
 import com.badbones69.crazycrates.api.objects.BrokeLocation;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.support.holograms.HologramHandler;
 import com.badbones69.crazycrates.tasks.crates.types.*;
 import com.badbones69.crazycrates.tasks.crates.types.CasinoCrate;
@@ -46,9 +47,11 @@ import com.badbones69.crazycrates.support.holograms.types.DecentHologramsSupport
 import com.badbones69.crazycrates.support.holograms.types.HolographicDisplaysSupport;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.badbones69.crazycrates.api.utils.ItemUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -247,35 +250,6 @@ public class CrateManager {
                             prizes.add(new Prize(prizeSection, tierPrizes, crateName, alternativePrize));
                         }
                     }
-
-                    if (file.contains(path + ".Alternative-Prize") && (file.getBoolean(path + ".Alternative-Prize.Toggle"))) {
-                        altPrize = new Prize("Alternative-Prize",
-                                file.getStringList(path + ".Alternative-Prize.Messages"),
-                                file.getStringList(path + ".Alternative-Prize.Commands"),
-                                null, // No editor items
-                                getItems(file, prize + ".Alternative-Prize"));
-                    }
-
-                    ArrayList<ItemStack> editorItems = new ArrayList<>();
-
-                    if (file.contains(path + ".Editor-Items")) {
-                        for (Object list : file.getList(path + ".Editor-Items")) {
-                            editorItems.add((ItemStack) list);
-                        }
-                    }
-
-                    prizes.add(new Prize(prize, getDisplayItem(file, prize),
-                            file.getStringList(path + ".Messages"),
-                            file.getStringList(path + ".Commands"),
-                            editorItems,
-                            getItems(file, prize),
-                            crateName,
-                            file.getInt(path + ".Chance", 100),
-                            file.getInt(path + ".MaxRange", 100),
-                            file.getBoolean(path + ".Firework"),
-                            file.getStringList(path + ".BlackListed-Permissions"),
-                            prizeTiers,
-                            altPrize));
                 }
 
                 int newPlayersKeys = file.getInt("Crate.StartingKeys");
@@ -375,13 +349,12 @@ public class CrateManager {
                 if (schematicName.endsWith(".nbt")) {
                     this.crateSchematics.add(new CrateSchematic(schematicName, new File(plugin.getDataFolder() + "/schematics/" + schematicName)));
 
-                    if (this.plugin.isLogging())
-                        this.plugin.getLogger().info(schematicName + " was successfully found and loaded.");
+                    this.plugin.debug(() -> schematicName + " was successfully found and loaded.", Level.INFO);
                 }
             }
         }
 
-        if (this.plugin.isLogging()) this.plugin.getLogger().info("All schematics were found and loaded.");
+        this.plugin.debug(() -> "All schematics were found and loaded.", Level.INFO);
 
         cleanDataFile();
 
@@ -405,9 +378,9 @@ public class CrateManager {
     /**
      * Opens a crate for a player.
      *
-     * @param player the player that is having the crate opened for them.
-     * @param crate the crate that is being used.
-     * @param location the location that may be needed for some crate types.
+     * @param player    the player that is having the crate opened for them.
+     * @param crate     the crate that is being used.
+     * @param location  the location that may be needed for some crate types.
      * @param checkHand if it just checks the players hand or if it checks their inventory.
      */
     public void openCrate(Player player, @NotNull Crate crate, KeyType keyType, Location location, boolean virtualCrate, boolean checkHand) {
@@ -492,13 +465,12 @@ public class CrateManager {
             default -> {
                 crateBuilder = new CsgoCrate(crate, player, 27);
 
-                if (this.plugin.isLogging()) {
-                    List.of(
-                            crate.getCrateInventoryName() + " has an invalid crate type. Your Value: " + crate.getFile().getString("Crate.CrateType"),
-                            "We will use " + CrateType.csgo.getName() + " until you change the crate type.",
-                            "Valid Crate Types: CSGO/QuadCrate/QuickCrate/Roulette/CrateOnTheGo/FireCracker/Wonder/Wheel/War"
-                    ).forEach(line -> this.plugin.getLogger().warning(line));
-                }
+
+                List.of(
+                        crate.getCrateInventoryName() + " has an invalid crate type. Your Value: " + crate.getFile().getString("Crate.CrateType"),
+                        "We will use " + CrateType.csgo.getName() + " until you change the crate type.",
+                        "Valid Crate Types: CSGO/QuadCrate/QuickCrate/Roulette/CrateOnTheGo/FireCracker/Wonder/Wheel/War"
+                ).forEach(line -> this.plugin.debug(() -> line, Level.WARNING));
             }
         }
 
@@ -509,7 +481,7 @@ public class CrateManager {
     /**
      * Adds a crate in use for when a player opens a crate.
      *
-     * @param player the player opening the crate.
+     * @param player   the player opening the crate.
      * @param location the location the crate is at.
      */
     public void addCrateInUse(Player player, Location location) {
@@ -578,7 +550,7 @@ public class CrateManager {
      * Add a quad crate task that is going on for a player.
      *
      * @param player the player opening the crate.
-     * @param task the task of the quad crate.
+     * @param task   the task of the quad crate.
      */
     public void addQuadCrateTask(@NotNull Player player, BukkitTask task) {
         if (!this.currentQuadTasks.containsKey(player.getUniqueId())) {
@@ -602,7 +574,7 @@ public class CrateManager {
      * Add a crate task that is going on for a player.
      *
      * @param player player opening the crate.
-     * @param task task of the crate.
+     * @param task   task of the crate.
      */
     public void addCrateTask(@NotNull Player player, BukkitTask task) {
         this.currentTasks.put(player.getUniqueId(), task);
@@ -612,8 +584,8 @@ public class CrateManager {
      * Adds a repeating timer task for a player opening a crate.
      *
      * @param player player opening the crate.
-     * @param task task of the crate.
-     * @param delay delay before running the task.
+     * @param task   task of the crate.
+     * @param delay  delay before running the task.
      * @param period interval between task runs.
      */
     public void addRepeatingCrateTask(@NotNull Player player, TimerTask task, Long delay, Long period) {
@@ -645,8 +617,8 @@ public class CrateManager {
      * Adds a timer task for a player opening a crate.
      *
      * @param player player opening the crate.
-     * @param task task of the crate.
-     * @param delay delay before running the task.
+     * @param task   task of the crate.
+     * @param delay  delay before running the task.
      */
     public void addCrateTask(@NotNull Player player, TimerTask task, Long delay) {
         this.timerTasks.put(player.getUniqueId(), task);
@@ -678,7 +650,7 @@ public class CrateManager {
      * Add a player to the list of players that are currently opening crates.
      *
      * @param player the player that is opening a crate.
-     * @param crate the crate the player is opening.
+     * @param crate  the crate the player is opening.
      */
     public void addPlayerToOpeningList(@NotNull Player player, Crate crate) {
         this.playerOpeningCrates.put(player.getUniqueId(), crate);
@@ -717,7 +689,7 @@ public class CrateManager {
      * Set the type of key the player is opening a crate for.
      * This is only used in the Cosmic CrateType currently.
      *
-     * @param player the player that is opening the crate.
+     * @param player  the player that is opening the crate.
      * @param keyType the KeyType that they are using.
      */
     public void addPlayerKeyType(@NotNull Player player, KeyType keyType) {
@@ -817,7 +789,7 @@ public class CrateManager {
      * Add a new physical crate location.
      *
      * @param location the location you wish to add.
-     * @param crate the crate which you would like to set it to.
+     * @param crate    the crate which you would like to set it to.
      */
     public void addCrateLocation(Location location, Crate crate) {
         FileConfiguration locations = Files.LOCATIONS.getFile();
@@ -998,7 +970,7 @@ public class CrateManager {
     /**
      * Check if a key is from a specific Crate.
      *
-     * @param item the key ItemStack you are checking.
+     * @param item  the key ItemStack you are checking.
      * @param crate the Crate you are checking.
      * @return true if it belongs to that Crate and false if it does not.
      */
