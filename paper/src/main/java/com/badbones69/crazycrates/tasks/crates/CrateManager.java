@@ -282,8 +282,10 @@ public class CrateManager {
 
         addCrate(new Crate("Menu", "Menu", CrateType.menu, new ItemStack(Material.AIR), new ArrayList<>(), null, 0, null, 0, 0, Collections.emptyList(), null));
 
-        List.of("All crate information has been loaded.", "Loading all the physical crate locations.")
-                .forEach(line -> this.plugin.debug(() -> line, Level.INFO));
+        List.of(
+                "All crate information has been loaded.",
+                "Loading all the physical crate locations."
+        ).forEach(line -> this.plugin.debug(() -> line, Level.INFO));
 
         FileConfiguration locations = FileManager.Files.LOCATIONS.getFile();
         int loadedAmount = 0;
@@ -1043,56 +1045,6 @@ public class CrateManager {
         boolean glowing = file.getBoolean("Crate.PhysicalKey.Glowing", true);
 
         return new ItemBuilder().setMaterial(id).setName(name).setLore(lore).setGlow(glowing).build();
-    }
-
-    private ItemBuilder getDisplayItem(@NotNull FileConfiguration file, String prize) {
-        String path = "Crate.Prizes." + prize + ".";
-        ItemBuilder itemBuilder = new ItemBuilder();
-        String displayItem = file.getString(path + "DisplayItem");
-        if (displayItem == null) {
-            this.plugin.getLogger().warning("The display item for the prize " + prize + " is null. Please check your config.yml file.");
-            displayItem = "RED_TERRACOTTA";
-        }
-
-        try {
-            itemBuilder.setMaterial(displayItem)
-                    .setAmount(file.getInt(path + "DisplayAmount", 1))
-                    .setName(file.getString(path + "DisplayName"))
-                    .setLore(file.getStringList(path + "Lore"))
-                    .setGlow(file.getBoolean(path + "Glowing"))
-                    .setUnbreakable(file.getBoolean(path + "Unbreakable"))
-                    .hideItemFlags(file.getBoolean(path + "HideItemFlags"))
-                    .addItemFlags(file.getStringList(path + "Flags"))
-                    .addPatterns(file.getStringList(path + "Patterns"))
-                    .setPlayerName(file.getString(path + "Player"))
-                    .setCustomItem();
-
-            if (file.contains(path + "DisplayDamage") && file.getInt(path + "DisplayDamage") >= 1) {
-                itemBuilder.setDamage(file.getInt(path + "DisplayDamage"));
-            }
-
-            if (file.contains(path + "DisplayTrim.Pattern")) {
-                itemBuilder.setTrimPattern(Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(file.getString(path + "DisplayTrim.Pattern").toLowerCase())));
-            }
-
-            if (file.contains(path + "DisplayTrim.Material")) {
-                itemBuilder.setTrimMaterial(Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(file.getString(path + "DisplayTrim.Material").toLowerCase())));
-            }
-
-            if (file.contains(path + "DisplayEnchantments")) {
-                for (String enchantmentName : file.getStringList(path + "DisplayEnchantments")) {
-                    Enchantment enchantment = MiscUtils.getEnchantment(enchantmentName.split(":")[0]);
-
-                    if (enchantment != null) {
-                        itemBuilder.addEnchantments(enchantment, Integer.parseInt(enchantmentName.split(":")[1]));
-                    }
-                }
-            }
-
-            return itemBuilder;
-        } catch (Exception e) {
-            return new ItemBuilder().setMaterial(Material.RED_TERRACOTTA).setName("&c&lERROR").setLore(Arrays.asList("&cThere is an error", "&cFor the reward: &c" + prize));
-        }
     }
 
     // Cleans the data file.
