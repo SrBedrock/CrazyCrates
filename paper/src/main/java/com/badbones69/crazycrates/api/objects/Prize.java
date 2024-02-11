@@ -15,7 +15,7 @@ import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
 
 public class Prize {
@@ -47,7 +47,7 @@ public class Prize {
 
         this.crateName = crateName;
 
-        List<?> list = section.getList("Editor-Items") == null ? section.getList("Editor-Items") : Collections.emptyList();
+        List<?> list = section.getList("Editor-Items") == null ? section.getList("Editor-Items") : List.of();
 
         if (list != null) {
             for (Object key : list) {
@@ -68,10 +68,10 @@ public class Prize {
         this.chance = section.getInt("Chance", 100);
         this.firework = section.getBoolean("Firework", false);
 
-        this.messages = section.contains("Messages") ? section.getStringList("Messages") : Collections.emptyList();
-        this.commands = section.contains("Commands") ? section.getStringList("Commands") : Collections.emptyList();
+        this.messages = section.contains("Messages") ? section.getStringList("Messages") : List.of();
+        this.commands = section.contains("Commands") ? section.getStringList("Commands") : List.of();
 
-        this.permissions = section.contains("BlackListed-Permissions") ? section.getStringList("BlackListed-Permissions") : Collections.emptyList();
+        this.permissions = section.contains("BlackListed-Permissions") ? section.getStringList("BlackListed-Permissions") : List.of();
 
         if (!this.permissions.isEmpty()) {
             this.permissions.replaceAll(String::toLowerCase);
@@ -116,6 +116,7 @@ public class Prize {
      */
     public ItemStack getDisplayItem() {
         if (this.itemStack == null) {
+            this.displayItem.setCustomItem();
             this.itemStack = this.displayItem.build();
 
             ItemMeta itemMeta = this.itemStack.getItemMeta();

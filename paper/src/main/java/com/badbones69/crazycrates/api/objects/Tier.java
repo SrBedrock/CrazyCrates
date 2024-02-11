@@ -5,7 +5,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import java.util.Collections;
 import java.util.List;
 
 public class Tier {
@@ -27,7 +26,7 @@ public class Tier {
         this.item = new ItemBuilder()
                 .setMaterial(section.getString("Item", "CHEST"))
                 .setName(this.coloredName)
-                .setLore(!lore.isEmpty() ? lore : Collections.emptyList());
+                .setLore(!lore.isEmpty() ? lore : List.of());
 
         this.chance = section.getInt("Chance");
         this.maxRange = section.getInt("MaxRange");

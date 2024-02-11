@@ -4,7 +4,6 @@ import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
-import java.util.Collections;
 import java.util.List;
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
@@ -151,7 +150,7 @@ public class ConfigKeys implements SettingsHolder {
 
     public static final Property<String> filler_name = newProperty("Settings.Filler.Name", " ");
 
-    public static final Property<List<String>> filler_lore = newListProperty("Settings.Filler.Lore", Collections.emptyList());
+    public static final Property<List<String>> filler_lore = newListProperty("Settings.Filler.Lore", List.of());
 
     public static final Property<Boolean> gui_customizer_toggle = newProperty("Settings.GUI-Customizer-Toggle", true);
 
