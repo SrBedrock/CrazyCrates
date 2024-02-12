@@ -2,7 +2,7 @@ package com.badbones69.crazycrates.commands.subs;
 
 import ch.jalu.configme.SettingsManager;
 import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.EventLogger;
+import com.badbones69.crazycrates.api.EventManager;
 import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
@@ -13,8 +13,11 @@ import dev.triumphteam.cmd.bukkit.annotation.Permission;
 import dev.triumphteam.cmd.core.BaseCommand;
 import dev.triumphteam.cmd.core.annotation.Command;
 import dev.triumphteam.cmd.core.annotation.Default;
+import dev.triumphteam.cmd.core.annotation.Description;
+import dev.triumphteam.cmd.core.annotation.Optional;
 import dev.triumphteam.cmd.core.annotation.SubCommand;
 import dev.triumphteam.cmd.core.annotation.Suggestion;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -35,9 +38,6 @@ public class BaseKeyCommand extends BaseCommand {
     private final CrateManager crateManager = this.plugin.getCrateManager();
 
     @NotNull
-    private final EventLogger eventLogger = this.plugin.getEventLogger();
-
-    @NotNull
     private final SettingsManager config = this.plugin.getConfigManager().getConfig();
 
     @Default
@@ -51,21 +51,22 @@ public class BaseKeyCommand extends BaseCommand {
 
     @SubCommand("ver")
     @Permission("crazycrates.command.player.key.others")
-    public void viewOthers(CommandSender sender, @Suggestion("online-players") Player target) {
-        if (target == sender) {
-            sender.sendMessage(Messages.same_player.getString());
-            return;
+    public void viewOthers(CommandSender sender, @Optional @Suggestion("online-players") CrateBaseCommand.CustomPlayer target) {
+        if (target == null) {
+            target = new CrateBaseCommand.CustomPlayer(sender.getName());
         }
 
+        OfflinePlayer player = target.getOfflinePlayer();
+
         HashMap<String, String> placeholders = new HashMap<>();
-        placeholders.put("%player%", target.getName());
-        placeholders.put("%crates_opened%", String.valueOf(this.plugin.getCrazyHandler().getUserManager().getTotalCratesOpened(target.getUniqueId())));
+        placeholders.put("%player%", player.getName());
+        placeholders.put("%crates_opened%", String.valueOf(this.plugin.getCrazyHandler().getUserManager().getTotalCratesOpened(player.getUniqueId())));
 
         String header = Messages.other_player_no_keys_header.getMessage(placeholders).toString();
 
-        String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", target.getName()).toString();
+        String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", player.getName()).toString();
 
-        getKeys(target, sender, header, otherPlayer);
+        getKeys(player, sender, header, otherPlayer);
     }
 
     @SubCommand("transferir")
@@ -105,7 +106,7 @@ public class BaseKeyCommand extends BaseCommand {
         HashMap<String, String> placeholders = new HashMap<>();
 
         placeholders.put("%crate%", crate.getName());
-        placeholders.put("%key%", crate.getKey().getItemMeta().getDisplayName());
+        placeholders.put("%key%", crate.getKeyName());
         placeholders.put("%amount%", String.valueOf(amount));
         placeholders.put("%player%", player.getName());
 
@@ -115,18 +116,18 @@ public class BaseKeyCommand extends BaseCommand {
 
         player.sendMessage(Messages.transfer_received_keys.getMessage(placeholders).toString());
 
-        this.eventLogger.logKeyEvent(player, sender, crate, KeyType.virtual_key, EventLogger.KeyEventType.KEY_EVENT_RECEIVED, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
+        EventManager.logKeyEvent(player, sender, crate, KeyType.virtual_key, EventManager.KeyEventType.KEY_EVENT_RECEIVED, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
     }
 
     /**
      * Get keys from player or sender or other player.
      *
-     * @param player player to get keys.
-     * @param sender sender to send message to.
-     * @param header header of the message.
+     * @param player         player to get keys.
+     * @param sender         sender to send message to.
+     * @param header         header of the message.
      * @param messageContent content of the message.
      */
-    private void getKeys(Player player, CommandSender sender, String header, String messageContent) {
+    private void getKeys(OfflinePlayer player, CommandSender sender, String header, String messageContent) {
         List<String> message = Lists.newArrayList();
 
         message.add(header);
