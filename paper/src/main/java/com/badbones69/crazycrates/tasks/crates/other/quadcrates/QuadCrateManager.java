@@ -22,12 +22,14 @@ import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 import com.badbones69.crazycrates.common.crates.quadcrates.CrateParticles;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+
+import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
 
 public class QuadCrateManager {
 
@@ -88,12 +90,12 @@ public class QuadCrateManager {
     /**
      * A constructor to build the quad crate session.
      *
-     * @param player player opening the crate.
-     * @param crate crate the player is opening.
-     * @param keyType key type the player has.
+     * @param player        player opening the crate.
+     * @param crate         crate the player is opening.
+     * @param keyType       key type the player has.
      * @param spawnLocation spawn location of the schematic.
-     * @param inHand checks the hand of the player.
-     * @param handler the structure handler instance.
+     * @param inHand        checks the hand of the player.
+     * @param handler       the structure handler instance.
      */
     public QuadCrateManager(Player player, Crate crate, KeyType keyType, Location spawnLocation, boolean inHand, StructureHandler handler) {
         this.instance = this;
@@ -110,8 +112,8 @@ public class QuadCrateManager {
         this.handler = handler;
 
         List<CrateParticles> particles = Arrays.asList(CrateParticles.values());
-        this.particle = particles.get(new Random().nextInt(particles.size()));
-        this.particleColor = getColors().get(new Random().nextInt(getColors().size()));
+        this.particle = particles.get(RANDOM.nextInt(particles.size()));
+        this.particleColor = getColors().get(RANDOM.nextInt(getColors().size()));
 
         crateSessions.add(this.instance);
     }
@@ -152,7 +154,8 @@ public class QuadCrateManager {
                 crateSessions.remove(this.instance);
                 return;
             } else {
-                if (!loc.getBlock().getType().equals(Material.AIR)) this.oldBlocks.put(loc.getBlock().getLocation(), loc.getBlock().getState());
+                if (!loc.getBlock().getType().equals(Material.AIR))
+                    this.oldBlocks.put(loc.getBlock().getLocation(), loc.getBlock().getState());
             }
         }
 
@@ -181,7 +184,8 @@ public class QuadCrateManager {
             return;
         }
 
-        if (this.plugin.getCrateManager().getHolograms() != null) this.plugin.getCrateManager().getHolograms().removeHologram(this.spawnLocation.getBlock());
+        if (this.plugin.getCrateManager().getHolograms() != null)
+            this.plugin.getCrateManager().getHolograms().removeHologram(this.spawnLocation.getBlock());
 
         // Shove other players away from the player opening the crate.
         shovePlayers.forEach(entity -> entity.getLocation().toVector().subtract(this.spawnLocation.clone().toVector()).normalize().setY(1));
@@ -241,7 +245,7 @@ public class QuadCrateManager {
                     }
                 }
             }
-        }.runTaskTimer(this.plugin, 0,1));
+        }.runTaskTimer(this.plugin, 0, 1));
 
         this.crateManager.addCrateTask(this.player, new BukkitRunnable() {
             @Override
@@ -339,9 +343,9 @@ public class QuadCrateManager {
      * Spawn particles at 2 specific locations with a customizable color.
      *
      * @param quadCrateParticle the particle to spawn.
-     * @param particleColor the color of the particle.
-     * @param location1 the first location of the particle.
-     * @param location2 the second location of the particle.
+     * @param particleColor     the color of the particle.
+     * @param location1         the first location of the particle.
+     * @param location2         the second location of the particle.
      */
     private void spawnParticles(CrateParticles quadCrateParticle, Color particleColor, Location location1, Location location2) {
         Particle particle = switch (quadCrateParticle) {

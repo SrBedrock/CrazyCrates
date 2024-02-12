@@ -10,6 +10,7 @@ import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.structure.StructureManager;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,7 +49,9 @@ public class StructureHandler {
         try {
             getBlocks(location);
 
-            getStructureManager().loadStructure(this.file).place(location.subtract(2, 0.0, 2), false, StructureRotation.NONE, Mirror.NONE, 0, 1F, new Random());
+            getStructureManager()
+                    .loadStructure(this.file)
+                    .place(location.subtract(2, 0.0, 2), false, StructureRotation.NONE, Mirror.NONE, 0, 1F, new Random());
 
             getStructureBlocks(location);
         } catch (Exception exception) {
@@ -134,8 +137,8 @@ public class StructureHandler {
     }
 
     public List<Material> getBlockBlackList() {
-        return Lists.newArrayList(Material.ACACIA_SIGN, Material.BIRCH_SIGN, Material.DARK_OAK_SIGN, Material.JUNGLE_SIGN, Material.OAK_SIGN,
+        return List.of(Material.ACACIA_SIGN, Material.BIRCH_SIGN, Material.DARK_OAK_SIGN, Material.JUNGLE_SIGN, Material.OAK_SIGN,
                 Material.SPRUCE_SIGN, Material.ACACIA_WALL_SIGN, Material.BIRCH_WALL_SIGN, Material.DARK_OAK_WALL_SIGN, Material.JUNGLE_WALL_SIGN, Material.OAK_WALL_SIGN,
-                Material.SPRUCE_WALL_SIGN,Material.STONE_BUTTON,Material.BIRCH_BUTTON,Material.ACACIA_BUTTON,Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.SPRUCE_BUTTON);
+                Material.SPRUCE_WALL_SIGN, Material.STONE_BUTTON, Material.BIRCH_BUTTON, Material.ACACIA_BUTTON, Material.DARK_OAK_BUTTON, Material.JUNGLE_BUTTON, Material.SPRUCE_BUTTON);
     }
 }

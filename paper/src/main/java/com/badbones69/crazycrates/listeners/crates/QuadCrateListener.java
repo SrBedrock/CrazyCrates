@@ -35,6 +35,8 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
+import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
+
 public class QuadCrateListener implements Listener {
 
     @NotNull
@@ -88,7 +90,7 @@ public class QuadCrateListener implements Listener {
                 ItemBuilder itemBuilder = ItemBuilder.convertItemStack(display);
 
                 // Makes sure items do not merge.
-                itemBuilder.addLore(new Random().nextInt(Integer.MAX_VALUE) + "");
+                itemBuilder.addLore(RANDOM.nextInt(Integer.MAX_VALUE) + "");
 
                 // Builds the item.
                 ItemStack item = itemBuilder.build();

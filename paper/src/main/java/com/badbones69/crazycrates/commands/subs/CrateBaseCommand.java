@@ -40,13 +40,11 @@ import dev.triumphteam.cmd.bukkit.annotation.Permission;
 import dev.triumphteam.cmd.core.BaseCommand;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 import com.badbones69.crazycrates.api.builders.types.CrateAdminMenu;
@@ -55,6 +53,7 @@ import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.utils.FileUtils;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -366,7 +365,7 @@ public class CrateBaseCommand extends BaseCommand {
         }
 
         this.plugin.getCrazyHandler().getInventoryManager().addViewer(player);
-        this.plugin.getCrazyHandler().getInventoryManager().openNewCratePreview(player, crate,crate.getCrateType() == CrateType.cosmic || crate.getCrateType() == CrateType.casino);
+        this.plugin.getCrazyHandler().getInventoryManager().openNewCratePreview(player, crate, crate.getCrateType() == CrateType.cosmic || crate.getCrateType() == CrateType.casino);
     }
 
     @SubCommand("open-others")
@@ -494,7 +493,8 @@ public class CrateBaseCommand extends BaseCommand {
             PrizeManager.givePrize(player, prize, crate);
             this.plugin.getServer().getPluginManager().callEvent(new PlayerPrizeEvent(player, crate, crate.getName(), prize));
 
-            if (prize.useFireworks()) MiscUtils.spawnFirework(((Player) sender).getLocation().clone().add(.5, 1, .5), null);
+            if (prize.useFireworks())
+                MiscUtils.spawnFirework(((Player) sender).getLocation().clone().add(.5, 1, .5), null);
 
             keysUsed++;
         }
@@ -728,12 +728,12 @@ public class CrateBaseCommand extends BaseCommand {
     /**
      * Take keys from a player whether offline or not.
      *
-     * @param sender the sender of the command.
-     * @param player the target of the command.
+     * @param sender        the sender of the command.
+     * @param player        the target of the command.
      * @param offlinePlayer the other target of the command.
-     * @param crate the crate.
-     * @param type the type of key.
-     * @param amount the amount of keys.
+     * @param crate         the crate.
+     * @param type          the type of key.
+     * @param amount        the amount of keys.
      */
     private void takeKey(CommandSender sender, @Nullable Player player, OfflinePlayer offlinePlayer, Crate crate, KeyType type, int amount) {
         if (player != null) {

@@ -21,6 +21,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MiscUtils {
 
     private static final CrazyCrates plugin = CrazyCrates.get();
+    public static final Random RANDOM = new Random();
 
     public static void sendCommand(String command) {
         Server server = plugin.getServer();
@@ -50,7 +52,8 @@ public class MiscUtils {
                 .trail(false)
                 .flicker(false);
 
-        if (color != null) effect.withColor(color); else effect.withColor(Color.RED).withColor(Color.AQUA).withColor(Color.ORANGE).withColor(Color.YELLOW);
+        if (color != null) effect.withColor(color);
+        else effect.withColor(Color.RED).withColor(Color.AQUA).withColor(Color.ORANGE).withColor(Color.YELLOW);
 
         fireworkMeta.addEffects(effect.build());
         fireworkMeta.setPower(0);
@@ -161,7 +164,8 @@ public class MiscUtils {
             ItemStack inventoryItem = inventory[i];
 
             if (inventoryItem != null) {
-                if ((getAmount && item.equals(inventoryItem)) || (!getAmount && item.isSimilar(inventoryItem))) return i;
+                if ((getAmount && item.equals(inventoryItem)) || (!getAmount && item.isSimilar(inventoryItem)))
+                    return i;
             }
         }
 
@@ -189,7 +193,7 @@ public class MiscUtils {
     }
 
     public static int randomNumber(int min, int max) {
-        return min + new Random().nextInt(max - min);
+        return min + RANDOM.nextInt(max - min);
     }
 
     public static Enchantment getEnchantment(String enchantmentName) {
@@ -206,7 +210,9 @@ public class MiscUtils {
                         stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName))) {
                     return enchantment;
                 }
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+                // Ignored
+            }
         }
 
         return null;

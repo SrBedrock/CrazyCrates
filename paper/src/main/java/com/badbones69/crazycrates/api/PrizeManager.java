@@ -16,12 +16,14 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
+
 import java.util.HashMap;
-import java.util.Random;
+
+import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
 import static java.util.regex.Matcher.quoteReplacement;
 
 public class PrizeManager {
-    
+
     @NotNull
     private static final CrazyCrates plugin = CrazyCrates.get();
 
@@ -29,12 +31,13 @@ public class PrizeManager {
      * Gets the prize for the player.
      *
      * @param player who the prize is for.
-     * @param crate the player is opening.
-     * @param prize the player is being given.
+     * @param crate  the player is opening.
+     * @param prize  the player is being given.
      */
     public static void givePrize(Player player, Prize prize, Crate crate) {
         if (prize == null) {
-            if (plugin.isLogging()) plugin.getLogger().warning("No prize was found when giving " + player.getName() + " a prize.");
+            if (plugin.isLogging())
+                plugin.getLogger().warning("No prize was found when giving " + player.getName() + " a prize.");
             return;
         }
 
@@ -99,7 +102,8 @@ public class PrizeManager {
                 command = command.substring(0, command.length() - 1);
             }
 
-            if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled()) command = PlaceholderAPI.setPlaceholders(player, command);
+            if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled())
+                command = PlaceholderAPI.setPlaceholders(player, command);
 
             String name = prize.getDisplayItemBuilder().getName() == null || prize.getDisplayItemBuilder().getName().isEmpty() ? MsgUtils.color(WordUtils.capitalizeFully(prize.getDisplayItemBuilder().getMaterial().getKey().getKey().replaceAll("_", " "))) : prize.getDisplayItemBuilder().getName();
 
@@ -147,8 +151,8 @@ public class PrizeManager {
      * Gets the prize for the player.
      *
      * @param player who the prize is for.
-     * @param crate the player is opening.
-     * @param prize the player is being given.
+     * @param crate  the player is opening.
+     * @param prize  the player is being given.
      */
     public static void givePrize(Player player, Crate crate, Prize prize) {
         if (prize != null) {
@@ -177,7 +181,7 @@ public class PrizeManager {
             for (int stopLoop = 0; stopLoop <= 100; stopLoop++) {
                 for (Tier tier : crate.getTiers()) {
                     int chance = tier.getChance();
-                    int num = new Random().nextInt(tier.getMaxRange());
+                    int num = RANDOM.nextInt(tier.getMaxRange());
 
                     if (num >= 1 && num <= chance) {
                         return tier;

@@ -16,6 +16,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 import java.util.Random;
 
+import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
+
 public class CasinoCrate extends CrateBuilder {
 
     public CasinoCrate(Crate crate, Player player, int size) {
@@ -127,17 +129,17 @@ public class CasinoCrate extends CrateBuilder {
             String row_tres = section.getString("types.row-3");
 
             if (isRandom) {
-                setItem(2, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
-                setItem(11, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
-                setItem(20, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
+                setItem(2, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
+                setItem(11, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
+                setItem(20, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
 
-                setItem(4, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
-                setItem(13, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
-                setItem(22, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
+                setItem(4, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
+                setItem(13, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
+                setItem(22, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
 
-                setItem(6, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
-                setItem(15, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
-                setItem(24, getDisplayItem(getCrate().getTiers().get(new Random().nextInt(getCrate().getTiers().size()))));
+                setItem(6, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
+                setItem(15, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
+                setItem(24, getDisplayItem(getCrate().getTiers().get(RANDOM.nextInt(getCrate().getTiers().size()))));
 
                 return;
             }
