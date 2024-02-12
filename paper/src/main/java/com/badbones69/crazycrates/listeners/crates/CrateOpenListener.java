@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import com.badbones69.crazycrates.CrazyHandler;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
+
 import java.util.List;
 
 public class CrateOpenListener implements Listener {
@@ -33,16 +34,14 @@ public class CrateOpenListener implements Listener {
         Player player = event.getPlayer();
         Crate crate = event.getCrate();
 
-        if (crate.getCrateType() != CrateType.menu) {
-            if (!crate.canWinPrizes(player)) {
-                player.sendMessage(Messages.no_prizes_found.getString());
-                this.crateManager.removePlayerFromOpeningList(player);
-                this.crateManager.removePlayerKeyType(player);
+        if (crate.getCrateType() != CrateType.menu && (!crate.canWinPrizes(player))) {
+            player.sendMessage(Messages.no_prizes_found.getString());
+            this.crateManager.removePlayerFromOpeningList(player);
+            this.crateManager.removePlayerKeyType(player);
 
-                event.setCancelled(true);
+            event.setCancelled(true);
 
-                return;
-            }
+            return;
         }
 
         if (!player.hasPermission("crazycrates.open." + crate.getName()) || !player.hasPermission("crazycrates.open." + crate.getName().toLowerCase())) {
@@ -56,18 +55,20 @@ public class CrateOpenListener implements Listener {
         }
 
         this.crateManager.addPlayerToOpeningList(player, crate);
-        if (crate.getCrateType() != CrateType.cosmic) this.crazyHandler.getUserManager().addOpenedCrate(player.getUniqueId(), crate.getName());
+
+        if (crate.getCrateType() != CrateType.cosmic && crate.getCrateType() != CrateType.quick_crate) {
+            this.plugin.getLogger().info("CrateOpenListener#onCrateOpen - Player " + player.getName() + " is opening a " + crate.getName() + " crate.");
+            this.crazyHandler.getUserManager().addOpenedCrate(player.getUniqueId(), crate.getName());
+        }
 
         FileConfiguration configuration = event.getConfiguration();
 
         String broadcastMessage = configuration.getString("Crate.BroadCast", "");
         boolean broadcastToggle = configuration.contains("Crate.OpeningBroadCast") && configuration.getBoolean("Crate.OpeningBroadCast");
 
-        if (broadcastToggle) {
-            if (!broadcastMessage.isBlank()) {
-                //noinspection deprecation
-                this.plugin.getServer().broadcastMessage(MsgUtils.color(broadcastMessage.replaceAll("%prefix%", MsgUtils.getPrefix())).replaceAll("%player%", player.getName()));
-            }
+        if (broadcastToggle && (!broadcastMessage.isBlank())) {
+            //noinspection deprecation
+            this.plugin.getServer().broadcastMessage(MsgUtils.color(broadcastMessage.replaceAll("%prefix%", MsgUtils.getPrefix())).replaceAll("%player%", player.getName()));
         }
 
         boolean commandToggle = configuration.contains("Crate.opening-command") && configuration.getBoolean("Crate.opening-command.toggle");

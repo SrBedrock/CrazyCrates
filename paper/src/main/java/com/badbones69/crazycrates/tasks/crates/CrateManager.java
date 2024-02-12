@@ -464,7 +464,6 @@ public class CrateManager {
             default -> {
                 crateBuilder = new CsgoCrate(crate, player, 27);
 
-
                 List.of(
                         crate.getCrateInventoryName() + " has an invalid crate type. Your Value: " + crate.getFile().getString("Crate.CrateType"),
                         "We will use " + CrateType.csgo.getName() + " until you change the crate type.",

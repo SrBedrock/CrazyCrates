@@ -16,6 +16,8 @@ import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.api.builders.CrateBuilder;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
+import us.crazycrew.crazycrates.api.users.UserManager;
+
 import java.util.logging.Level;
 
 public class QuickCrate extends CrateBuilder {
@@ -26,39 +28,39 @@ public class QuickCrate extends CrateBuilder {
 
     @Override
     public void open(KeyType type, boolean checkHand) {
-        // If the crate type is not fire cracker.
-        if (!isFireCracker()) {
-            // If the crate event failed.
-            if (isCrateEventValid(type, checkHand)) {
-                return;
-            }
+        // If the crate type is not fire cracker then check if the crate event is valid.
+        if (!isFireCracker() && (isCrateEventValid(type, checkHand))) {
+            return;
         }
 
         this.plugin.getCrateManager().addCrateInUse(getPlayer(), getLocation());
 
+        UserManager userManager = this.plugin.getCrazyHandler().getUserManager();
         int keys = switch (type) {
-            case virtual_key -> this.plugin.getCrazyHandler().getUserManager().getVirtualKeys(getPlayer().getUniqueId(), getCrate().getName());
-            case physical_key -> this.plugin.getCrazyHandler().getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), getCrate().getName());
+            case virtual_key -> userManager.getVirtualKeys(getPlayer().getUniqueId(), getCrate().getName());
+            case physical_key -> userManager.getPhysicalKeys(getPlayer().getUniqueId(), getCrate().getName());
             default -> 1;
         };
 
         if (getPlayer().isSneaking() && keys > 1) {
-            int used = 0;
+            int usedKey = 0;
 
-            for (;keys > 0; keys--) {
+            for (; keys > 0; keys--) {
                 if (MiscUtils.isInventoryFull(getPlayer())) break;
-                if (used >= getCrate().getMaxMassOpen()) break;
+                if (usedKey >= getCrate().getMaxMassOpen()) break;
 
                 Prize prize = getCrate().pickPrize(getPlayer());
                 this.plugin.getCrazyHandler().getPrizeManager().givePrize(getPlayer(), prize, getCrate());
                 this.plugin.getServer().getPluginManager().callEvent(new PlayerPrizeEvent(getPlayer(), getCrate(), getCrate().getName(), prize));
 
-                if (prize.useFireworks()) MiscUtils.spawnFirework(getLocation().clone().add(.5, 1, .5), null);
+                if (prize.useFireworks()) {
+                    MiscUtils.spawnFirework(getLocation().clone().add(.5, 1, .5), null);
+                }
 
-                used++;
+                usedKey++;
             }
 
-            boolean keyCheck = this.plugin.getCrazyHandler().getUserManager().takeKeys(used, getPlayer().getUniqueId(), getCrate().getName(), type, false);
+            boolean keyCheck = userManager.takeKeys(usedKey, getPlayer().getUniqueId(), getCrate().getName(), type, false);
 
             if (!keyCheck) {
                 // Send the message about failing to take the key.
@@ -75,7 +77,7 @@ public class QuickCrate extends CrateBuilder {
             return;
         }
 
-        boolean keyCheck = this.plugin.getCrazyHandler().getUserManager().takeKeys(1, getPlayer().getUniqueId(), getCrate().getName(), type, true);
+        boolean keyCheck = userManager.takeKeys(1, getPlayer().getUniqueId(), getCrate().getName(), type, true);
 
         if (!keyCheck) {
             // Send the message about failing to take the key.
@@ -105,7 +107,7 @@ public class QuickCrate extends CrateBuilder {
             PersistentKeys key = PersistentKeys.crate_prize;
 
             //noinspection unchecked
-            itemMeta.getPersistentDataContainer().set(key.getNamespacedKey(), key.getType(), 1);
+            itemMeta.getPersistentDataContainer().set(key.getNamespacedKey(), key.getType(), "1");
 
             // Set the item meta.
             display.setItemMeta(itemMeta);
@@ -160,6 +162,7 @@ public class QuickCrate extends CrateBuilder {
             }
         }.runTaskLater(this.plugin, 40));
     }
+
     @Override
     public void run() {
 
