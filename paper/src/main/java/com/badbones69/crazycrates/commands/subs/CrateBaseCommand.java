@@ -422,7 +422,9 @@ public class CrateBaseCommand extends BaseCommand {
             keysUsed++;
         }
 
-        if (crate.getCrateType() != CrateType.cosmic) userManager.addOpenedCrate(player.getUniqueId(), keysUsed, crate.getName());
+        if (crate.getCrateType() != CrateType.cosmic) {
+            userManager.addOpenedCrate(player.getUniqueId(), keysUsed, crate.getName());
+        }
 
         if (!this.plugin.getCrazyHandler().getUserManager().takeKeys(keysUsed, player.getUniqueId(), crate.getName(), type, false)) {
             MiscUtils.failedToTakeKey(player, crate);
@@ -527,7 +529,7 @@ public class CrateBaseCommand extends BaseCommand {
 
     @SubCommand("give")
     @Permission(value = "crazycrates.command.admin.givekey", def = PermissionDefault.OP)
-    public void onAdminCrateGive(CommandSender sender, @Suggestion("key-types") String keyType, @Suggestion("crates") String crateName, @Suggestion("numbers") int amount, @Suggestion("online-players") CustomPlayer target) {
+    public void onAdminCrateGive(CommandSender sender, @Suggestion("key-types") String keyType, @Suggestion("crates") String crateName, @Suggestion("numbers") int amount, @Optional @Suggestion("online-players") CustomPlayer target) {
         KeyType type = KeyType.getFromName(keyType);
         Crate crate = this.crateManager.getCrateFromName(crateName);
 
@@ -544,6 +546,10 @@ public class CrateBaseCommand extends BaseCommand {
         if (amount <= 0) {
             sender.sendMessage(Messages.not_a_number.getMessage("%number%", String.valueOf(amount)).toString());
             return;
+        }
+
+        if (target == null) {
+            target = new CustomPlayer(sender.getName());
         }
 
         if (target.getPlayer() != null) {
@@ -607,7 +613,7 @@ public class CrateBaseCommand extends BaseCommand {
 
     @SubCommand("take")
     @Permission(value = "crazycrates.command.admin.takekey", def = PermissionDefault.OP)
-    public void onAdminCrateTake(CommandSender sender, @Suggestion("key-types") String keyType, @Suggestion("crates") String crateName, @Suggestion("numbers") int amount, @Suggestion("online-players") CustomPlayer target) {
+    public void onAdminCrateTake(CommandSender sender, @Suggestion("key-types") String keyType, @Suggestion("crates") String crateName, @Suggestion("numbers") int amount, @Optional @Suggestion("online-players") CustomPlayer target) {
         KeyType type = KeyType.getFromName(keyType);
 
         Crate crate = this.crateManager.getCrateFromName(crateName);
@@ -625,6 +631,10 @@ public class CrateBaseCommand extends BaseCommand {
         if (amount <= 0) {
             sender.sendMessage(Messages.not_a_number.getMessage("%number%", String.valueOf(amount)).toString());
             return;
+        }
+
+        if (target == null) {
+            target = new CustomPlayer(sender.getName());
         }
 
         if (target.getPlayer() != null) {
