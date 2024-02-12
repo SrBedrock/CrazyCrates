@@ -11,7 +11,6 @@ import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public enum Messages {

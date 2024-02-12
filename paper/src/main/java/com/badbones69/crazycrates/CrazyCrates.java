@@ -5,7 +5,11 @@ import com.badbones69.crazycrates.api.enums.Permissions;
 import com.badbones69.crazycrates.listeners.BrokeLocationsListener;
 import com.badbones69.crazycrates.listeners.CrateControlListener;
 import com.badbones69.crazycrates.listeners.MiscListener;
-import com.badbones69.crazycrates.listeners.crates.*;
+import com.badbones69.crazycrates.listeners.crates.CosmicCrateListener;
+import com.badbones69.crazycrates.listeners.crates.CrateOpenListener;
+import com.badbones69.crazycrates.listeners.crates.MobileCrateListener;
+import com.badbones69.crazycrates.listeners.crates.QuadCrateListener;
+import com.badbones69.crazycrates.listeners.crates.WarCrateListener;
 import com.badbones69.crazycrates.listeners.menus.CrateAdminListener;
 import com.badbones69.crazycrates.listeners.menus.CrateMenuListener;
 import com.badbones69.crazycrates.listeners.menus.CratePreviewListener;
@@ -25,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.support.placeholders.PlaceholderAPISupport;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
+
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.function.Supplier;
@@ -109,7 +114,8 @@ public class CrazyCrates extends JavaPlugin {
         this.crazyHandler.getCrateManager().purgeRewards();
 
         // Purge holograms.
-        if (this.crazyHandler.getCrateManager().getHolograms() != null) this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
+        if (this.crazyHandler.getCrateManager().getHolograms() != null)
+            this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
 
         // Unload the plugin.
         this.crazyHandler.unload();

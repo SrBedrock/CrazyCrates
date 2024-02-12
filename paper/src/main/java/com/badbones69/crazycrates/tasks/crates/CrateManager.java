@@ -6,9 +6,17 @@ import com.badbones69.crazycrates.api.FileManager;
 import com.badbones69.crazycrates.api.FileManager.Files;
 import com.badbones69.crazycrates.api.objects.other.BrokeLocation;
 import com.badbones69.crazycrates.api.ChestManager;
-import com.badbones69.crazycrates.tasks.crates.types.*;
 import com.badbones69.crazycrates.tasks.crates.types.CasinoCrate;
+import com.badbones69.crazycrates.tasks.crates.types.CosmicCrate;
+import com.badbones69.crazycrates.tasks.crates.types.CrateOnTheGo;
 import com.badbones69.crazycrates.tasks.crates.types.CsgoCrate;
+import com.badbones69.crazycrates.tasks.crates.types.FireCrackerCrate;
+import com.badbones69.crazycrates.tasks.crates.types.QuadCrate;
+import com.badbones69.crazycrates.tasks.crates.types.QuickCrate;
+import com.badbones69.crazycrates.tasks.crates.types.RouletteCrate;
+import com.badbones69.crazycrates.tasks.crates.types.WarCrate;
+import com.badbones69.crazycrates.tasks.crates.types.WheelCrate;
+import com.badbones69.crazycrates.tasks.crates.types.WonderCrate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -1210,11 +1218,8 @@ public class CrateManager {
         removeCrateInUse(player);
         removePlayerFromOpeningList(player);
 
-        if (!useQuickCrateAgain) {
-            HologramHandler handler = this.plugin.getCrateManager().getHolograms();
-            if (handler != null && crate != null && crate.getHologram().isEnabled() && crate.getHologram() == null) {
-                handler.createHologram(location.getBlock(), crate);
-            }
+        if (!useQuickCrateAgain && holograms != null && crate != null && crate.getHologram().isEnabled() && crate.getHologram() == null) {
+            holograms.createHologram(location.getBlock(), crate);
         }
     }
 
