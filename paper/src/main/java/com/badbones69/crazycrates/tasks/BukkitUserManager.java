@@ -548,7 +548,6 @@ public class BukkitUserManager extends UserManager {
 
     @Override
     public void addOpenedCrate(UUID uuid, int amount, String crateName) {
-        plugin.getLogger().info("BukkitUserManager#addopenedCrate - Adding " + amount + " opened crate for " + uuid + " and " + crateName + ".");
         if (isCrateInvalid(crateName)) {
             if (this.plugin.isLogging()) this.plugin.getLogger().warning("Crate " + crateName + " doesn't exist.");
             return;
@@ -579,7 +578,6 @@ public class BukkitUserManager extends UserManager {
 
     @Override
     public void addOpenedCrate(UUID uuid, String crateName) {
-        this.plugin.getLogger().info("BukkitUserManager#addopenedCrate - Adding opened crate for " + uuid + " and " + crateName + ".");
         if (isCrateInvalid(crateName)) {
             if (this.plugin.isLogging()) this.plugin.getLogger().warning("Crate " + crateName + " doesn't exist.");
             return;

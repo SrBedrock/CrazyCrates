@@ -57,7 +57,6 @@ public class CrateOpenListener implements Listener {
         this.crateManager.addPlayerToOpeningList(player, crate);
 
         if (crate.getCrateType() != CrateType.cosmic && crate.getCrateType() != CrateType.quick_crate) {
-            this.plugin.getLogger().info("CrateOpenListener#onCrateOpen - Player " + player.getName() + " is opening a " + crate.getName() + " crate.");
             this.crazyHandler.getUserManager().addOpenedCrate(player.getUniqueId(), crate.getName());
         }
 
