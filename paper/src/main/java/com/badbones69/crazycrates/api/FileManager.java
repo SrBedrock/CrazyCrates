@@ -31,11 +31,8 @@ public class FileManager {
     /**
      * Sets up the plugin and loads all necessary files.
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public FileManager setup() {
-        if (!this.plugin.getDataFolder().exists()) {
-            this.plugin.getDataFolder().mkdirs();
-        }
+    public void setup() {
+        if (!this.plugin.getDataFolder().exists()) this.plugin.getDataFolder().mkdirs();
 
         this.files.clear();
         this.customFiles.clear();
@@ -50,6 +47,7 @@ public class FileManager {
             if (!newFile.exists()) {
                 try (InputStream jarFile = getClass().getResourceAsStream("/" + file.getFileJar())) {
                     File serverFile = new File(this.plugin.getDataFolder(), "/" + file.getFileLocation());
+
                     copyFile(jarFile, serverFile);
                 } catch (Exception exception) {
                     this.plugin.getLogger().log(Level.WARNING, "Failed to load file: " + file.getFileName(), exception);
@@ -58,10 +56,14 @@ public class FileManager {
             }
 
             this.files.put(file, newFile);
-            if (file.getFileName().endsWith(".yml"))
-                this.configurations.put(file, YamlConfiguration.loadConfiguration(newFile));
 
-            if (this.plugin.isLogging()) this.plugin.getLogger().info("Successfully loaded " + file.getFileName());
+            if (file.getFileName().endsWith(".yml")) {
+                this.configurations.put(file, YamlConfiguration.loadConfiguration(newFile));
+            }
+
+            if (this.plugin.isLogging()) {
+                this.plugin.getLogger().info("Successfully loaded " + file.getFileName());
+            }
         }
 
         // Starts to load all the custom files.
@@ -101,6 +103,7 @@ public class FileManager {
 
                             try (InputStream jarFile = getClass().getResourceAsStream((this.jarHomeFolders.getOrDefault(fileName, homeFolder)) + "/" + fileName)) {
                                 File serverFile = new File(this.plugin.getDataFolder(), homeFolder + "/" + fileName);
+
                                 copyFile(jarFile, serverFile);
 
                                 if (fileName.toLowerCase().endsWith(".yml")) {
@@ -119,7 +122,6 @@ public class FileManager {
             this.plugin.debug(() -> "Finished loading custom files.", Level.INFO);
         }
 
-        return this;
     }
 
     /**
@@ -129,6 +131,7 @@ public class FileManager {
      */
     public FileManager registerCustomFilesFolder(String homeFolder) {
         this.homeFolders.add(homeFolder);
+
         return this;
     }
 
@@ -139,6 +142,7 @@ public class FileManager {
      */
     public FileManager unregisterCustomFilesFolder(String homeFolder) {
         this.homeFolders.remove(homeFolder);
+
         return this;
     }
 
@@ -150,6 +154,7 @@ public class FileManager {
      */
     public FileManager registerDefaultGenerateFiles(String fileName, String homeFolder) {
         this.autoGenerateFiles.put(fileName, homeFolder);
+
         return this;
     }
 
@@ -163,6 +168,7 @@ public class FileManager {
     public FileManager registerDefaultGenerateFiles(String fileName, String homeFolder, String jarHomeFolder) {
         this.autoGenerateFiles.put(fileName, homeFolder);
         this.jarHomeFolders.put(fileName, jarHomeFolder);
+
         return this;
     }
 
@@ -174,6 +180,7 @@ public class FileManager {
     public FileManager unregisterDefaultGenerateFiles(String fileName) {
         this.autoGenerateFiles.remove(fileName);
         this.jarHomeFolders.remove(fileName);
+
         return this;
     }
 

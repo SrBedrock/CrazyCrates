@@ -1,6 +1,7 @@
 package com.badbones69.crazycrates.api.objects;
 
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
+import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -47,7 +48,7 @@ public class Prize {
 
         this.crateName = crateName;
 
-        List<?> list = section.getList("Editor-Items") == null ? section.getList("Editor-Items") : List.of();
+        List<?> list = section.getList("Editor-Items");
 
         if (list != null) {
             for (Object key : list) {

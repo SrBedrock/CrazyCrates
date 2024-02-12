@@ -1,9 +1,9 @@
 package com.badbones69.crazycrates.listeners;
 
 import ch.jalu.configme.SettingsManager;
-import com.badbones69.crazycrates.api.events.PhysicalCrateKeyCheckEvent;
+import com.badbones69.crazycrates.api.events.KeyCheckEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.CrateLocation;
+import com.badbones69.crazycrates.api.objects.other.CrateLocation;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -122,14 +122,14 @@ public class CrateControlListener implements Listener {
                     return;
                 }
 
-                PhysicalCrateKeyCheckEvent event = new PhysicalCrateKeyCheckEvent(player, crateLocation);
+                KeyCheckEvent event = new KeyCheckEvent(player, crateLocation);
                 player.getServer().getPluginManager().callEvent(event);
 
                 if (!event.isCancelled()) {
                     boolean hasKey = false;
                     boolean isPhysical = false;
                     boolean useQuickCrateAgain = false;
-                    String keyName = crate.getKey().getItemMeta().getDisplayName();
+                    String keyName = crate.getKeyName();
 
                     int requiredKeys = this.plugin.getCrateManager().getCrateFromName(crate.getName()).getRequiredKeys();
 

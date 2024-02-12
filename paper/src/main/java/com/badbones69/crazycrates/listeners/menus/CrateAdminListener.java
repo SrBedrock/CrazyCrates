@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +18,6 @@ import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import com.badbones69.crazycrates.api.builders.types.CrateAdminMenu;
 import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.modules.ModuleHandler;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
 import java.util.HashMap;
 
 public class CrateAdminListener extends ModuleHandler {
@@ -36,11 +34,7 @@ public class CrateAdminListener extends ModuleHandler {
 
         Inventory inventory = event.getInventory();
 
-        InventoryHolder holder = inventory.getHolder();
-
-        if (!(holder instanceof CrateAdminMenu)) {
-            return;
-        }
+        if (!(inventory.getHolder() instanceof CrateAdminMenu)) return;
 
         event.setCancelled(true);
 
@@ -52,7 +46,7 @@ public class CrateAdminListener extends ModuleHandler {
 
         if (event.getClickedInventory() != topInventory) return;
 
-        if (!MiscUtils.permCheck(player, Permissions.CRAZY_CRATES_ADMIN_ACCESS, false)) {
+        if (!Permissions.CRAZYCRATES_ACCESS.hasPermission(player)) {
             player.closeInventory(InventoryCloseEvent.Reason.CANT_USE);
             player.sendMessage(Messages.no_permission.getString());
             return;
@@ -83,7 +77,7 @@ public class CrateAdminListener extends ModuleHandler {
                 HashMap<String, String> placeholders = new HashMap<>();
 
                 placeholders.put("%amount%", String.valueOf(1));
-                placeholders.put("%key%", crate.getKey().getItemMeta().getDisplayName());
+                placeholders.put("%key%", crate.getKeyName());
 
                 player.sendMessage(Messages.obtaining_keys.getMessage(placeholders).toString());
             }

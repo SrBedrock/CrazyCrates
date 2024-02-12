@@ -1,4 +1,4 @@
-package com.badbones69.crazycrates.commands.subs.player;
+package com.badbones69.crazycrates.commands.subs;
 
 import ch.jalu.configme.SettingsManager;
 import com.badbones69.crazycrates.CrazyCrates;
@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Command(value = "chaves", alias = {"chave"})
+@Description("Views the amount of keys you/others have.")
 public class BaseKeyCommand extends BaseCommand {
 
     @NotNull

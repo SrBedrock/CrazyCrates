@@ -3,6 +3,8 @@ package com.badbones69.crazycrates.tasks.crates.types;
 import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.Prize;
+import com.badbones69.crazycrates.api.ChestManager;
+import com.badbones69.crazycrates.api.PrizeManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -50,7 +52,8 @@ public class QuickCrate extends CrateBuilder {
                 if (usedKey >= getCrate().getMaxMassOpen()) break;
 
                 Prize prize = getCrate().pickPrize(getPlayer());
-                this.plugin.getCrazyHandler().getPrizeManager().givePrize(getPlayer(), prize, getCrate());
+                PrizeManager.givePrize(getPlayer(), prize, getCrate());
+
                 this.plugin.getServer().getPluginManager().callEvent(new PlayerPrizeEvent(getPlayer(), getCrate(), getCrate().getName(), prize));
 
                 if (prize.useFireworks()) {
@@ -72,7 +75,7 @@ public class QuickCrate extends CrateBuilder {
                 return;
             }
 
-            plugin.getCrateManager().endQuickCrate(getPlayer(), getLocation(), getCrate(), true);
+            this.plugin.getCrateManager().endQuickCrate(getPlayer(), getLocation(), getCrate(), true);
 
             return;
         }
@@ -90,7 +93,8 @@ public class QuickCrate extends CrateBuilder {
         }
 
         Prize prize = getCrate().pickPrize(getPlayer(), getLocation().clone().add(.5, 1.3, .5));
-        this.plugin.getCrazyHandler().getPrizeManager().givePrize(getPlayer(), prize, getCrate());
+        PrizeManager.givePrize(getPlayer(), prize, getCrate());
+
         this.plugin.getServer().getPluginManager().callEvent(new PlayerPrizeEvent(getPlayer(), getCrate(), getCrate().getName(), prize));
 
         boolean showQuickCrateItem = this.plugin.getConfigManager().getConfig().getProperty(ConfigKeys.show_quickcrate_item);
@@ -132,7 +136,7 @@ public class QuickCrate extends CrateBuilder {
             this.plugin.getCrateManager().addReward(getPlayer(), reward);
 
             // Always open the chest.
-            this.plugin.getCrazyHandler().getChestManager().openChest(getLocation().getBlock(), true);
+            ChestManager.openChest(getLocation().getBlock(), true);
 
             // Always spawn fireworks if enabled.
             if (prize.useFireworks()) MiscUtils.spawnFirework(getLocation().clone().add(0.5, 1, .5), null);
@@ -149,7 +153,7 @@ public class QuickCrate extends CrateBuilder {
         }
 
         // Always open the chest.
-        this.plugin.getCrazyHandler().getChestManager().openChest(getLocation().getBlock(), true);
+        ChestManager.openChest(getLocation().getBlock(), true);
 
         // Always spawn fireworks if enabled.
         if (prize.useFireworks()) MiscUtils.spawnFirework(getLocation().clone().add(0.5, 1, .5), null);

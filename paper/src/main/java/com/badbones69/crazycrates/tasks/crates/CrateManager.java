@@ -4,8 +4,8 @@ import com.Zrips.CMI.Modules.ModuleHandling.CMIModule;
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.FileManager;
 import com.badbones69.crazycrates.api.FileManager.Files;
-import com.badbones69.crazycrates.api.objects.BrokeLocation;
-import com.badbones69.crazycrates.support.holograms.HologramHandler;
+import com.badbones69.crazycrates.api.objects.other.BrokeLocation;
+import com.badbones69.crazycrates.api.ChestManager;
 import com.badbones69.crazycrates.tasks.crates.types.*;
 import com.badbones69.crazycrates.tasks.crates.types.CasinoCrate;
 import com.badbones69.crazycrates.tasks.crates.types.CsgoCrate;
@@ -31,9 +31,10 @@ import org.bukkit.scheduler.BukkitTask;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.api.builders.types.CrateMainMenu;
 import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.support.holograms.HologramManager;
 import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.CrateLocation;
-import com.badbones69.crazycrates.api.objects.ItemBuilder;
+import com.badbones69.crazycrates.api.objects.other.CrateLocation;
+import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.objects.Prize;
 import com.badbones69.crazycrates.api.objects.Tier;
 import com.badbones69.crazycrates.common.crates.CrateHologram;
@@ -73,7 +74,7 @@ public class CrateManager {
     private final List<String> brokeCrates = new ArrayList<>();
     private final List<Crate> crates = new ArrayList<>();
 
-    private HologramHandler holograms;
+    private HologramManager holograms;
 
     private boolean giveNewPlayersKeys;
 
@@ -258,7 +259,7 @@ public class CrateManager {
                 List<String> prizeMessage = file.contains("Crate.Prize-Message") ? file.getStringList("Crate.Prize-Message") : List.of();
 
                 CrateHologram holo = new CrateHologram(file.getBoolean("Crate.Hologram.Toggle"), file.getDouble("Crate.Hologram.Height", 0.0), file.getInt("Crate.Hologram.Range", 8), file.getStringList("Crate.Hologram.Message"));
-                addCrate(new Crate(crateName, previewName, crateType, getKey(file), prizes, file, newPlayersKeys, tiers, maxMassOpen, requiredKeys, prizeMessage, holo));
+                addCrate(new Crate(crateName, previewName, crateType, getKey(file), file.getString("Crate.PhysicalKey.Name"), prizes, file, newPlayersKeys, tiers, maxMassOpen, requiredKeys, prizeMessage, holo));
 
                 Permission doesExist = this.plugin.getServer().getPluginManager().getPermission("crazycrates.open." + crateName);
 
@@ -277,7 +278,7 @@ public class CrateManager {
             }
         }
 
-        addCrate(new Crate("Menu", "Menu", CrateType.menu, new ItemStack(Material.AIR), new ArrayList<>(), null, 0, null, 0, 0, List.of(), null));
+        addCrate(new Crate("Menu", "Menu", CrateType.menu, new ItemStack(Material.AIR), "", new ArrayList<>(), null, 0, null, 0, 0, Collections.emptyList(), null));
 
         List.of(
                 "All crate information has been loaded.",
@@ -382,14 +383,7 @@ public class CrateManager {
      * @param location  the location that may be needed for some crate types.
      * @param checkHand if it just checks the players hand or if it checks their inventory.
      */
-    public void openCrate(Player player, @NotNull Crate crate, KeyType keyType, Location location, boolean virtualCrate, boolean checkHand) {
-        if (crate.getCrateType() == null) {
-            this.plugin.getLogger().warning("The crate type in the config section is not a valid type: " + crate.getFile().getString("Crate.CrateType"));
-            this.plugin.getLogger().warning("Valid Crate Types: CSGO/Casino/QuadCrate/QuickCrate/Roulette/CrateOnTheGo/FireCracker/Wonder/Wheel/War");
-            removePlayerFromOpeningList(player);
-            return;
-        }
-
+    public void openCrate(Player player, Crate crate, KeyType keyType, Location location, boolean virtualCrate, boolean checkHand) {
         if (crate.getCrateType() == CrateType.menu) {
             if (this.plugin.getConfigManager().getConfig().getProperty(ConfigKeys.enable_crate_menu)) {
                 CrateMainMenu crateMainMenu = new CrateMainMenu(player, this.plugin.getConfigManager().getConfig().getProperty(ConfigKeys.inventory_size), this.plugin.getConfigManager().getConfig().getProperty(ConfigKeys.inventory_name));
@@ -467,7 +461,7 @@ public class CrateManager {
                 List.of(
                         crate.getCrateInventoryName() + " has an invalid crate type. Your Value: " + crate.getFile().getString("Crate.CrateType"),
                         "We will use " + CrateType.csgo.getName() + " until you change the crate type.",
-                        "Valid Crate Types: CSGO/QuadCrate/QuickCrate/Roulette/CrateOnTheGo/FireCracker/Wonder/Wheel/War"
+                        "Valid Crate Types: CSGO/Casino/Cosmic/QuadCrate/QuickCrate/Roulette/CrateOnTheGo/FireCracker/Wonder/Wheel/War"
                 ).forEach(line -> this.plugin.debug(() -> line, Level.WARNING));
             }
         }
@@ -983,7 +977,7 @@ public class CrateManager {
     /**
      * @return the hologram handler.
      */
-    public HologramHandler getHolograms() {
+    public HologramManager getHolograms() {
         return this.holograms;
     }
 
@@ -1143,10 +1137,6 @@ public class CrateManager {
         }
     }
 
-    private List<ItemBuilder> getItems(@NotNull FileConfiguration file, String prize) {
-        return ItemBuilder.convertStringList(file.getStringList("Crate.Prizes." + prize + ".Items"), prize);
-    }
-
     // War Crate
     private final HashMap<UUID, Boolean> canPick = new HashMap<>();
     private final HashMap<UUID, Boolean> canClose = new HashMap<>();
@@ -1215,7 +1205,7 @@ public class CrateManager {
             this.rewards.remove(player.getUniqueId());
         }
 
-        this.plugin.getCrazyHandler().getChestManager().closeChest(location.getBlock(), false);
+        ChestManager.closeChest(location.getBlock(), false);
 
         removeCrateInUse(player);
         removePlayerFromOpeningList(player);

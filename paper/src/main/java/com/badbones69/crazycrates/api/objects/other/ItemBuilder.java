@@ -1,12 +1,9 @@
-package com.badbones69.crazycrates.api.objects;
+package com.badbones69.crazycrates.api.objects.other;
 
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.ryderbelserion.cluster.utils.DyeUtils;
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import emanondev.itemedit.ItemEdit;
-import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

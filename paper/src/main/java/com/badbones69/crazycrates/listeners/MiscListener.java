@@ -4,6 +4,7 @@ import com.badbones69.crazycrates.tasks.InventoryManager;
 import org.bukkit.entity.Firework;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
+import us.crazycrew.crazycrates.api.enums.types.CrateType;
 
 public class MiscListener implements Listener {
 
@@ -24,6 +26,7 @@ public class MiscListener implements Listener {
     @NotNull
     private final CrateManager crateManager = this.plugin.getCrateManager();
 
+    @NotNull
     private final InventoryManager inventoryManager = this.plugin.getCrazyHandler().getInventoryManager();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -38,6 +41,22 @@ public class MiscListener implements Listener {
 
         // Also add the new data.
         this.plugin.getUserManager().loadOfflinePlayersKeys(player, this.crateManager.getCrates());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerAttemptPickUp(PlayerAttemptPickupItemEvent event) {
+        if (this.crateManager.isDisplayReward(event.getItem())) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (this.crateManager.isInOpeningList(event.getPlayer())) {
+            // DrBot Start
+            if (this.crateManager.getOpeningCrate(event.getPlayer()).getCrateType().equals(CrateType.quick_crate)) return;
+
+            // DrBot End
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
