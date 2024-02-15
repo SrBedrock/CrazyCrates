@@ -102,7 +102,7 @@ public class QuickCrate extends CrateBuilder {
         // Only related to the item above the crate.
         if (showQuickCrateItem) {
             // Get the display item.
-            ItemStack display = prize.getDisplayItem();
+            ItemStack display = prize.getDisplayItem(getPlayer());
 
             // Get the item meta.
             ItemMeta itemMeta = display.getItemMeta();
