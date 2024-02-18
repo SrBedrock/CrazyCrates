@@ -35,16 +35,11 @@ public class ArgumentRelations extends MessageManager {
 
             String commandOrder = "/" + command + " " + subCommand + " ";
 
-            String correctUsage = null;
+            String correctUsage = getCorrectUsage(command, subCommand, commandOrder);
 
-            switch (command) {
-                case "crates" -> correctUsage = getContext(subCommand, commandOrder);
-                case "keys" -> {
-                    if (subCommand.equals("view")) correctUsage = "/keys " + subCommand;
-                }
+            if (!correctUsage.isEmpty()) {
+                send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
             }
-
-            if (correctUsage != null) send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
         });
 
         getBukkitCommandManager().registerMessage(MessageKey.NOT_ENOUGH_ARGUMENTS, (sender, context) -> {
@@ -53,19 +48,32 @@ public class ArgumentRelations extends MessageManager {
 
             String commandOrder = "/" + command + " " + subCommand + " ";
 
-            String correctUsage = null;
+            String correctUsage = getCorrectUsage(command, subCommand, commandOrder);
 
-            switch (command) {
-                case "crates" -> correctUsage = getContext(subCommand, commandOrder);
-                case "keys" -> {
-                    if (subCommand.equals("view")) correctUsage = "/keys " + subCommand + " <player-name>";
-                }
+            if (!correctUsage.isEmpty()) {
+                send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
             }
-
-            if (correctUsage != null) send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
         });
 
         getBukkitCommandManager().registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> send(sender, Messages.unknown_command.getString()));
+    }
+
+    private String getCorrectUsage(@NotNull String command, String subCommand, String commandOrder) {
+        String correctUsage = "";
+
+        switch (command) {
+            case "crates" -> correctUsage = getContext(subCommand, commandOrder);
+            case "chave" -> {
+                if (subCommand.equals("ver")) {
+                    correctUsage = commandOrder + " [jogador]";
+                }
+                if (subCommand.equals("transferir")) {
+                    correctUsage = commandOrder + " <caixa> <jogador> <quantidade>";
+                }
+            }
+        }
+
+        return correctUsage;
     }
 
     @Override

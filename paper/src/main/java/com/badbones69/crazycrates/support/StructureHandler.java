@@ -1,7 +1,6 @@
 package com.badbones69.crazycrates.support;
 
 import com.badbones69.crazycrates.CrazyCrates;
-import com.google.common.collect.Lists;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -49,9 +48,7 @@ public class StructureHandler {
         try {
             getBlocks(location);
 
-            getStructureManager()
-                    .loadStructure(this.file)
-                    .place(location.subtract(2, 0.0, 2), false, StructureRotation.NONE, Mirror.NONE, 0, 1F, new Random());
+            getStructureManager().loadStructure(this.file).place(location.subtract(2, 0.0, 2), false, StructureRotation.NONE, Mirror.NONE, 0, 1F, new Random());
 
             getStructureBlocks(location);
         } catch (Exception exception) {

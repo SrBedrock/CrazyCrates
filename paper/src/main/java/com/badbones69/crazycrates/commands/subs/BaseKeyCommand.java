@@ -27,7 +27,7 @@ import us.crazycrew.crazycrates.api.enums.types.KeyType;
 import java.util.HashMap;
 import java.util.List;
 
-@Command(value = "chaves", alias = {"chave"})
+@Command(value = "chave", alias = {"chaves"})
 @Description("Views the amount of keys you/others have.")
 public class BaseKeyCommand extends BaseCommand {
 
