@@ -1,19 +1,15 @@
 package com.badbones69.crazycrates;
 
 import com.badbones69.crazycrates.api.MigrateManager;
+import com.badbones69.crazycrates.api.builders.types.CrateAdminMenu;
+import com.badbones69.crazycrates.api.builders.types.CrateMainMenu;
+import com.badbones69.crazycrates.api.builders.types.CratePreviewMenu;
+import com.badbones69.crazycrates.api.builders.types.CrateTierMenu;
 import com.badbones69.crazycrates.api.enums.Permissions;
 import com.badbones69.crazycrates.listeners.BrokeLocationsListener;
 import com.badbones69.crazycrates.listeners.CrateControlListener;
 import com.badbones69.crazycrates.listeners.MiscListener;
-import com.badbones69.crazycrates.listeners.crates.CosmicCrateListener;
-import com.badbones69.crazycrates.listeners.crates.CrateOpenListener;
-import com.badbones69.crazycrates.listeners.crates.MobileCrateListener;
-import com.badbones69.crazycrates.listeners.crates.QuadCrateListener;
-import com.badbones69.crazycrates.listeners.crates.WarCrateListener;
-import com.badbones69.crazycrates.listeners.menus.CrateAdminListener;
-import com.badbones69.crazycrates.listeners.menus.CrateMenuListener;
-import com.badbones69.crazycrates.listeners.menus.CratePreviewListener;
-import com.badbones69.crazycrates.listeners.menus.CrateTierListener;
+import com.badbones69.crazycrates.listeners.crates.*;
 import com.badbones69.crazycrates.listeners.other.EntityDamageListener;
 import com.badbones69.crazycrates.tasks.BukkitUserManager;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
@@ -25,13 +21,13 @@ import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.api.FileManager;
 import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.support.placeholders.PlaceholderAPISupport;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -66,25 +62,24 @@ public class CrazyCrates extends JavaPlugin {
         this.crazyHandler.cleanFiles();
 
         // Register listeners
-        this.crazyHandler.getModuleLoader().addModule(new CrateTierListener());
-        this.crazyHandler.getModuleLoader().addModule(new CratePreviewListener());
-        this.crazyHandler.getModuleLoader().addModule(new CrateAdminListener());
-        this.crazyHandler.getModuleLoader().addModule(new CrateMenuListener());
+        List.of(
+                // Menu listeners.
+                new CratePreviewMenu.CratePreviewListener(),
+                new CrateAdminMenu.CrateAdminListener(),
+                new CrateMainMenu.CrateMenuListener(),
+                new CrateTierMenu.CrateTierListener(),
 
-        this.crazyHandler.getModuleLoader().load();
-
-        PluginManager pluginManager = getServer().getPluginManager();
-
-        pluginManager.registerEvents(new BrokeLocationsListener(), this);
-
-        pluginManager.registerEvents(new CrateControlListener(), this);
-        pluginManager.registerEvents(new EntityDamageListener(), this);
-        pluginManager.registerEvents(new MobileCrateListener(), this);
-        pluginManager.registerEvents(new CosmicCrateListener(), this);
-        pluginManager.registerEvents(new QuadCrateListener(), this);
-        pluginManager.registerEvents(new CrateOpenListener(), this);
-        pluginManager.registerEvents(new WarCrateListener(), this);
-        pluginManager.registerEvents(new MiscListener(), this);
+                // Other listeners.
+                new BrokeLocationsListener(),
+                new CrateControlListener(),
+                new EntityDamageListener(),
+                new MobileCrateListener(),
+                new CosmicCrateListener(),
+                new QuadCrateListener(),
+                new CrateOpenListener(),
+                new WarCrateListener(),
+                new MiscListener()
+        ).forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
 
         if (isLogging()) {
             String prefix = this.crazyHandler.getConfigManager().getConfig().getProperty(ConfigKeys.console_prefix);
@@ -112,15 +107,16 @@ public class CrazyCrates extends JavaPlugin {
         // End all crates.
         SessionManager.endCrates();
 
-        // Remove quick crate rewards
-        this.crazyHandler.getCrateManager().purgeRewards();
+        if (this.crazyHandler != null) {
+            // Remove quick crate rewards
+            this.crazyHandler.getCrateManager().purgeRewards();
 
-        // Purge holograms.
-        if (this.crazyHandler.getCrateManager().getHolograms() != null)
-            this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
+            // Purge holograms.
+            if (this.crazyHandler.getCrateManager().getHolograms() != null) this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
 
-        // Unload the plugin.
-        this.crazyHandler.unload();
+            // Unload the plugin.
+            this.crazyHandler.unload();
+        }
 
         if (this.timer != null) this.timer.cancel();
     }
