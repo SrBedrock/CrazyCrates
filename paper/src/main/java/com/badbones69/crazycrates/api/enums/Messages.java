@@ -3,11 +3,14 @@ package com.badbones69.crazycrates.api.enums;
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.properties.Property;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.common.config.types.MessageKeys;
 import com.badbones69.crazycrates.common.utils.StringUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -122,8 +125,8 @@ public enum Messages {
         return this.configuration.getProperty(property);
     }
 
-    public String getString() {
-        return getMessage().toString();
+    public String getString(Player player) {
+        return getMessage().toString(player);
     }
 
     public Messages getMessage() {
@@ -158,7 +161,11 @@ public enum Messages {
         return this;
     }
 
-    public String toString() {
-        return MsgUtils.color(this.message.replaceAll("%prefix%", this.configManager.getConfig().getProperty(ConfigKeys.command_prefix)));
+    public String toString(Player player) {
+        String prefix = this.configManager.getConfig().getProperty(ConfigKeys.command_prefix);
+
+        String replacedMessage = this.message.replaceAll("%prefix%", prefix);
+
+        return MiscUtils.isPapiActive() && player != null ? PlaceholderAPI.setPlaceholders(player, MsgUtils.color(replacedMessage)) : MsgUtils.color(replacedMessage);
     }
 }

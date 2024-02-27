@@ -9,7 +9,7 @@ import com.badbones69.crazycrates.api.objects.Tier;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
-import com.badbones69.crazycrates.support.libraries.PluginSupport;
+import com.badbones69.crazycrates.support.PluginSupport;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.Player;
@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
 import static java.util.regex.Matcher.quoteReplacement;
@@ -68,9 +69,9 @@ public class PrizeManager {
             }
 
             if (!MiscUtils.isInventoryFull(player)) {
-                player.getInventory().addItem(clone.build());
+                player.getInventory().addItem(clone.build(player));
             } else {
-                player.getWorld().dropItemNaturally(player.getLocation(), clone.build());
+                player.getWorld().dropItemNaturally(player.getLocation(), clone.build(player));
             }
         }
 
@@ -102,8 +103,7 @@ public class PrizeManager {
                 command = command.substring(0, command.length() - 1);
             }
 
-            if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled())
-                command = PlaceholderAPI.setPlaceholders(player, command);
+            if (MiscUtils.isPapiActive()) command = PlaceholderAPI.setPlaceholders(player, command);
 
             String name = prize.getDisplayItemBuilder().getName() == null || prize.getDisplayItemBuilder().getName().isEmpty() ? MsgUtils.color(WordUtils.capitalizeFully(prize.getDisplayItemBuilder().getMaterial().getKey().getKey().replaceAll("_", " "))) : prize.getDisplayItemBuilder().getName();
 
@@ -116,35 +116,27 @@ public class PrizeManager {
 
         if (!crate.getPrizeMessage().isEmpty() && prize.getMessages().isEmpty()) {
             for (String message : crate.getPrizeMessage()) {
-                if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled()) {
-                    message = PlaceholderAPI.setPlaceholders(player, message);
-                }
-
-                String name = prize.getDisplayItemBuilder().getName() == null || prize.getDisplayItemBuilder().getName().isEmpty() ? MsgUtils.color(WordUtils.capitalizeFully(prize.getDisplayItemBuilder().getMaterial().getKey().getKey().replaceAll("_", " "))) : prize.getDisplayItemBuilder().getName();
-
-                MsgUtils.sendMessage(player, message
-                        .replaceAll("%player%", quoteReplacement(player.getName()))
-                        .replaceAll("%Player%", quoteReplacement(player.getName()))
-                        .replaceAll("%reward%", quoteReplacement(name))
-                        .replaceAll("%crate%", quoteReplacement(crate.getCrateInventoryName())), false);
+                sendMessage(player, prize, crate, message);
             }
 
             return;
         }
 
         for (String message : prize.getMessages()) {
-            if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled()) {
-                message = PlaceholderAPI.setPlaceholders(player, message);
-            }
-
-            String name = prize.getDisplayItemBuilder().getName() == null || prize.getDisplayItemBuilder().getName().isEmpty() ? MsgUtils.color(WordUtils.capitalizeFully(prize.getDisplayItemBuilder().getMaterial().getKey().getKey().replaceAll("_", " "))) : prize.getDisplayItemBuilder().getName();
-
-            MsgUtils.sendMessage(player, message
-                    .replaceAll("%player%", quoteReplacement(player.getName()))
-                    .replaceAll("%Player%", quoteReplacement(player.getName()))
-                    .replaceAll("%reward%", quoteReplacement(name))
-                    .replaceAll("%crate%", quoteReplacement(crate.getCrateInventoryName())), false);
+            sendMessage(player, prize, crate, message);
         }
+    }
+
+    private static void sendMessage(Player player, Prize prize, Crate crate, String message) {
+        String name = prize.getDisplayItemBuilder().getName() == null || prize.getDisplayItemBuilder().getName().isEmpty() ? MsgUtils.color(WordUtils.capitalizeFully(prize.getDisplayItemBuilder().getMaterial().getKey().getKey().replaceAll("_", " "))) : prize.getDisplayItemBuilder().getName();
+
+        String defaultMessage = message
+                .replaceAll("%player%", quoteReplacement(player.getName()))
+                .replaceAll("%Player%", quoteReplacement(player.getName()))
+                .replaceAll("%reward%", quoteReplacement(name))
+                .replaceAll("%crate%", quoteReplacement(crate.getCrateInventoryName()));
+
+        MsgUtils.sendMessage(player, MiscUtils.isPapiActive() ? PlaceholderAPI.setPlaceholders(player, defaultMessage) : defaultMessage, false);
     }
 
     /**
@@ -181,7 +173,8 @@ public class PrizeManager {
             for (int stopLoop = 0; stopLoop <= 100; stopLoop++) {
                 for (Tier tier : crate.getTiers()) {
                     int chance = tier.getChance();
-                    int num = RANDOM.nextInt(tier.getMaxRange());
+
+                    int num = MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(tier.getMaxRange()) : RANDOM.nextInt(tier.getMaxRange());
 
                     if (num >= 1 && num <= chance) {
                         return tier;

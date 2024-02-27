@@ -296,7 +296,7 @@ public abstract class CrateBuilder extends BukkitRunnable {
     public void setItem(int slot, Material material, String name, List<String> lore) {
         ItemBuilder builder = new ItemBuilder().setMaterial(material).setName(name).setLore(lore);
 
-        getInventory().setItem(slot, builder.build());
+        getInventory().setItem(slot, builder.build(getPlayer()));
     }
 
     /**
@@ -309,7 +309,7 @@ public abstract class CrateBuilder extends BukkitRunnable {
     public void setItem(int slot, Material material, String name) {
         ItemBuilder builder = new ItemBuilder().setMaterial(material).setName(name);
 
-        getInventory().setItem(slot, builder.build());
+        getInventory().setItem(slot, builder.build(getPlayer()));
     }
 
     /**
@@ -322,7 +322,7 @@ public abstract class CrateBuilder extends BukkitRunnable {
     }
 
     public ItemStack getRandomGlassPane() {
-        return MiscUtils.getRandomPaneColor().setName(" ").build();
+        return MiscUtils.getRandomPaneColor().setName(" ").build(getPlayer());
     }
 
     /**

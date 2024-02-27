@@ -9,11 +9,12 @@ import eu.decentsoftware.holograms.api.holograms.Hologram;
 import org.bukkit.block.Block;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DecentHologramsSupport extends HologramManager {
 
-    private final HashMap<Block, Hologram> holograms = new HashMap<>();
+    private final Map<Block, Hologram> holograms = new HashMap<>();
 
     @Override
     public void createHologram(Block block, Crate crate) {

@@ -1,4 +1,4 @@
-package com.badbones69.crazycrates.support.libraries;
+package com.badbones69.crazycrates.support;
 
 import com.badbones69.crazycrates.CrazyCrates;
 import org.jetbrains.annotations.NotNull;

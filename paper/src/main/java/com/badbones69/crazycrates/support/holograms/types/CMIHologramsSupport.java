@@ -9,11 +9,12 @@ import net.Zrips.CMILib.Container.CMILocation;
 import org.bukkit.block.Block;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class CMIHologramsSupport extends HologramManager {
 
-    private final HashMap<Block, CMIHologram> holograms = new HashMap<>();
+    private final Map<Block, CMIHologram> holograms = new HashMap<>();
 
     @Override
     public void createHologram(Block block, Crate crate) {

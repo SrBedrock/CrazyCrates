@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 
-import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class QuadCrate extends CrateBuilder {
 
@@ -38,7 +38,7 @@ public class QuadCrate extends CrateBuilder {
             return;
         }
 
-        CrateSchematic crateSchematic = this.crateManager.getCrateSchematics().get(RANDOM.nextInt(this.crateManager.getCrateSchematics().size()));
+        CrateSchematic crateSchematic = this.crateManager.getCrateSchematics().get(ThreadLocalRandom.current().nextInt(this.crateManager.getCrateSchematics().size()));
         StructureHandler handler = new StructureHandler(crateSchematic.getSchematicFile());
         CrateLocation crateLocation = this.crateManager.getCrateLocation(this.location);
         QuadCrateManager session = new QuadCrateManager(getPlayer(), getCrate(), type, crateLocation.getLocation(), checkHand, handler);

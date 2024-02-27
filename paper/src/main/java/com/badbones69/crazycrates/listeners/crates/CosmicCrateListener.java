@@ -231,7 +231,7 @@ public class CosmicCrateListener implements Listener {
                         .addLorePlaceholder("%Slot%", String.valueOf(pickedSlot));
 
                 // Overwrite the current item.
-                event.setCurrentItem(builder.build());
+                event.setCurrentItem(builder.build(player));
 
                 cosmicCrateManager.addPickedPrize(player, slot);
 
@@ -245,7 +245,7 @@ public class CosmicCrateListener implements Listener {
                     .addLorePlaceholder("%Slot%", String.valueOf(pickedSlot));
 
             // Overwrite the current item.
-            event.setCurrentItem(builder.build());
+            event.setCurrentItem(builder.build(player));
 
             // Remove slot if we click it.
             cosmicCrateManager.removePickedPrize(player, slot);
@@ -268,7 +268,7 @@ public class CosmicCrateListener implements Listener {
             // If they don't have enough keys.
             if (value) {
                 // Send no keys message.
-                player.sendMessage(Messages.no_keys.getString());
+                player.sendMessage(Messages.no_keys.getString(player));
 
                 // Remove opening stuff.
                 this.crateManager.removePlayerFromOpeningList(player);
@@ -393,7 +393,7 @@ public class CosmicCrateListener implements Listener {
         for (int slot = 0; slot < cosmic.getSize(); slot++) {
             Tier tier = PrizeManager.getTier(cosmic.getCrate());
 
-            if (tier != null) view.getTopInventory().setItem(slot, tier.getTierItem());
+            if (tier != null) view.getTopInventory().setItem(slot, tier.getTierItem(null));
         }
 
         cosmic.getCrate().playSound(player, player.getLocation(), "cycle-sound", "BLOCK_NOTE_BLOCK_XYLOPHONE", SoundCategory.PLAYERS);
@@ -412,7 +412,7 @@ public class CosmicCrateListener implements Listener {
         Tier tier = PrizeManager.getTier(cosmic.getCrate());
 
         if (tier != null) {
-            crateManager.getPickedPrizes(player).forEach(slot -> view.setItem(slot, tier.getTierItem()));
+            crateManager.getPickedPrizes(player).forEach(slot -> view.setItem(slot, tier.getTierItem(null)));
             player.updateInventory();
 
             if (this.plugin.getCrazyHandler().getConfigManager().getConfig().getProperty(ConfigKeys.cosmic_crate_timeout)) {
@@ -437,7 +437,7 @@ public class CosmicCrateListener implements Listener {
 
     private Tier getTier(Crate crate, ItemStack item) {
         for (Tier tier : crate.getTiers()) {
-            if (tier.getTierItem().isSimilar(item)) return tier;
+            if (tier.getTierItem(null).isSimilar(item)) return tier;
         }
 
         return null;

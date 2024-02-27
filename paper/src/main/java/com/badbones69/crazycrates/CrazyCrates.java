@@ -19,7 +19,7 @@ import com.badbones69.crazycrates.listeners.crates.MobileCrateListener;
 import com.badbones69.crazycrates.listeners.crates.QuadCrateListener;
 import com.badbones69.crazycrates.listeners.crates.WarCrateListener;
 import com.badbones69.crazycrates.listeners.other.EntityDamageListener;
-import com.badbones69.crazycrates.support.libraries.PluginSupport;
+import com.badbones69.crazycrates.support.PluginSupport;
 import com.badbones69.crazycrates.support.placeholders.PlaceholderAPISupport;
 import com.badbones69.crazycrates.tasks.BukkitUserManager;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;

@@ -17,7 +17,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 import us.crazycrew.crazycrates.api.users.UserManager;
 
@@ -33,10 +32,8 @@ public class CrateAdminMenu extends InventoryBuilder {
     public InventoryBuilder build() {
         Inventory inventory = getInventory();
 
-        for (Crate crate : this.plugin.getCrateManager().getCrates()) {
-            if (crate.getCrateType() != CrateType.menu) {
-                if (inventory.firstEmpty() >= 0) inventory.setItem(inventory.firstEmpty(), crate.getAdminKey());
-            }
+        for (Crate crate : this.plugin.getCrateManager().getUsableCrates()) {
+            if (inventory.firstEmpty() >= 0) inventory.setItem(inventory.firstEmpty(), crate.getAdminKey());
         }
 
         return this;
@@ -69,7 +66,7 @@ public class CrateAdminMenu extends InventoryBuilder {
 
             if (!Permissions.CRAZYCRATES_ACCESS.hasPermission(player)) {
                 player.closeInventory(InventoryCloseEvent.Reason.CANT_USE);
-                player.sendMessage(Messages.no_permission.getString());
+                player.sendMessage(Messages.no_permission.getString(player));
                 return;
             }
 

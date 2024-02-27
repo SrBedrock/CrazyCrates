@@ -19,11 +19,11 @@ import com.badbones69.crazycrates.api.utils.ItemUtils;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.common.crates.CrateHologram;
 import com.badbones69.crazycrates.common.crates.quadcrates.CrateSchematic;
+import com.badbones69.crazycrates.support.PluginSupport;
 import com.badbones69.crazycrates.support.holograms.HologramManager;
 import com.badbones69.crazycrates.support.holograms.types.CMIHologramsSupport;
 import com.badbones69.crazycrates.support.holograms.types.DecentHologramsSupport;
 import com.badbones69.crazycrates.support.holograms.types.HolographicDisplaysSupport;
-import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.badbones69.crazycrates.tasks.crates.types.CasinoCrate;
 import com.badbones69.crazycrates.tasks.crates.types.CosmicCrate;
 import com.badbones69.crazycrates.tasks.crates.types.CrateOnTheGo;
@@ -401,7 +401,7 @@ public class CrateManager {
                 return;
             }
 
-            player.sendMessage(Messages.feature_disabled.getString());
+            player.sendMessage(Messages.feature_disabled.getString(player));
 
             return;
         }
@@ -418,7 +418,7 @@ public class CrateManager {
             case cosmic -> crateBuilder = new CosmicCrate(crate, player, 27);
             case quad_crate -> {
                 if (virtualCrate) {
-                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString());
+                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString(player));
                     removePlayerFromOpeningList(player);
                     return;
                 }
@@ -427,13 +427,13 @@ public class CrateManager {
             }
             case fire_cracker -> {
                 if (this.cratesInUse.containsValue(location)) {
-                    player.sendMessage(Messages.quick_crate_in_use.getString());
+                    player.sendMessage(Messages.quick_crate_in_use.getString(player));
                     removePlayerFromOpeningList(player);
                     return;
                 }
 
                 if (virtualCrate) {
-                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString());
+                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString(player));
                     removePlayerFromOpeningList(player);
                     return;
                 }
@@ -442,7 +442,7 @@ public class CrateManager {
             }
             case crate_on_the_go -> {
                 if (virtualCrate) {
-                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString());
+                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString(player));
                     removePlayerFromOpeningList(player);
                     return;
                 }
@@ -451,13 +451,13 @@ public class CrateManager {
             }
             case quick_crate -> {
                 if (this.cratesInUse.containsValue(location)) {
-                    player.sendMessage(Messages.quick_crate_in_use.getString());
+                    player.sendMessage(Messages.quick_crate_in_use.getString(player));
                     removePlayerFromOpeningList(player);
                     return;
                 }
 
                 if (virtualCrate) {
-                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString());
+                    player.sendMessage(Messages.cant_be_a_virtual_crate.getString(player));
                     removePlayerFromOpeningList(player);
                     return;
                 }
@@ -843,6 +843,16 @@ public class CrateManager {
 
             if (this.holograms != null) this.holograms.removeHologram(location.getLocation().getBlock());
         }
+    }
+
+    /**
+     * @return an unmodifiable list of crate objects.
+     */
+    public List<Crate> getUsableCrates() {
+        List<Crate> crateList = new ArrayList<>(this.crates);
+        crateList.removeIf(crate -> crate.getCrateType() == CrateType.menu);
+
+        return Collections.unmodifiableList(crateList);
     }
 
     /**

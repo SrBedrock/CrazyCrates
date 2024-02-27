@@ -1,13 +1,15 @@
 package com.badbones69.crazycrates.api.objects.other;
 
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
+import com.badbones69.crazycrates.support.PluginSupport;
 import com.badbones69.crazycrates.support.SkullCreator;
-import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.ryderbelserion.cluster.utils.DyeUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import emanondev.itemedit.ItemEdit;
 import io.th0rgal.oraxen.api.OraxenItems;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -18,6 +20,7 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
@@ -375,7 +378,7 @@ public class ItemBuilder {
      *
      * @return The name with all the placeholders in it.
      */
-    public String getUpdatedName() {
+    public String getUpdatedName(Player player) {
         String newName = this.itemName;
 
         for (Map.Entry<String, String> entry : this.namePlaceholders.entrySet()) {
@@ -384,7 +387,7 @@ public class ItemBuilder {
             newName = newName.replace(placeholder, replacement).replace(placeholder.toLowerCase(), replacement);
         }
 
-        return newName;
+        return MiscUtils.isPapiActive() && player != null ? PlaceholderAPI.setPlaceholders(player, newName) : newName;
     }
 
     private boolean isArmor() {
@@ -399,9 +402,16 @@ public class ItemBuilder {
      * @return the result of all the info that was given to the builder as an ItemStack.
      */
     public ItemStack build() {
-        if (this.nbtItem != null) {
-            this.itemStack = this.nbtItem.getItem();
-        }
+        return build(null);
+    }
+
+    /**
+     * Builder the item from all the information that was given to the builder.
+     *
+     * @return the result of all the info that was given to the builder as an ItemStack.
+     */
+    public ItemStack build(Player player) {
+        if (this.nbtItem != null) this.itemStack = this.nbtItem.getItem();
 
         ItemStack item = this.itemStack;
 
@@ -423,8 +433,8 @@ public class ItemBuilder {
                 this.itemMeta = item.getItemMeta();
             }
 
-            this.itemMeta.setDisplayName(getUpdatedName());
-            this.itemMeta.setLore(getUpdatedLore());
+            this.itemMeta.setDisplayName(getUpdatedName(player));
+            this.itemMeta.setLore(getUpdatedLore(player));
 
             if (isArmor() && (this.trimPattern != null && this.trimMaterial != null)) {
                 ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
@@ -715,7 +725,9 @@ public class ItemBuilder {
      * @return the ItemBuilder with an updated name.
      */
     public ItemBuilder setName(String itemName) {
-        if (itemName != null) this.itemName = MsgUtils.color(itemName);
+        if (itemName != null) {
+            this.itemName = MsgUtils.color(itemName);
+        }
 
         return this;
     }
@@ -771,6 +783,25 @@ public class ItemBuilder {
     }
 
     /**
+     * Set the lore of the item with papi support in the builder. This will auto force color in all the lores that contains color code. (&a, &c, &7, etc...)
+     *
+     * @param player the player viewing the button.
+     * @param lore the lore of the item in the builder.
+     * @return the ItemBuilder with updated info.
+     */
+    public ItemBuilder setLore(Player player, List<String> lore) {
+        if (lore != null) {
+            this.itemLore.clear();
+
+            for (String line : lore) {
+                this.itemLore.add(PlaceholderAPI.setPlaceholders(player, line));
+            }
+        }
+
+        return this;
+    }
+
+    /**
      * Add a line to the current lore of the item. This will auto force color in the lore that contains color code. (&a, &c, &7, etc...)
      *
      * @param lore the new line you wish to add.
@@ -809,7 +840,7 @@ public class ItemBuilder {
      *
      * @return the lore with all placeholders in it.
      */
-    public List<String> getUpdatedLore() {
+    public List<String> getUpdatedLore(Player player) {
         List<String> newLore = new ArrayList<>();
 
         for (String lore : this.itemLore) {
@@ -817,9 +848,8 @@ public class ItemBuilder {
                 String placeholder = entry.getKey();
                 String replacement = entry.getValue();
                 lore = lore.replace(placeholder, replacement).replace(placeholder.toLowerCase(), replacement);
+                newLore.add(MiscUtils.isPapiActive() && player != null ? PlaceholderAPI.setPlaceholders(player, lore) : lore);
             }
-
-            newLore.add(lore);
         }
 
         return newLore;

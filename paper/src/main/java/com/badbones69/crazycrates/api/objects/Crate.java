@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
@@ -266,7 +267,7 @@ public class Crate {
         chanceCheck(prizes, usablePrizes);
 
         try {
-            return prizes.get(RANDOM.nextInt(prizes.size()));
+            return prizes.get(MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(prizes.size()) : RANDOM.nextInt(prizes.size()));
         } catch (IllegalArgumentException exception) {
             this.plugin.getLogger().log(Level.WARNING, "Failed to find prize from the " + name + " crate for player " + player.getName() + ".", exception);
             return null;
@@ -286,8 +287,8 @@ public class Crate {
                 int chance = prize.getChance();
                 int num;
 
-                for (int counter = 1; counter == 1; counter++) {
-                    num = 1 + RANDOM.nextInt(max);
+                for (int counter = 1; counter <= 1; counter++) {
+                    num = MiscUtils.useOtherRandom() ? 1 + ThreadLocalRandom.current().nextInt(max) : 1 + RANDOM.nextInt(max);
 
                     if (num <= chance) prizes.add(prize);
                 }
@@ -350,7 +351,7 @@ public class Crate {
         // ================= Chance Check ================= //
         chanceCheck(prizes, usablePrizes);
 
-        return prizes.get(RANDOM.nextInt(prizes.size()));
+        return prizes.get(MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(prizes.size()) : RANDOM.nextInt(prizes.size()));
     }
 
     /**

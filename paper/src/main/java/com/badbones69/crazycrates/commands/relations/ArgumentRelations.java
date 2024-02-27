@@ -17,7 +17,8 @@ public class ArgumentRelations extends MessageManager {
             case "debug", "open", "set" -> correctUsage = commandOrder + "<crate-name>";
             case "tp" -> correctUsage = commandOrder + "<id>";
             case "additem" -> correctUsage = commandOrder + "<crate-name> <prize-number> <chance> [tier]";
-            case "preview", "open-others", "forceopen" -> correctUsage = commandOrder + "<crate-name> <player-name>";
+            case "preview", "forceopen" -> correctUsage = commandOrder + "<crate-name> <player-name>";
+            case "open-others" -> correctUsage = commandOrder + "<crate-name> <player-name> [key-type]";
             case "mass-open" -> correctUsage = commandOrder + "<crate-name> <key-type> <amount>";
             case "give-random" -> correctUsage = commandOrder + "<key-type> <amount> <player-name>";
             case "give", "take" -> correctUsage = commandOrder + "<key-type> <crate-name> <amount> <player-name>";
@@ -53,9 +54,11 @@ public class ArgumentRelations extends MessageManager {
             if (!correctUsage.isEmpty()) {
                 send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
             }
+
+            if (correctUsage != null) send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString(null));
         });
 
-        getBukkitCommandManager().registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> send(sender, Messages.unknown_command.getString()));
+        getBukkitCommandManager().registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> send(sender, Messages.unknown_command.getString(null)));
     }
 
     private String getCorrectUsage(@NotNull String command, String subCommand, String commandOrder) {

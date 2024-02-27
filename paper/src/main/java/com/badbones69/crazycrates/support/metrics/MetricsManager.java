@@ -1,14 +1,10 @@
 package com.badbones69.crazycrates.support.metrics;
 
 import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.objects.Crate;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MetricsManager {
 
@@ -25,11 +21,7 @@ public class MetricsManager {
 
         this.metrics = new Metrics(this.plugin, 4514);
 
-        List<Crate> crateList = new ArrayList<>(this.plugin.getCrateManager().getCrates());
-
-        crateList.removeIf(crate -> crate.getCrateType() == CrateType.menu);
-
-        crateList.forEach(crate -> {
+        this.plugin.getCrateManager().getUsableCrates().forEach(crate -> {
             CrateType crateType = crate.getCrateType();
 
             // If the crate type is null. don't add to the pie chart.

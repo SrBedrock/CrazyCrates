@@ -66,25 +66,25 @@ public class CratePreviewMenu extends InventoryBuilder {
             List<Integer> borderItems = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8);
 
             for (int i : borderItems) { // Top Border slots
-                inventory.setItem(i, getCrate().getBorderItem().build());
+                inventory.setItem(i, getCrate().getBorderItem().build(getPlayer()));
             }
 
             borderItems.replaceAll(getCrate()::getAbsoluteItemPosition);
 
             for (int i : borderItems) { // Bottom Border slots
-                inventory.setItem(i, getCrate().getBorderItem().build());
+                inventory.setItem(i, getCrate().getBorderItem().build(getPlayer()));
             }
         }
 
         int page = this.crazyHandler.getInventoryManager().getPage(getPlayer());
 
         if (this.crazyHandler.getInventoryManager().inCratePreview(getPlayer()) && this.crazyHandler.getConfigManager().getConfig().getProperty(ConfigKeys.enable_crate_menu)) {
-            inventory.setItem(getCrate().getAbsoluteItemPosition(4), this.crazyHandler.getInventoryManager().getMenuButton());
+            inventory.setItem(getCrate().getAbsoluteItemPosition(4), this.crazyHandler.getInventoryManager().getMenuButton(getPlayer()).build(getPlayer()));
         }
 
         if (page == 1) {
             if (getCrate().isBorderToggle()) {
-                inventory.setItem(getCrate().getAbsoluteItemPosition(3), getCrate().getBorderItem().build());
+                inventory.setItem(getCrate().getAbsoluteItemPosition(3), getCrate().getBorderItem().build(getPlayer()));
             }
         } else {
             inventory.setItem(getCrate().getAbsoluteItemPosition(3), this.crazyHandler.getInventoryManager().getBackButton(getPlayer()));
@@ -92,7 +92,7 @@ public class CratePreviewMenu extends InventoryBuilder {
 
         if (page == getCrate().getMaxPage()) {
             if (getCrate().isBorderToggle()) {
-                inventory.setItem(getCrate().getAbsoluteItemPosition(5), getCrate().getBorderItem().build());
+                inventory.setItem(getCrate().getAbsoluteItemPosition(5), getCrate().getBorderItem().build(getPlayer()));
             }
         } else {
             inventory.setItem(getCrate().getAbsoluteItemPosition(5), this.crazyHandler.getInventoryManager().getNextButton(getPlayer()));
@@ -147,7 +147,7 @@ public class CratePreviewMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
-            if (!(inventory.getHolder(false) instanceof CrateAdminMenu holder)) return;
+            if (!(inventory.getHolder(false) instanceof CratePreviewMenu holder)) return;
 
             event.setCancelled(true);
 

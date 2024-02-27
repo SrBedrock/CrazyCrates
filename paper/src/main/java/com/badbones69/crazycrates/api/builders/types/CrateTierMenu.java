@@ -43,23 +43,23 @@ public class CrateTierMenu extends InventoryBuilder {
     }
 
     private void setDefaultItems() {
-        getTiers().forEach(tier -> getInventory().setItem(tier.getSlot(), tier.getTierItem()));
+        getTiers().forEach(tier -> getInventory().setItem(tier.getSlot(), tier.getTierItem(getPlayer())));
 
         if (getCrate().isPreviewTierBorderToggle()) {
             List<Integer> borderItems = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8);
 
             for (int item : borderItems) { // Top border slots
-                getInventory().setItem(item, getCrate().getPreviewTierBorderItem().build());
+                getInventory().setItem(item, getCrate().getPreviewTierBorderItem().build(getPlayer()));
             }
 
             borderItems.replaceAll(getCrate()::getAbsolutePreviewItemPosition);
 
             for (int item : borderItems) { // Bottom border slots
-                getInventory().setItem(item, getCrate().getPreviewTierBorderItem().build());
+                getInventory().setItem(item, getCrate().getPreviewTierBorderItem().build(getPlayer()));
             }
         }
 
-        if (this.crazyHandler.getInventoryManager().inCratePreview(getPlayer()) && this.crazyHandler.getConfigManager().getConfig().getProperty(ConfigKeys.enable_crate_menu)) getInventory().setItem(getCrate().getAbsolutePreviewItemPosition(4), this.crazyHandler.getInventoryManager().getMenuButton());
+        if (this.crazyHandler.getInventoryManager().inCratePreview(getPlayer()) && this.crazyHandler.getConfigManager().getConfig().getProperty(ConfigKeys.enable_crate_menu)) getInventory().setItem(getCrate().getAbsolutePreviewItemPosition(4), this.crazyHandler.getInventoryManager().getMenuButton(getPlayer()).build(getPlayer()));
     }
 
     public static class CrateTierListener implements Listener {
@@ -83,7 +83,7 @@ public class CrateTierMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
-            if (!(inventory.getHolder(false) instanceof CrateAdminMenu holder)) return;
+            if (!(inventory.getHolder(false) instanceof CrateTierMenu holder)) return;
 
             event.setCancelled(true);
 

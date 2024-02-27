@@ -34,7 +34,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class QuadCrateListener implements Listener {
 
@@ -80,7 +80,7 @@ public class QuadCrateListener implements Listener {
                 PersistentKeys key = PersistentKeys.crate_prize;
 
                 //noinspection unchecked
-                itemMeta.getPersistentDataContainer().set(key.getNamespacedKey(), key.getType(), 1);
+                itemMeta.getPersistentDataContainer().set(key.getNamespacedKey(), key.getType(), "1");
 
                 // Set the item meta.
                 display.setItemMeta(itemMeta);
@@ -89,10 +89,10 @@ public class QuadCrateListener implements Listener {
                 ItemBuilder itemBuilder = ItemBuilder.convertItemStack(display);
 
                 // Makes sure items do not merge.
-                itemBuilder.addLore(RANDOM.nextInt(Integer.MAX_VALUE) + "");
+                itemBuilder.addLore(ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE) + "");
 
                 // Builds the item.
-                ItemStack item = itemBuilder.build();
+                ItemStack item = itemBuilder.build(player);
 
                 // Drop the item.
                 Item reward = player.getWorld().dropItem(block.getLocation().add(.5, 1, .5), item);

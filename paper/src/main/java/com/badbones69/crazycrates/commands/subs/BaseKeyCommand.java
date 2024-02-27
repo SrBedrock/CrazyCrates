@@ -6,6 +6,7 @@ import com.badbones69.crazycrates.api.EventManager;
 import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import com.google.common.collect.Lists;
@@ -17,6 +18,7 @@ import dev.triumphteam.cmd.core.annotation.Description;
 import dev.triumphteam.cmd.core.annotation.Optional;
 import dev.triumphteam.cmd.core.annotation.SubCommand;
 import dev.triumphteam.cmd.core.annotation.Suggestion;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,7 +48,7 @@ public class BaseKeyCommand extends BaseCommand {
         HashMap<String, String> placeholders = new HashMap<>();
         placeholders.put("%crates_opened%", String.valueOf(this.plugin.getCrazyHandler().getUserManager().getTotalCratesOpened(player.getUniqueId())));
 
-        getKeys(player, player, Messages.no_virtual_keys_header.getMessage(placeholders).toString(), Messages.no_virtual_keys.getString());
+        getKeys(player, player, Messages.no_virtual_keys_header.getMessage(placeholders).toString(player), Messages.no_virtual_keys.getString(player));
     }
 
     @SubCommand("ver")
@@ -82,7 +84,7 @@ public class BaseKeyCommand extends BaseCommand {
 
         // If it's the same player, we return.
         if (player.getName().equalsIgnoreCase(sender.getName())) {
-            sender.sendMessage(Messages.same_player.getString());
+            sender.sendMessage(Messages.same_player.getString(null));
             return;
         }
 
@@ -134,7 +136,7 @@ public class BaseKeyCommand extends BaseCommand {
 
         HashMap<Crate, Integer> keys = new HashMap<>();
 
-        this.plugin.getCrateManager().getCrates().forEach(crate -> keys.put(crate, this.plugin.getCrazyHandler().getUserManager().getVirtualKeys(player.getUniqueId(), crate.getName())));
+        this.plugin.getCrateManager().getUsableCrates().forEach(crate -> keys.put(crate, this.plugin.getCrazyHandler().getUserManager().getVirtualKeys(player.getUniqueId(), crate.getName())));
 
         boolean hasKeys = false;
 
@@ -149,8 +151,24 @@ public class BaseKeyCommand extends BaseCommand {
                 placeholders.put("%crate%", crate.getFile().getString("Crate.Name"));
                 placeholders.put("%keys%", String.valueOf(amount));
                 placeholders.put("%crate_opened%", String.valueOf(this.plugin.getCrazyHandler().getUserManager().getCrateOpened(player.getUniqueId(), crate.getName())));
-                message.add(Messages.per_crate.getMessage(placeholders).toString());
+
+                message.add(Messages.per_crate.getMessage(placeholders).toString(null));
             }
+        }
+
+        if (MiscUtils.isPapiActive()) {
+            if (sender instanceof Player person) {
+                if (hasKeys) {
+                    message.forEach(line -> person.sendMessage(PlaceholderAPI.setPlaceholders(person, line)));
+                    return;
+                }
+
+                sender.sendMessage(PlaceholderAPI.setPlaceholders(person, messageContent));
+
+                return;
+            }
+
+            return;
         }
 
         if (hasKeys) {

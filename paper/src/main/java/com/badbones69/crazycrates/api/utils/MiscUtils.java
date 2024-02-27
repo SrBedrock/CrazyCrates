@@ -4,6 +4,8 @@ import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+import com.badbones69.crazycrates.support.PluginSupport;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -185,7 +187,7 @@ public class MiscUtils {
     }
 
     public static int randomNumber(int min, int max) {
-        return min + RANDOM.nextInt(max - min);
+        return MiscUtils.useOtherRandom() ? min + ThreadLocalRandom.current().nextInt(max - min) : min + RANDOM.nextInt(max - min);
     }
 
     public static Enchantment getEnchantment(String enchantmentName) {
@@ -304,5 +306,13 @@ public class MiscUtils {
         }
 
         return slow;
+    }
+
+    public static boolean isPapiActive() {
+        return PluginSupport.PLACEHOLDERAPI.isPluginEnabled();
+    }
+
+    public static boolean useOtherRandom() {
+        return plugin.getConfigManager().getConfig().getProperty(ConfigKeys.use_different_random);
     }
 }
