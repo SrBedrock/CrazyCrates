@@ -1,11 +1,12 @@
 package com.badbones69.crazycrates.support.metrics;
 
-import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.objects.Crate;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
+
 import java.util.ArrayList;
 import java.util.List;
 

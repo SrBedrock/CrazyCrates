@@ -3,6 +3,7 @@ package com.badbones69.crazycrates.api;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 

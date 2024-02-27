@@ -1,18 +1,20 @@
 package com.badbones69.crazycrates.tasks.crates.other.quadcrates;
 
-import org.bukkit.SoundCategory;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.tasks.crates.CrateManager;
-import com.badbones69.crazycrates.api.enums.Messages;
-import com.badbones69.crazycrates.api.SpiralManager;
-import com.badbones69.crazycrates.support.StructureHandler;
 import com.badbones69.crazycrates.api.ChestManager;
+import com.badbones69.crazycrates.api.SpiralManager;
+import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+import com.badbones69.crazycrates.common.crates.quadcrates.CrateParticles;
+import com.badbones69.crazycrates.support.StructureHandler;
+import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -20,8 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import com.badbones69.crazycrates.common.crates.quadcrates.CrateParticles;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

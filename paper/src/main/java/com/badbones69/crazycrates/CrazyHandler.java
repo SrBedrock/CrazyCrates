@@ -2,15 +2,15 @@ package com.badbones69.crazycrates;
 
 import com.badbones69.crazycrates.api.FileManager;
 import com.badbones69.crazycrates.api.FileManager.Files;
+import com.badbones69.crazycrates.api.utils.FileUtils;
 import com.badbones69.crazycrates.commands.CommandManager;
-import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.common.CrazyCratesPlugin;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
-import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import com.badbones69.crazycrates.support.metrics.MetricsManager;
 import com.badbones69.crazycrates.tasks.BukkitUserManager;
 import com.badbones69.crazycrates.tasks.InventoryManager;
-import com.badbones69.crazycrates.api.utils.FileUtils;
+import com.badbones69.crazycrates.tasks.crates.CrateManager;
+import org.jetbrains.annotations.NotNull;
 
 public class CrazyHandler extends CrazyCratesPlugin {
 

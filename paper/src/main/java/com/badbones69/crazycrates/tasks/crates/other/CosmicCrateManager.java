@@ -1,12 +1,13 @@
 package com.badbones69.crazycrates.tasks.crates.other;
 
+import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import com.badbones69.crazycrates.api.enums.PersistentKeys;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

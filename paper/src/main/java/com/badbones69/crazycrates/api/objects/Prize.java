@@ -18,8 +18,8 @@ import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Prize {

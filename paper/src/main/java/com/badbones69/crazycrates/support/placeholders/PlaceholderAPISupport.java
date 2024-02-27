@@ -1,16 +1,17 @@
 package com.badbones69.crazycrates.support.placeholders;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import org.apache.commons.lang3.StringUtils;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.CrazyHandler;
 import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.tasks.BukkitUserManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
-import com.badbones69.crazycrates.CrazyHandler;
-import com.badbones69.crazycrates.tasks.BukkitUserManager;
+
 import java.text.NumberFormat;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

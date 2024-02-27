@@ -1,8 +1,8 @@
 package com.badbones69.crazycrates.api.enums;
 
+import com.badbones69.crazycrates.CrazyCrates;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
-import com.badbones69.crazycrates.CrazyCrates;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("rawtypes")

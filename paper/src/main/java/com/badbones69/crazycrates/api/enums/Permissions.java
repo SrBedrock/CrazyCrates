@@ -2,6 +2,7 @@ package com.badbones69.crazycrates.api.enums;
 
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
+
 import java.util.HashMap;
 
 public enum Permissions {

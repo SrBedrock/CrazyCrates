@@ -1,15 +1,16 @@
 package com.badbones69.crazycrates.support.holograms.types;
 
 
-import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.common.crates.CrateHologram;
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
+import com.badbones69.crazycrates.common.crates.CrateHologram;
+import com.badbones69.crazycrates.support.holograms.HologramManager;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import org.bukkit.block.Block;
-import com.badbones69.crazycrates.support.holograms.HologramManager;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 
 public class HolographicDisplaysSupport extends HologramManager {

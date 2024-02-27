@@ -1,7 +1,7 @@
 package com.badbones69.crazycrates.support.libraries;
 
-import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.CrazyCrates;
+import org.jetbrains.annotations.NotNull;
 
 public enum PluginSupport {
 

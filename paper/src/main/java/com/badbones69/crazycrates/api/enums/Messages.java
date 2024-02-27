@@ -2,13 +2,14 @@ package com.badbones69.crazycrates.api.enums;
 
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.properties.Property;
-import org.jetbrains.annotations.NotNull;
+import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.common.config.types.MessageKeys;
 import com.badbones69.crazycrates.common.utils.StringUtils;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

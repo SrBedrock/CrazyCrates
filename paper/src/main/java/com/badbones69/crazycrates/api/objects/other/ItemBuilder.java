@@ -1,6 +1,7 @@
 package com.badbones69.crazycrates.api.objects.other;
 
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import com.ryderbelserion.cluster.utils.DyeUtils;
@@ -37,7 +38,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.badbones69.crazycrates.api.utils.MsgUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

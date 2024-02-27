@@ -1,21 +1,21 @@
 package com.badbones69.crazycrates.api;
 
-import com.badbones69.crazycrates.api.objects.Tier;
-import org.apache.commons.lang.WordUtils;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.objects.Prize;
-import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.objects.Tier;
+import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.support.libraries.PluginSupport;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
 
 import java.util.HashMap;
 

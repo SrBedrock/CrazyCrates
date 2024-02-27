@@ -1,7 +1,8 @@
 package com.badbones69.crazycrates.api.utils;
 
-import org.jetbrains.annotations.NotNull;
 import com.badbones69.crazycrates.CrazyCrates;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
