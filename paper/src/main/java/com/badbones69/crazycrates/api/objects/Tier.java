@@ -2,8 +2,6 @@ package com.badbones69.crazycrates.api.objects;
 
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -82,10 +80,12 @@ public class Tier {
     /**
      * @return the tier item shown in the preview.
      */
-    public ItemStack getTierItem(Player player) {
-        this.item.setName(MiscUtils.isPapiActive() && player != null ? PlaceholderAPI.setPlaceholders(player, this.coloredName) : this.coloredName);
+    public ItemStack getTierItem(Player target) {
+        this.item.setTarget(target);
 
-        this.item.setLore(player, this.lore);
+        this.item.setName(this.coloredName);
+
+        this.item.setLore(this.lore);
 
         ItemMeta itemMeta = this.item.getItemMeta();
 

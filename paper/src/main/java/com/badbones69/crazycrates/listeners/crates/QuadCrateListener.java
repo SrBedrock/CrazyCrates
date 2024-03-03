@@ -92,7 +92,7 @@ public class QuadCrateListener implements Listener {
                 itemBuilder.addLore(ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE) + "");
 
                 // Builds the item.
-                ItemStack item = itemBuilder.build(player);
+                ItemStack item = itemBuilder.build();
 
                 // Drop the item.
                 Item reward = player.getWorld().dropItem(block.getLocation().add(.5, 1, .5), item);
@@ -166,7 +166,7 @@ public class QuadCrateListener implements Listener {
 
         if (this.sessionManager.inSession(player) && !player.hasPermission("crazycrates.admin")) {
             event.setCancelled(true);
-            player.sendMessage(Messages.no_commands_while_in_crate.getMessage("%player%", player.getName()).toString());
+            player.sendMessage(Messages.no_commands_while_in_crate.getMessage("%player%", player.getName(), player));
         }
     }
 
@@ -176,7 +176,7 @@ public class QuadCrateListener implements Listener {
 
         if (this.sessionManager.inSession(player) && event.getCause() == TeleportCause.ENDER_PEARL) {
             event.setCancelled(true);
-            player.sendMessage(Messages.no_teleporting.getMessage("%Player%", player.getName()).toString());
+            player.sendMessage(Messages.no_teleporting.getMessage("%Player%", player.getName(), player));
         }
     }
 

@@ -74,7 +74,7 @@ public class CrateControlListener implements Listener {
                     if (player.getGameMode() == GameMode.CREATIVE && player.isSneaking() && player.hasPermission("crazycrates.admin")) {
                         e.setCancelled(true);
                         this.plugin.getCrateManager().removeCrateLocation(loc.getID());
-                        player.sendMessage(Messages.removed_physical_crate.getMessage("%id%", loc.getID()).toString());
+                        player.sendMessage(Messages.removed_physical_crate.getMessage("%id%", loc.getID(), player));
                         return;
                     }
 
@@ -87,7 +87,7 @@ public class CrateControlListener implements Listener {
                             this.inventoryManager.addViewer(player);
                             this.inventoryManager.openNewCratePreview(player, loc.getCrate(), crate.getCrateType() == CrateType.cosmic || crate.getCrateType() == CrateType.casino);
                         } else {
-                            player.sendMessage(Messages.preview_disabled.getString(player));
+                            player.sendMessage(Messages.preview_disabled.getMessage(player));
                         }
                     }
                 }
@@ -123,7 +123,7 @@ public class CrateControlListener implements Listener {
 
                         player.openInventory(crateMainMenu.build().getInventory());
                     } else {
-                        player.sendMessage(Messages.feature_disabled.getString(player));
+                        player.sendMessage(Messages.feature_disabled.getMessage(player));
                     }
 
                     return;
@@ -148,7 +148,7 @@ public class CrateControlListener implements Listener {
                         placeholders.put("%crate%", crate.getPreviewName());
                         placeholders.put("%amount%", String.valueOf(totalKeys));
 
-                        player.sendMessage(Messages.required_keys.getMessage(placeholders).toString());
+                        player.sendMessage(Messages.required_keys.getMessage(placeholders, player));
                         return;
                     }
 
@@ -167,18 +167,18 @@ public class CrateControlListener implements Listener {
 
                         if (!useQuickCrateAgain) {
                             if (this.crateManager.isInOpeningList(player)) {
-                                player.sendMessage(Messages.already_opening_crate.getMessage("%key%", keyName).toString());
+                                player.sendMessage(Messages.already_opening_crate.getMessage("%key%", keyName, player));
                                 return;
                             }
 
                             if (this.crateManager.getCratesInUse().containsValue(crateLocation.getLocation())) {
-                                player.sendMessage(Messages.quick_crate_in_use.getString(player));
+                                player.sendMessage(Messages.quick_crate_in_use.getMessage(player));
                                 return;
                             }
                         }
 
                         if (MiscUtils.isInventoryFull(player)) {
-                            player.sendMessage(Messages.inventory_not_empty.getString(player));
+                            player.sendMessage(Messages.inventory_not_empty.getMessage(player));
                             return;
                         }
 
@@ -202,7 +202,7 @@ public class CrateControlListener implements Listener {
                                 player.playSound(player.getLocation(), Sound.valueOf(this.config.getProperty(ConfigKeys.need_key_sound)), SoundCategory.PLAYERS, 1f, 1f);
                             }
 
-                            player.sendMessage(Messages.no_keys.getMessage("%key%", keyName).toString());
+                            player.sendMessage(Messages.no_keys.getMessage("%key%", keyName, player));
                         }
                     }
                 }

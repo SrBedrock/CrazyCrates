@@ -66,7 +66,7 @@ public class CrateAdminMenu extends InventoryBuilder {
 
             if (!Permissions.CRAZYCRATES_ACCESS.hasPermission(player)) {
                 player.closeInventory(InventoryCloseEvent.Reason.CANT_USE);
-                player.sendMessage(Messages.no_permission.getString(player));
+                player.sendMessage(Messages.no_permission.getMessage(player));
                 return;
             }
 
@@ -81,7 +81,20 @@ public class CrateAdminMenu extends InventoryBuilder {
             ClickType clickType = event.getClick();
 
             switch (clickType) {
-                case LEFT -> player.getInventory().addItem(crate.getKey());
+                case LEFT -> {
+                    ItemStack key = crate.getKey();
+
+                    player.getInventory().addItem(key);
+
+                    if (key.getItemMeta() != null) {
+                        HashMap<String, String> placeholders = new HashMap<>();
+
+                        placeholders.put("%amount%", String.valueOf(1));
+                        placeholders.put("%key%", crate.getKeyName());
+
+                        player.sendMessage(Messages.obtaining_keys.getMessage(placeholders, player));
+                    }
+                }
 
                 case RIGHT -> {
                     this.userManager.addKeys(1, player.getUniqueId(), crate.getName(), KeyType.virtual_key);
@@ -94,7 +107,7 @@ public class CrateAdminMenu extends InventoryBuilder {
                         placeholders.put("%amount%", String.valueOf(1));
                         placeholders.put("%key%", crate.getKeyName());
 
-                        player.sendMessage(Messages.obtaining_keys.getMessage(placeholders).toString());
+                        player.sendMessage(Messages.obtaining_keys.getMessage(placeholders, player));
                     }
                 }
             }

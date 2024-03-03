@@ -1,10 +1,15 @@
 package com.badbones69.crazycrates.tasks.crates.types;
 
+import com.badbones69.crazycrates.api.PrizeManager;
 import com.badbones69.crazycrates.api.builders.CrateBuilder;
+import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.objects.Tier;
 import com.badbones69.crazycrates.tasks.crates.other.CosmicCrateManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 
 public class CosmicCrate extends CrateBuilder {
@@ -24,10 +29,19 @@ public class CosmicCrate extends CrateBuilder {
         int slot = 1;
 
         for (int index = 0; index < getSize(); index++) {
-            ItemStack stack = manager.getMysteryCrate().setAmount(slot).addNamePlaceholder("%Slot%", String.valueOf(slot)).addLorePlaceholder("%Slot%", String.valueOf(slot)).build(getPlayer());
+            ItemStack stack = manager.getMysteryCrate().setTarget(getPlayer()).setAmount(slot).addNamePlaceholder("%Slot%", String.valueOf(slot)).addLorePlaceholder("%Slot%", String.valueOf(slot)).build();
 
-            setItem(index, stack);
-            slot++;
+            ItemMeta itemMeta = stack.getItemMeta();
+
+            Tier tier = PrizeManager.getTier(getCrate());
+
+            if (tier != null) {
+                itemMeta.getPersistentDataContainer().set(PersistentKeys.crate_tier.getNamespacedKey(), PersistentDataType.STRING, tier.getName());
+                stack.setItemMeta(itemMeta);
+
+                setItem(index, stack);
+                slot++;
+            }
         }
 
         this.plugin.getCrateManager().addPlayerKeyType(getPlayer(), type);

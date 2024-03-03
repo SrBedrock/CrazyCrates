@@ -13,7 +13,6 @@ import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.tasks.InventoryManager;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -30,7 +29,6 @@ import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CrateMainMenu extends InventoryBuilder {
@@ -52,20 +50,12 @@ public class CrateMainMenu extends InventoryBuilder {
     public InventoryBuilder build() {
         Inventory inventory = getInventory();
 
-        boolean isPapiActive = MiscUtils.isPapiActive();
-
         if (this.config.getProperty(ConfigKeys.filler_toggle)) {
             String id = this.config.getProperty(ConfigKeys.filler_item);
             String name = this.config.getProperty(ConfigKeys.filler_name);
             List<String> lore = this.config.getProperty(ConfigKeys.filler_lore);
 
-            List<String> newLore = new ArrayList<>();
-
-            if (isPapiActive) {
-                lore.forEach(line -> newLore.add(PlaceholderAPI.setPlaceholders(getPlayer(), line)));
-            }
-
-            ItemStack item = new ItemBuilder().setMaterial(id).setName(isPapiActive ? PlaceholderAPI.setPlaceholders(getPlayer(), name) : name).setLore(isPapiActive ? newLore : lore).build(getPlayer());
+            ItemStack item = new ItemBuilder().setMaterial(id).setName(name).setLore(lore).setTarget(getPlayer()).build();
 
             for (int i = 0; i < getSize(); i++) {
                 inventory.setItem(i, item.clone());
@@ -90,7 +80,7 @@ public class CrateMainMenu extends InventoryBuilder {
 
                             option = getCrates(option);
 
-                            item.setName(isPapiActive ? PlaceholderAPI.setPlaceholders(getPlayer(), option.replaceAll("%player%", getPlayer().getName())) : option.replaceAll("%player%", getPlayer().getName()));
+                            item.setName(option.replaceAll("%player%", getPlayer().getName()));
                         }
 
                         if (option.contains("Lore:")) {
@@ -100,7 +90,7 @@ public class CrateMainMenu extends InventoryBuilder {
                             for (String ignored : lore) {
                                 option = getCrates(option);
 
-                                item.addLore(isPapiActive ? PlaceholderAPI.setPlaceholders(getPlayer(), option.replaceAll("%player%", getPlayer().getName())) : option.replaceAll("%player%", getPlayer().getName()));
+                                item.addLore(option.replaceAll("%player%", getPlayer().getName()));
                             }
                         }
 
@@ -122,7 +112,7 @@ public class CrateMainMenu extends InventoryBuilder {
                     if (slot > getSize()) continue;
 
                     slot--;
-                    inventory.setItem(slot, item.build(getPlayer()));
+                    inventory.setItem(slot, item.setTarget(getPlayer()).build());
                 }
             }
         }
@@ -138,18 +128,13 @@ public class CrateMainMenu extends InventoryBuilder {
 
                     slot--;
 
-                    List<String> lore = new ArrayList<>();
-
-                    if (isPapiActive) {
-                        file.getStringList(path + "Lore").forEach(line -> lore.add(PlaceholderAPI.setPlaceholders(getPlayer(), line)));
-                    }
-
                     String name = file.getString(path + "Name", path + "Name is missing in " + crate.getName() + ".yml");
 
                     inventory.setItem(slot, new ItemBuilder()
+                            .setTarget(getPlayer())
                             .setMaterial(file.getString(path + "Item", "CHEST"))
-                            .setName(isPapiActive ? PlaceholderAPI.setPlaceholders(getPlayer(), name) : name)
-                            .setLore(isPapiActive ? lore : file.getStringList(path + "Lore"))
+                            .setName(name)
+                            .setLore(file.getStringList(path + "Lore"))
                             .setCrateName(crate.getName())
                             .setPlayerName(file.getString(path + "Player"))
                             .setGlow(file.getBoolean(path + "Glowing"))
@@ -158,7 +143,7 @@ public class CrateMainMenu extends InventoryBuilder {
                             .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
                             .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName())))
                             .addLorePlaceholder("%Player%", getPlayer().getName())
-                            .build(getPlayer()));
+                            .build());
                 }
             }
 
@@ -225,14 +210,14 @@ public class CrateMainMenu extends InventoryBuilder {
                     this.inventoryManager.addViewer(player);
                     this.inventoryManager.openNewCratePreview(player, crate, crate.getCrateType() == CrateType.cosmic || crate.getCrateType() == CrateType.casino);
                 } else {
-                    player.sendMessage(Messages.preview_disabled.getString(player));
+                    player.sendMessage(Messages.preview_disabled.getMessage(player));
                 }
 
                 return;
             }
 
             if (this.crateManager.isInOpeningList(player)) {
-                player.sendMessage(Messages.already_opening_crate.getString(player));
+                player.sendMessage(Messages.already_opening_crate.getMessage(player));
                 return;
             }
 
@@ -253,19 +238,19 @@ public class CrateMainMenu extends InventoryBuilder {
                     player.playSound(player.getLocation(), Sound.valueOf(this.config.getProperty(ConfigKeys.need_key_sound)), SoundCategory.PLAYERS, 1f, 1f);
                 }
 
-                player.sendMessage(Messages.no_virtual_key.getString(player));
+                player.sendMessage(Messages.no_virtual_key.getMessage(player));
                 return;
             }
 
             for (String world : this.config.getProperty(ConfigKeys.disabledWorlds)) {
                 if (world.equalsIgnoreCase(player.getWorld().getName())) {
-                    player.sendMessage(Messages.world_disabled.getMessage("%world%", player.getWorld().getName()).toString(player));
+                    player.sendMessage(Messages.world_disabled.getMessage("%world%", player.getWorld().getName(), player));
                     return;
                 }
             }
 
             if (MiscUtils.isInventoryFull(player)) {
-                player.sendMessage(Messages.inventory_not_empty.getString(player));
+                player.sendMessage(Messages.inventory_not_empty.getMessage(player));
                 return;
             }
 
