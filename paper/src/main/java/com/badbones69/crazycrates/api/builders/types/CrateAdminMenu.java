@@ -33,7 +33,7 @@ public class CrateAdminMenu extends InventoryBuilder {
         Inventory inventory = getInventory();
 
         for (Crate crate : this.plugin.getCrateManager().getUsableCrates()) {
-            if (inventory.firstEmpty() >= 0) inventory.setItem(inventory.firstEmpty(), crate.getAdminKey());
+            if (inventory.firstEmpty() >= 0) inventory.setItem(inventory.firstEmpty(), crate.getAdminKey(getPlayer()));
         }
 
         return this;
@@ -82,7 +82,7 @@ public class CrateAdminMenu extends InventoryBuilder {
 
             switch (clickType) {
                 case LEFT -> {
-                    ItemStack key = crate.getKey();
+                    ItemStack key = crate.getKey(player);
 
                     player.getInventory().addItem(key);
 
@@ -99,7 +99,7 @@ public class CrateAdminMenu extends InventoryBuilder {
                 case RIGHT -> {
                     this.userManager.addKeys(1, player.getUniqueId(), crate.getName(), KeyType.virtual_key);
 
-                    ItemStack key = crate.getKey();
+                    ItemStack key = crate.getKey(player);
 
                     if (key.getItemMeta() != null) {
                         HashMap<String, String> placeholders = new HashMap<>();

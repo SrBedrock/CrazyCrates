@@ -45,7 +45,7 @@ public class Crate {
     private final String keyName;
     private final ItemBuilder keyBuilder;
     private final ItemStack keyNoNBT;
-    private final ItemStack adminKey;
+    private final ItemBuilder adminKey;
     private int maxPage = 1;
     private final int maxSlots;
     private final String previewName;
@@ -98,7 +98,7 @@ public class Crate {
         .addLore("")
         .addLore("&7&l(&6&l!&7&l) Left click for Physical Key")
         .addLore("&7&l(&6&l!&7&l) Right click for Virtual Key")
-        .setCrateName(name).build();
+        .setCrateName(name);
         this.file = file;
         this.name = name;
         this.tiers = tiers != null ? tiers : new ArrayList<>();
@@ -463,6 +463,15 @@ public class Crate {
     }
 
     /**
+     * @param player The player getting the key.
+     *
+     * @return the key as an item stack.
+     */
+    public ItemStack getKey(Player player) {
+        return this.keyBuilder.setTarget(player).build();
+    }
+
+    /**
      * @param amount The amount of keys you want.
      * @return the key as an item stack.
      */
@@ -473,6 +482,18 @@ public class Crate {
     }
 
     /**
+     * @param amount The amount of keys you want.
+     * @param player The player getting the key.
+     *
+     * @return the key as an item stack.
+     */
+    public ItemStack getKey(int amount, Player player) {
+        ItemBuilder key = this.keyBuilder.setTarget(player).setAmount(amount);
+
+        return key.build();
+    }
+    
+    /**
      * @return the key as an item stack with no nbt tags.
      */
     public ItemStack getKeyNoNBT() {
@@ -481,6 +502,7 @@ public class Crate {
 
     /**
      * @param amount the amount of keys you want.
+     *
      * @return the key as an item stack with no nbt tags.
      */
     public ItemStack getKeyNoNBT(int amount) {
@@ -497,7 +519,18 @@ public class Crate {
      * @return the itemstack of the key shown in the /cc admin menu.
      */
     public ItemStack getAdminKey() {
-        return this.adminKey;
+        return this.adminKey.build();
+    }
+
+    /**
+     * Get the key that shows in the /cc admin menu.
+     *
+     * @param player The player getting the key.
+     *
+     * @return the itemstack of the key shown in the /cc admin menu.
+     */
+    public ItemStack getAdminKey(Player player) {
+        return this.adminKey.setTarget(player).build();
     }
 
     /**
@@ -579,18 +612,12 @@ public class Crate {
      * @param path   the path in the config to set the item at.
      */
     private void setItem(ItemStack item, int chance, String path) {
-        if (item.hasItemMeta()) {
-            if (item.getItemMeta().hasDisplayName())
-                this.file.set(path + ".DisplayName", item.getItemMeta().getDisplayName());
-            if (item.getItemMeta().hasLore()) this.file.set(path + ".Lore", item.getItemMeta().getLore());
-        }
+        ItemMeta itemMeta = item.getItemMeta();
 
-        NBTItem nbtItem = new NBTItem(item);
+        if (itemMeta.hasDisplayName()) this.file.set(path + ".DisplayName", item.getItemMeta().getDisplayName());
+        if (itemMeta.hasLore()) this.file.set(path + ".Lore", item.getItemMeta().getLore());
 
-        if (nbtItem.hasNBTData()) {
-            if (nbtItem.hasTag("Unbreakable") && nbtItem.getBoolean("Unbreakable"))
-                this.file.set(path + ".Unbreakable", true);
-        }
+        this.file.set(path + ".Unbreakable", itemMeta.isUnbreakable());
 
         List<String> enchantments = new ArrayList<>();
 

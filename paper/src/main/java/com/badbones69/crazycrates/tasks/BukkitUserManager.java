@@ -114,7 +114,7 @@ public class BukkitUserManager extends UserManager {
         switch (keyType) {
             case physical_key -> {
                 if (!MiscUtils.isInventoryFull(player)) {
-                    player.getInventory().addItem(crate.getKey(amount));
+                    player.getInventory().addItem(crate.getKey(amount, player));
                     return;
                 }
 
@@ -132,7 +132,7 @@ public class BukkitUserManager extends UserManager {
                     return;
                 }
 
-                player.getWorld().dropItem(player.getLocation(), crate.getKey(amount));
+                player.getWorld().dropItem(player.getLocation(), crate.getKey(amount, player));
             }
 
             case virtual_key -> addVirtualKeys(amount, player.getUniqueId(), crate.getName());
@@ -466,7 +466,7 @@ public class BukkitUserManager extends UserManager {
                     if (crate.getCrateType() == CrateType.crate_on_the_go) {
                         // If the inventory is full, drop the items then stop.
                         if (MiscUtils.isInventoryFull(player)) {
-                            player.getWorld().dropItemNaturally(player.getLocation(), crate.getKey(amount));
+                            player.getWorld().dropItemNaturally(player.getLocation(), crate.getKey(amount, player));
                             break;
                         }
                     }
@@ -477,7 +477,7 @@ public class BukkitUserManager extends UserManager {
                 // If the crate type is on the go.
                 if (crate.getCrateType() == CrateType.crate_on_the_go) {
                     // If the inventory not full, add to inventory.
-                    player.getInventory().addItem(crate.getKey(amount));
+                    player.getInventory().addItem(crate.getKey(amount, player));
                 } else {
                     // Otherwise add virtual keys.
                     addVirtualKeys(amount, uuid, crate.getName());
@@ -500,7 +500,7 @@ public class BukkitUserManager extends UserManager {
                 while (keysGiven < amount) {
                     // If the inventory is full, drop the remaining keys then stop.
                     if (MiscUtils.isInventoryFull(player)) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), crate.getKey(amount - keysGiven));
+                        player.getWorld().dropItemNaturally(player.getLocation(), crate.getKey(amount-keysGiven, player));
                         break;
                     }
 
@@ -508,7 +508,7 @@ public class BukkitUserManager extends UserManager {
                 }
 
                 // If the inventory not full, add to inventory.
-                player.getInventory().addItem(crate.getKey(keysGiven));
+                player.getInventory().addItem(crate.getKey(keysGiven, player));
 
                 // If keys given is greater or equal than, remove data.
                 if (keysGiven >= amount)

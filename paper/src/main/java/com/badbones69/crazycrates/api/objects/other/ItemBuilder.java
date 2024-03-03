@@ -426,12 +426,22 @@ public class ItemBuilder {
 
         setCustomItem();
 
-        if (item != null && item.getType() != Material.AIR) {
-            if (this.isHead && (this.isHash)) { // Sauce: https://github.com/deanveloper/SkullCreator
-                if (this.isURL) {
-                    item = SkullCreator.itemWithUrl(item, this.player);
-                } else {
-                    item = SkullCreator.itemWithBase64(item, this.player);
+            if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
+                item = oraxenItem.build();
+                this.itemMeta = item.getItemMeta();
+            }
+        }
+
+        if (item.getType() != Material.AIR) {
+            if (this.isHead) { // Has to go 1st due to it removing all data when finished.
+                if (this.isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
+                    if (this.isURL) {
+                        item = SkullCreator.itemWithUrl(item, this.player);
+                    } else {
+                        item = SkullCreator.itemWithBase64(item, this.player);
+                    }
+
+                    this.itemMeta = item.getItemMeta();
                 }
                 this.itemMeta = item.getItemMeta();
             }
@@ -504,9 +514,9 @@ public class ItemBuilder {
                 shieldMeta.setBlockState(banner);
             }
 
-            if (this.useCustomModelData) {
-                this.itemMeta.setCustomModelData(this.customModelData);
-            }
+            this.itemMeta.setUnbreakable(this.unbreakable);
+
+            if (this.useCustomModelData) this.itemMeta.setCustomModelData(this.customModelData);
 
             this.itemFlags.forEach(this.itemMeta::addItemFlags);
             item.setItemMeta(this.itemMeta);
@@ -516,17 +526,7 @@ public class ItemBuilder {
 
             NBTItem nbt = new NBTItem(item);
 
-            if (this.isHead && !this.isHash) {
-                nbt.setString("SkullOwner", this.player);
-            }
-
-            if (this.isMobEgg && (this.entityType != null)) {
-                nbt.addCompound("EntityTag").setString("id", "minecraft:" + this.entityType.name());
-            }
-
-            if (!this.crateName.isEmpty()) {
-                nbt.setString("CrazyCrates-Crate", this.crateName);
-            }
+            if (!this.crateName.isEmpty()) nbt.setString("CrazyCrates-Crate", this.crateName);
 
             return nbt.getItem();
         } else {
@@ -1144,44 +1144,25 @@ public class ItemBuilder {
     public static ItemBuilder convertItemStack(ItemStack item) {
         ItemBuilder itemBuilder = new ItemBuilder().setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
 
-        if (item.hasItemMeta() && item.getItemMeta() != null) {
-            ItemMeta itemMeta = item.getItemMeta();
-
-            if (itemMeta.hasDisplayName()) {
-                itemBuilder.setName(itemMeta.getDisplayName());
-            }
-            if (itemMeta.hasLore()) {
-                itemBuilder.setLore(itemMeta.getLore());
-            }
-
-            NBTItem nbt = new NBTItem(item);
-
-            if (nbt.hasTag("Unbreakable")) {
-                itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
-            }
-
-            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable damageable) {
-                itemBuilder.setDamage(damageable.getDamage());
-            }
-        }
-
-        return itemBuilder;
+        return set(item, itemBuilder);
     }
 
     public static ItemBuilder convertItemStack(ItemStack item, Player player) {
         ItemBuilder itemBuilder = new ItemBuilder().setTarget(player).setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
 
+        return set(item, itemBuilder);
+    }
+
+    private static ItemBuilder set(ItemStack item, ItemBuilder itemBuilder) {
         if (item.hasItemMeta() && item.getItemMeta() != null) {
             ItemMeta itemMeta = item.getItemMeta();
 
             if (itemMeta.hasDisplayName()) itemBuilder.setName(itemMeta.getDisplayName());
             if (itemMeta.hasLore()) itemBuilder.setLore(itemMeta.getLore());
 
-            NBTItem nbt = new NBTItem(item);
+            itemMeta.setUnbreakable(itemMeta.isUnbreakable());
 
-            if (nbt.hasTag("Unbreakable")) itemBuilder.setUnbreakable(nbt.getBoolean("Unbreakable"));
-
-            if (itemMeta instanceof org.bukkit.inventory.meta.Damageable) itemBuilder.setDamage(((org.bukkit.inventory.meta.Damageable) itemMeta).getDamage());
+            if (itemMeta instanceof Damageable) itemBuilder.setDamage(((Damageable) itemMeta).getDamage());
         }
 
         return itemBuilder;

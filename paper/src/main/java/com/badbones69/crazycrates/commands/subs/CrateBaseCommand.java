@@ -804,7 +804,7 @@ public class CrateBaseCommand extends BaseCommand {
 
         if (player != null) {
             if (crate.getCrateType() == CrateType.crate_on_the_go) {
-                player.getInventory().addItem(crate.getKey(amount));
+                player.getInventory().addItem(crate.getKey(amount, player));
             } else {
                 this.userManager.addKeys(amount, player.getUniqueId(), crate.getName(), type);
             }
@@ -1020,7 +1020,7 @@ public class CrateBaseCommand extends BaseCommand {
             onlinePlayer.sendMessage(Messages.obtaining_keys.getMessage(placeholders, onlinePlayer));
 
             if (crate.getCrateType() == CrateType.crate_on_the_go) {
-                onlinePlayer.getInventory().addItem(crate.getKey(amount));
+                onlinePlayer.getInventory().addItem(crate.getKey(amount, onlinePlayer));
 
                 return;
             }
