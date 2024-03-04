@@ -426,12 +426,6 @@ public class ItemBuilder {
 
         setCustomItem();
 
-            if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
-                item = oraxenItem.build();
-                this.itemMeta = item.getItemMeta();
-            }
-        }
-
         if (item.getType() != Material.AIR) {
             if (this.isHead) { // Has to go 1st due to it removing all data when finished.
                 if (this.isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
@@ -562,20 +556,23 @@ public class ItemBuilder {
 
         if ("or".equals(identifier) && PluginSupport.ORAXEN.isPluginEnabled()) {
             configureOraxenItem(id);
-        } else if ("ie".equals(identifier) && PluginSupport.ITEM_EDIT.isPluginEnabled()) {
+            return;
+        }
+
+        if ("ie".equals(identifier) && PluginSupport.ITEM_EDIT.isPluginEnabled()) {
             configureItemEditItem(id);
         }
     }
 
     private void configureOraxenItem(String id) {
-        io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(id);
+        var oraxenItem = OraxenItems.getItemById(id);
         if (oraxenItem != null) {
             updateItemStack(oraxenItem.build());
         }
     }
 
     private void configureItemEditItem(String id) {
-        ItemStack item = ItemEdit.get().getServerStorage().getItem(id);
+        var item = ItemEdit.get().getServerStorage().getItem(id);
         updateItemStack(item);
     }
 
@@ -762,7 +759,7 @@ public class ItemBuilder {
      * Add a placeholder to the name of the item.
      *
      * @param placeholder the placeholder that will be replaced.
-     * @param argument the argument you wish to replace the placeholder with.
+     * @param argument    the argument you wish to replace the placeholder with.
      * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addNamePlaceholder(String placeholder, String argument) {
@@ -803,7 +800,7 @@ public class ItemBuilder {
      * Set the lore of the item with papi support in the builder. This will auto force color in all the lores that contains color code. (&a, &c, &7, etc...)
      *
      * @param player the player viewing the button.
-     * @param lore the lore of the item in the builder.
+     * @param lore   the lore of the item in the builder.
      * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setLore(Player player, List<String> lore) {
@@ -844,7 +841,7 @@ public class ItemBuilder {
      * Add a placeholder to the lore of the item.
      *
      * @param placeholder the placeholder you wish to replace.
-     * @param argument the argument that will replace the placeholder.
+     * @param argument    the argument that will replace the placeholder.
      * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addLorePlaceholder(String placeholder, String argument) {
@@ -993,7 +990,7 @@ public class ItemBuilder {
      * Adds an enchantment to the item.
      *
      * @param enchantment the enchantment you wish to add.
-     * @param level the level of the enchantment ( Unsafe levels included )
+     * @param level       the level of the enchantment ( Unsafe levels included )
      * @return the ItemBuilder with updated enchantments.
      */
     public ItemBuilder addEnchantments(Enchantment enchantment, int level) {
@@ -1181,7 +1178,7 @@ public class ItemBuilder {
     /**
      * Converts a string to an ItemBuilder with a placeholder for errors.
      *
-     * @param itemString the string you wish to convert.
+     * @param itemString  the string you wish to convert.
      * @param placeHolder the placeholder to use if there is an error.
      * @return the string as an ItemBuilder.
      */

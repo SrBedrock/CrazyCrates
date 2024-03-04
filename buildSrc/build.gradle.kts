@@ -9,7 +9,5 @@ dependencies {
 
     implementation(libs.runpaper)
 
-    implementation(libs.modrinth)
-
     implementation(libs.hangar)
 }

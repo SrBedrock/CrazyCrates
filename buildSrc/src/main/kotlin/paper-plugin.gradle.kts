@@ -45,7 +45,4 @@ tasks {
         minecraftVersion(mcVersion)
     }
 
-    modrinth {
-        loaders.addAll("paper", "purpur")
-    }
 }
