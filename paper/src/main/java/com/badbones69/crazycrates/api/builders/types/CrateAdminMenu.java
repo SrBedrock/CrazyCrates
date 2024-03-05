@@ -5,6 +5,7 @@ import com.badbones69.crazycrates.api.builders.InventoryBuilder;
 import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.enums.Permissions;
 import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,8 +33,15 @@ public class CrateAdminMenu extends InventoryBuilder {
     public InventoryBuilder build() {
         Inventory inventory = getInventory();
 
+        inventory.setItem(49, new ItemBuilder().setMaterial(Material.CHEST)
+                .setName("&cWhat is this menu?")
+                .addLore("")
+                .addLore("&dA cheat cheat menu of all your available keys.")
+                .addLore("&7&lRight click to get virtual keys.")
+                .addLore("&7&lLeft click to get physical keys.").build());
+
         for (Crate crate : this.plugin.getCrateManager().getUsableCrates()) {
-            if (inventory.firstEmpty() >= 0) inventory.setItem(inventory.firstEmpty(), crate.getAdminKey(getPlayer()));
+            if (inventory.firstEmpty() >= 0) inventory.setItem(inventory.firstEmpty(), crate.getKey(getPlayer()));
         }
 
         return this;
