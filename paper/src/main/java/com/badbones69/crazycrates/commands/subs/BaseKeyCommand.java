@@ -15,10 +15,10 @@ import dev.triumphteam.cmd.core.BaseCommand;
 import dev.triumphteam.cmd.core.annotation.Command;
 import dev.triumphteam.cmd.core.annotation.Default;
 import dev.triumphteam.cmd.core.annotation.Description;
+import dev.triumphteam.cmd.core.annotation.Optional;
 import dev.triumphteam.cmd.core.annotation.SubCommand;
 import dev.triumphteam.cmd.core.annotation.Suggestion;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -58,9 +58,14 @@ public class BaseKeyCommand extends BaseCommand {
 
     @SubCommand("ver")
     @Permission("crazycrates.command.player.key.others")
-    public void viewOthers(CommandSender sender, @Suggestion("online-players") Player target) {
-        if (target == sender) {
-            viewPersonal(target);
+    public void viewOthers(CommandSender sender, @Optional @Suggestion("online-players") Player target) {
+        if (target == sender || target == null) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(Messages.must_be_a_player.getMessage());
+                return;
+            }
+
+            viewPersonal(player);
             return;
         }
 
@@ -69,7 +74,7 @@ public class BaseKeyCommand extends BaseCommand {
         placeholders.put("%player%", target.getName());
         placeholders.put("%crates_opened%", String.valueOf(this.userManager.getTotalCratesOpened(target.getUniqueId())));
 
-        String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof Player player ?  player : null);
+        String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof Player player ? player : null);
 
         String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", target.getName(), sender instanceof Player player ? player : null);
 
