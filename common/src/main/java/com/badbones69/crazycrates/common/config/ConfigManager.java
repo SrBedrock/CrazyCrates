@@ -5,6 +5,7 @@ import ch.jalu.configme.SettingsManagerBuilder;
 import ch.jalu.configme.resource.YamlFileResourceOptions;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.common.config.types.MessageKeys;
+
 import java.io.File;
 
 public class ConfigManager {

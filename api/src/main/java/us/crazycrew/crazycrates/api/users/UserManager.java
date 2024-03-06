@@ -2,6 +2,7 @@ package us.crazycrew.crazycrates.api.users;
 
 import net.kyori.adventure.audience.Audience;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
+
 import java.util.UUID;
 
 /**

@@ -13,7 +13,6 @@ import com.badbones69.crazycrates.tasks.InventoryManager;
 import com.badbones69.crazycrates.tasks.crates.effects.SoundEffect;
 import com.badbones69.crazycrates.tasks.crates.other.AbstractCrateManager;
 import com.badbones69.crazycrates.tasks.crates.other.CosmicCrateManager;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;

@@ -3,6 +3,7 @@ package com.badbones69.crazycrates.common;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import us.crazycrew.crazycrates.api.CrazyCratesService;
 import us.crazycrew.crazycrates.api.ICrazyCrates;
+
 import java.io.File;
 
 public abstract class CrazyCratesPlugin implements ICrazyCrates {
