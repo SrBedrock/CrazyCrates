@@ -167,6 +167,8 @@ public class CratePreviewMenu extends InventoryBuilder {
 
             if (container.has(PersistentKeys.main_menu_button.getNamespacedKey()) && this.crazyHandler.getConfigManager().getConfig().getProperty(ConfigKeys.enable_crate_menu)) { // Clicked the menu button.
                 if (this.inventoryManager.inCratePreview(player)) {
+                    if (holder.overrideMenu()) return;
+
                     crate.playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
 
                     if (crate.getCrateType() == CrateType.casino || crate.getCrateType() == CrateType.cosmic) {
