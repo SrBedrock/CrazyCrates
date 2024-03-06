@@ -15,10 +15,10 @@ import dev.triumphteam.cmd.core.BaseCommand;
 import dev.triumphteam.cmd.core.annotation.Command;
 import dev.triumphteam.cmd.core.annotation.Default;
 import dev.triumphteam.cmd.core.annotation.Description;
+import dev.triumphteam.cmd.core.annotation.Optional;
 import dev.triumphteam.cmd.core.annotation.SubCommand;
 import dev.triumphteam.cmd.core.annotation.Suggestion;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -58,9 +58,14 @@ public class BaseKeyCommand extends BaseCommand {
 
     @SubCommand("ver")
     @Permission("crazycrates.command.player.key.others")
-    public void viewOthers(CommandSender sender, @Suggestion("online-players") Player target) {
-        if (target == sender) {
-            viewPersonal(target);
+    public void viewOthers(CommandSender sender, @Optional @Suggestion("online-players") Player target) {
+        if (target == sender || target == null) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(Messages.must_be_a_player.getMessage());
+                return;
+            }
+
+            viewPersonal(player);
             return;
         }
 
@@ -69,9 +74,9 @@ public class BaseKeyCommand extends BaseCommand {
         placeholders.put("%player%", target.getName());
         placeholders.put("%crates_opened%", String.valueOf(this.userManager.getTotalCratesOpened(target.getUniqueId())));
 
-        String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof Player ? (Player) sender : null);
+        String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof Player player ? player : null);
 
-        String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", target.getName(), sender instanceof Player ? (Player) sender : null);
+        String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", target.getName(), sender instanceof Player player ? player : null);
 
         getKeys(target, sender, header, otherPlayer);
     }
@@ -84,21 +89,25 @@ public class BaseKeyCommand extends BaseCommand {
         // If the crate is menu or null. we return
         if (crate == null || crate.getCrateType() == CrateType.menu) {
             sender.sendMessage(Messages.not_a_crate.getMessage("%crate%", crateName, sender));
-
             return;
         }
 
         // If it's the same player, we return.
         if (player.getUniqueId().toString().equalsIgnoreCase(sender.getUniqueId().toString())) {
             sender.sendMessage(Messages.same_player.getMessage(sender));
-
             return;
         }
 
-        // If they don't have enough keys, we return.
-        if (this.userManager.getVirtualKeys(sender.getUniqueId(), crate.getName()) <= amount) {
-            sender.sendMessage(Messages.transfer_not_enough_keys.getMessage("%crate%", crate.getName(), sender));
+        Map<String, String> placeholders = new HashMap<>();
 
+        placeholders.put("%crate%", crate.getName());
+        placeholders.put("%key%", crate.getKeyName());
+        placeholders.put("%amount%", String.valueOf(amount));
+        placeholders.put("%player%", player.getName());
+
+        // If they don't have enough keys, we return.
+        if (this.userManager.getVirtualKeys(sender.getUniqueId(), crate.getName()) < amount) {
+            sender.sendMessage(Messages.transfer_not_enough_keys.getMessage(placeholders, sender));
             return;
         }
 
@@ -111,18 +120,11 @@ public class BaseKeyCommand extends BaseCommand {
         this.userManager.takeKeys(amount, sender.getUniqueId(), crate.getName(), KeyType.virtual_key, false);
         this.userManager.addKeys(amount, player.getUniqueId(), crate.getName(), KeyType.virtual_key);
 
-        Map<String, String> placeholders = new HashMap<>();
-
-        placeholders.put("%crate%", crate.getName());
-        placeholders.put("%key%", crate.getKeyName());
-        placeholders.put("%amount%", String.valueOf(amount));
-        placeholders.put("%player%", player.getName());
-
         sender.sendMessage(Messages.transfer_sent_keys.getMessage(placeholders, sender));
 
         placeholders.put("%player%", sender.getName());
 
-        player.sendMessage(Messages.transfer_received_keys.getMessage("%player%", sender.getName(), player));
+        player.sendMessage(Messages.transfer_received_keys.getMessage(placeholders, player));
 
         EventManager.logKeyEvent(player, sender, crate, KeyType.virtual_key, EventManager.KeyEventType.KEY_EVENT_RECEIVED, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
     }

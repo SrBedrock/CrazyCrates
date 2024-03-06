@@ -75,7 +75,8 @@ public enum Messages {
     other_player_no_keys_header(MessageKeys.other_player_header, true),
     per_crate(MessageKeys.per_crate),
     help(MessageKeys.help, true),
-    admin_help(MessageKeys.admin_help, true);
+    admin_help(MessageKeys.admin_help, true),
+    cleared_player_keys(MessageKeys.cleared_player_keys);
 
     private Property<String> property;
 

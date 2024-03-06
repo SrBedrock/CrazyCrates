@@ -3,7 +3,9 @@ package com.badbones69.crazycrates.commands.relations;
 import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.commands.MessageManager;
+import dev.triumphteam.cmd.core.message.ContextualKey;
 import dev.triumphteam.cmd.core.message.MessageKey;
+import dev.triumphteam.cmd.core.message.context.MessageContext;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +16,6 @@ public class ArgumentRelations extends MessageManager {
         String correctUsage = null;
 
         switch (subCommand) {
-            case "transfer" -> correctUsage = commandOrder + "<crate-name> <player-name> <amount>";
             case "debug", "open", "set" -> correctUsage = commandOrder + "<crate-name>";
             case "tp" -> correctUsage = commandOrder + "<id>";
             case "additem" -> correctUsage = commandOrder + "<crate-name> <prize-number> <chance> [tier]";
@@ -31,68 +32,48 @@ public class ArgumentRelations extends MessageManager {
 
     @Override
     public void build() {
-        getBukkitCommandManager().registerMessage(MessageKey.TOO_MANY_ARGUMENTS, (sender, context) -> {
-            String command = context.getCommand();
-            String subCommand = context.getSubCommand();
+        for (var messageKey : ContextualKey.getRegisteredKeys()) {
+            getBukkitCommandManager().registerMessage(messageKey, this::sendCorrectUsage);
+        }
+        getBukkitCommandManager().registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> sendUnknownCommand(sender));
+    }
 
-            String commandOrder = "/" + command + " " + subCommand + " ";
+    private void sendCorrectUsage(CommandSender sender, MessageContext context) {
+        String command = context.getCommand();
+        String subCommand = context.getSubCommand();
 
-            String correctUsage = getCorrectUsage(command, subCommand, commandOrder);
+        String commandOrder = "/" + command + " " + subCommand + " ";
 
-            if (!correctUsage.isEmpty()) {
-                send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
-            }
+        String correctUsage = getCorrectUsage(command, subCommand, commandOrder);
 
-            if (correctUsage != null) {
-                if (sender instanceof Player player) {
-                    send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage, player));
-                } else {
-                    send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage));
-                }
-            }
-        });
+        if (sender instanceof Player player) {
+            this.send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage, player));
+        } else {
+            this.send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage));
+        }
+    }
 
-        getBukkitCommandManager().registerMessage(MessageKey.NOT_ENOUGH_ARGUMENTS, (sender, context) -> {
-            String command = context.getCommand();
-            String subCommand = context.getSubCommand();
-
-            String commandOrder = "/" + command + " " + subCommand + " ";
-
-            String correctUsage = getCorrectUsage(command, subCommand, commandOrder);
-
-            if (!correctUsage.isEmpty()) {
-                send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage).toString());
-            }
-
-            if (correctUsage != null) {
-                if (sender instanceof Player player) {
-                    send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage, player));
-                } else {
-                    send(sender, Messages.correct_usage.getMessage("%usage%", correctUsage));
-                }
-            }
-        });
-
-        getBukkitCommandManager().registerMessage(MessageKey.UNKNOWN_COMMAND, (sender, context) -> {
-            if (sender instanceof Player player) {
-                send(sender, Messages.unknown_command.getMessage(player));
-            } else {
-                send(sender, Messages.unknown_command.getMessage());
-            }
-        });
+    private void sendUnknownCommand(@NotNull CommandSender sender) {
+        if (sender instanceof Player player) {
+            this.send(sender, Messages.unknown_command.getMessage(player));
+        } else {
+            this.send(sender, Messages.unknown_command.getMessage());
+        }
     }
 
     private String getCorrectUsage(@NotNull String command, String subCommand, String commandOrder) {
         String correctUsage = "";
 
         switch (command) {
-            case "crates" -> correctUsage = getContext(subCommand, commandOrder);
+            case "crates" -> {
+                return getContext(subCommand, commandOrder);
+            }
             case "chave" -> {
                 if (subCommand.equals("ver")) {
-                    correctUsage = commandOrder + " [jogador]";
+                    return commandOrder + "[jogador]";
                 }
                 if (subCommand.equals("transferir")) {
-                    correctUsage = commandOrder + " <caixa> <jogador> <quantidade>";
+                    return commandOrder + "<chave> <jogador> <quantidade>";
                 }
             }
         }
