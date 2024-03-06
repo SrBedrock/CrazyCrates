@@ -4,7 +4,9 @@ import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
+
 import java.util.List;
+
 import static ch.jalu.configme.properties.PropertyInitializer.newListProperty;
 import static ch.jalu.configme.properties.PropertyInitializer.newProperty;
 
@@ -181,4 +183,7 @@ public class MessageKeys implements SettingsHolder {
             "",
             "&7You can find a list of permissions @ &ehttps://docs.crazycrew.us/crazycrates/info/commands/permissions"
     ));
+
+    public static final Property<String> cleared_player_keys = newProperty("Messages.Cleared-Player-Keys", "%prefix%&cYou have cleared &e%amount%x %key% &cfrom &6%player%&c.");
+
 }
