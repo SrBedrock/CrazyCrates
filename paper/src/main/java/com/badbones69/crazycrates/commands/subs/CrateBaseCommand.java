@@ -989,14 +989,14 @@ public class CrateBaseCommand extends BaseCommand {
         clearKey(sender, player);
     }
 
-    private void clearKey(CommandSender sender, Player player) {
+    private void clearKey(CommandSender sender, @NotNull Player player) {
         Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%player%", player.getName());
         for (Crate crate : this.crateManager.getUsableCrates()) {
             String crateName = crate.getName();
             int amount = this.userManager.getVirtualKeys(player.getUniqueId(), crateName);
             if (amount > 0) {
                 this.userManager.takeKeys(amount, player.getUniqueId(), crateName, KeyType.virtual_key, false);
-                placeholders.put("%player%", player.getName());
                 placeholders.put("%crate%", crateName);
                 placeholders.put("%key%", crate.getKeyName());
                 placeholders.put("%amount%", String.valueOf(amount));
