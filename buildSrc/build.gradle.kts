@@ -8,6 +8,4 @@ dependencies {
     implementation(libs.shadowjar)
 
     implementation(libs.runpaper)
-
-    implementation(libs.hangar)
 }
