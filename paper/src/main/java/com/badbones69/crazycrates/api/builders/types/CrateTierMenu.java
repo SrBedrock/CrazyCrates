@@ -84,6 +84,7 @@ public class CrateTierMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
+            if (inventory.getHolder() == null) return;
             if (!(inventory.getHolder(false) instanceof CrateTierMenu holder)) return;
 
             event.setCancelled(true);

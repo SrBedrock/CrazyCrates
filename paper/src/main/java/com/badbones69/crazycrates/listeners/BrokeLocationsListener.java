@@ -53,7 +53,7 @@ public class BrokeLocationsListener implements Listener {
         this.plugin.debug(() -> "Fixed " + finalFixedAmount + " broken crate locations.", Level.WARNING);
 
         if (this.crateManager.getBrokeLocations().isEmpty()) {
-            this.plugin.getLogger().warning("All broken crate locations have been fixed.");
+            this.plugin.debug(() -> "All broken crate locations have been fixed.", Level.WARNING);
         }
     }
 }

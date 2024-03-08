@@ -33,6 +33,7 @@ public class WarCrateListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
 
+        if (inventory.getHolder() == null) return;
         if (!(inventory.getHolder(false) instanceof CratePrizeMenu holder)) return;
 
         Player player = holder.getPlayer();

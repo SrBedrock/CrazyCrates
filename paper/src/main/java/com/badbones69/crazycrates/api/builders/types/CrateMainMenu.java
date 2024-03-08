@@ -126,26 +126,26 @@ public class CrateMainMenu extends InventoryBuilder {
 
                 if (slot > getSize()) continue;
 
-                    slot--;
+                slot--;
 
-                    String name = file.getString(path + "Name", path + "Name is missing in " + crate.getName() + ".yml");
+                String name = file.getString(path + "Name", path + "Name is missing in " + crate.getName() + ".yml");
 
-                    inventory.setItem(slot, new ItemBuilder()
-                            .setTarget(getPlayer())
-                            .setMaterial(file.getString(path + "Item", "CHEST"))
-                            .setName(name)
-                            .setLore(file.getStringList(path + "Lore"))
-                            .setCrateName(crate.getName())
-                            .setPlayerName(file.getString(path + "Player"))
-                            .setGlow(file.getBoolean(path + "Glowing"))
-                            .addLorePlaceholder("%Keys%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Keys_Physical%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Player%", getPlayer().getName())
-                            .build());
-                }
+                inventory.setItem(slot, new ItemBuilder()
+                        .setTarget(getPlayer())
+                        .setMaterial(file.getString(path + "Item", "CHEST"))
+                        .setName(name)
+                        .setLore(file.getStringList(path + "Lore"))
+                        .setCrateName(crate.getName())
+                        .setPlayerName(file.getString(path + "Player"))
+                        .setGlow(file.getBoolean(path + "Glowing"))
+                        .addLorePlaceholder("%Keys%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Keys_Physical%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Player%", getPlayer().getName())
+                        .build());
             }
+        }
 
         return this;
     }
@@ -182,6 +182,7 @@ public class CrateMainMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
+            if (inventory.getHolder() == null) return;
             if (!(inventory.getHolder(false) instanceof CrateMainMenu holder)) return;
 
             event.setCancelled(true);

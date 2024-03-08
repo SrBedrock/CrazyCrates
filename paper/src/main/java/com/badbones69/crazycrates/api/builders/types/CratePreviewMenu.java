@@ -147,6 +147,7 @@ public class CratePreviewMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
+            if (inventory.getHolder() == null) return;
             if (!(inventory.getHolder(false) instanceof CratePreviewMenu holder)) return;
 
             event.setCancelled(true);
@@ -169,7 +170,7 @@ public class CratePreviewMenu extends InventoryBuilder {
                 if (this.inventoryManager.inCratePreview(player)) {
                     if (holder.overrideMenu()) return;
 
-                    crate.playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+                    crate.playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
 
                     if (crate.getCrateType() == CrateType.casino || crate.getCrateType() == CrateType.cosmic) {
                         player.openInventory(crate.getTierPreview(player));
@@ -190,7 +191,7 @@ public class CratePreviewMenu extends InventoryBuilder {
 
             if (container.has(PersistentKeys.next_button.getNamespacedKey())) {  // Clicked the next button.
                 if (this.inventoryManager.getPage(player) < crate.getMaxPage()) {
-                    crate.playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+                    crate.playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
 
                     this.inventoryManager.nextPage(player);
 
@@ -202,7 +203,7 @@ public class CratePreviewMenu extends InventoryBuilder {
 
             if (container.has(PersistentKeys.back_button.getNamespacedKey())) {  // Clicked the back button.
                 if (this.inventoryManager.getPage(player) > 1 && this.inventoryManager.getPage(player) <= crate.getMaxPage()) {
-                    crate.playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+                    crate.playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
 
                     this.inventoryManager.backPage(player);
 
