@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
 import static java.util.regex.Matcher.quoteReplacement;
@@ -36,8 +37,7 @@ public class PrizeManager {
      */
     public static void givePrize(Player player, Prize prize, Crate crate) {
         if (prize == null) {
-            if (plugin.isLogging())
-                plugin.getLogger().warning("No prize was found when giving " + player.getName() + " a prize.");
+            plugin.debug(() -> "No prize was found when giving " + player.getName() + " a prize.", Level.WARNING);
             return;
         }
 

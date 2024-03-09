@@ -3,6 +3,7 @@ package com.badbones69.crazycrates.api.objects;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -61,7 +62,6 @@ public class Prize {
         this.tiers = tierPrizes;
 
         this.alternativePrize = alternativePrize;
-
         this.prizeName = section.getString("DisplayName", WordUtils.capitalizeFully(section.getString("DisplayItem", "STONE").replaceAll("_", " ")));
         this.maxRange = section.getInt("MaxRange", 100);
         this.chance = section.getInt("Chance", 100);
@@ -97,7 +97,7 @@ public class Prize {
 
         this.section = section;
     }
-    
+
     /**
      * @return the name of the prize.
      */
@@ -150,84 +150,84 @@ public class Prize {
     public ItemBuilder getDisplayItemBuilder() {
         return this.displayItem;
     }
-    
+
     /**
      * @return the list of tiers the prize is in.
      */
     public List<Tier> getTiers() {
         return this.tiers;
     }
-    
+
     /**
      * @return the messages sent to the player.
      */
     public List<String> getMessages() {
         return this.messages;
     }
-    
+
     /**
      * @return the commands that are run when the player wins.
      */
     public List<String> getCommands() {
         return this.commands;
     }
-    
+
     /**
      * @return the Editor ItemStacks that are given to the player that wins.
      */
     public List<ItemStack> getItems() {
         return this.items;
     }
-    
+
     /**
      * @return the ItemBuilders for all the custom items made from the Items: option.
      */
     public List<ItemBuilder> getItemBuilders() {
         return this.builders;
     }
-    
+
     /**
      * @return the name of the crate the prize is in.
      */
     public String getCrateName() {
         return this.crateName;
     }
-    
+
     /**
      * @return the chance the prize has of being picked.
      */
     public int getChance() {
         return this.chance;
     }
-    
+
     /**
      * @return the max range of the prize.
      */
     public int getMaxRange() {
         return this.maxRange;
     }
-    
+
     /**
      * @return true if a firework explosion is played and false if not.
      */
     public boolean useFireworks() {
         return this.firework;
     }
-    
+
     /**
      * @return the alternative prize the player wins if they have a blacklist permission.
      */
     public Prize getAlternativePrize() {
         return this.alternativePrize;
     }
-    
+
     /**
      * @return true if the prize doesn't have an alternative prize and false if it does.
      */
     public boolean hasAlternativePrize() {
         return this.alternativePrize == null;
     }
-    
+
     /**
      * @return true if they prize has blacklist permissions and false if not.
      */
@@ -320,12 +320,11 @@ public class Prize {
 
             return builder;
         } catch (Exception exception) {
-            List<String> list = new ArrayList<>() {{
-               add("&cThere was an error with one of your prizes!");
-               add("&cThe reward in question is labeled: &e" + section.getName() + " &cin crate: &e" + crateName);
-               add("&cName of the reward is " + section.getString("DisplayName"));
-               add("&cIf you are confused, Stop by our discord for support!");
-            }};
+            List<String> list = List.of(
+                    "&cThere was an error with one of your prizes!",
+                    "&cThe reward in question is labeled: &e" + this.section.getName() + " &cin crate: &e" + this.crateName,
+                    "&cName of the reward is " + this.section.getString("DisplayName"),
+                    "&cIf you are confused, Stop by our discord for support!");
 
             return new ItemBuilder().setMaterial(Material.RED_TERRACOTTA).setName("&c&lERROR").setLore(list);
         }

@@ -239,7 +239,7 @@ public class Crate {
      * @return the winning prize.
      */
     public Prize pickPrize(Player player) {
-        List<Prize> prizes = new ArrayList<>();
+        List<Prize> prizeList = new ArrayList<>();
         List<Prize> usablePrizes = new ArrayList<>();
 
         // ================= Blacklist Check ================= //
@@ -256,10 +256,10 @@ public class Crate {
         }
 
         // ================= Chance Check ================= //
-        chanceCheck(prizes, usablePrizes);
+        chanceCheck(prizeList, usablePrizes);
 
         try {
-            return prizes.get(MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(prizes.size()) : RANDOM.nextInt(prizes.size()));
+            return prizeList.get(MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(prizeList.size()) : RANDOM.nextInt(prizeList.size()));
         } catch (IllegalArgumentException exception) {
             this.plugin.getLogger().log(Level.WARNING, "Failed to find prize from the " + name + " crate for player " + player.getName() + ".", exception);
             return null;
@@ -279,7 +279,7 @@ public class Crate {
                 int chance = prize.getChance();
                 int num;
 
-                for (int counter = 1; counter <= 1; counter++) {
+                for (int counter = 1; counter == 1; counter++) {
                     num = MiscUtils.useOtherRandom() ? 1 + ThreadLocalRandom.current().nextInt(max) : 1 + RANDOM.nextInt(max);
 
                     if (num <= chance) prizes.add(prize);
@@ -322,28 +322,32 @@ public class Crate {
      * @return the winning prize based on the crate's tiers.
      */
     public Prize pickPrize(Player player, Tier tier) {
-        List<Prize> prizes = new ArrayList<>();
+        List<Prize> prizeList = new ArrayList<>();
         List<Prize> usablePrizes = new ArrayList<>();
 
         // ================= Blacklist Check ================= //
         if (player.isOp()) {
             for (Prize prize : getPrizes()) {
-                if (prize.getTiers().contains(tier)) usablePrizes.add(prize);
+                if (prize.getTiers().contains(tier)) {
+                    usablePrizes.add(prize);
+                }
             }
         } else {
             for (Prize prize : getPrizes()) {
-                if (prize.hasPermission(player)) {
-                    if (prize.hasAlternativePrize()) continue;
+                if (prize.hasPermission(player) && prize.hasAlternativePrize()) {
+                    continue;
                 }
 
-                if (prize.getTiers().contains(tier)) usablePrizes.add(prize);
+                if (prize.getTiers().contains(tier)) {
+                    usablePrizes.add(prize);
+                }
             }
         }
 
         // ================= Chance Check ================= //
-        chanceCheck(prizes, usablePrizes);
+        chanceCheck(prizeList, usablePrizes);
 
-        return prizes.get(MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(prizes.size()) : RANDOM.nextInt(prizes.size()));
+        return prizeList.get(MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(prizeList.size()) : RANDOM.nextInt(prizeList.size()));
     }
 
     /**
@@ -527,7 +531,9 @@ public class Crate {
      */
     public Prize getPrize(String name) {
         for (Prize prize : this.prizes) {
-            if (prize.getPrizeName().equalsIgnoreCase(name)) return prize;
+            if (prize.getPrizeName().equalsIgnoreCase(name)) {
+                return prize;
+            }
         }
 
         return null;

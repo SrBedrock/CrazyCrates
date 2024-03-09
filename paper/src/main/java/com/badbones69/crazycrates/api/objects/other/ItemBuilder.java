@@ -5,6 +5,7 @@ import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.support.PluginSupport;
 import com.badbones69.crazycrates.support.SkullCreator;
+import com.destroystokyo.paper.MaterialTags;
 import com.ryderbelserion.cluster.utils.DyeUtils;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import emanondev.itemedit.ItemEdit;
@@ -423,9 +424,7 @@ public class ItemBuilder {
         if (this.nbtItem != null) this.itemStack = this.nbtItem.getItem();
 
         ItemStack item = this.itemStack;
-
         setCustomItem();
-
         if (item.getType() != Material.AIR) {
             if (this.isHead) { // Has to go 1st due to it removing all data when finished.
                 if (this.isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
@@ -573,7 +572,9 @@ public class ItemBuilder {
 
     private void configureItemEditItem(String id) {
         var item = ItemEdit.get().getServerStorage().getItem(id);
-        updateItemStack(item);
+        if (item != null) {
+            updateItemStack(item);
+        }
     }
 
     private void updateItemStack(ItemStack item) {
@@ -1159,7 +1160,7 @@ public class ItemBuilder {
 
             itemMeta.setUnbreakable(itemMeta.isUnbreakable());
 
-            if (itemMeta instanceof Damageable) itemBuilder.setDamage(((Damageable) itemMeta).getDamage());
+            if (itemMeta instanceof Damageable damageable) itemBuilder.setDamage(damageable.getDamage());
         }
 
         return itemBuilder;
