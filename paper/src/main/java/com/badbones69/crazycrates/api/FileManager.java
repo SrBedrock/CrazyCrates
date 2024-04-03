@@ -473,7 +473,7 @@ public class FileManager {
          * Saves the file from the loaded state to the file system.
          */
         public void saveFile() {
-            Bukkit.getAsyncScheduler().runNow(this.plugin, task -> this.fileManager.saveFile(this));
+            this.fileManager.saveFile(this);
         }
 
         /**
