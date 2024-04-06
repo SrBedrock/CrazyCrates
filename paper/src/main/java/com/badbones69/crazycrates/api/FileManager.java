@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,12 +23,12 @@ public class FileManager {
     @NotNull
     private final CrazyCrates plugin = CrazyCrates.get();
 
-    private final Map<Files, File> files = new HashMap<>();
+    private final Map<Files, File> files = new ConcurrentHashMap<>();
     private final List<String> homeFolders = new ArrayList<>();
     private final List<CustomFile> customFiles = new ArrayList<>();
-    private final Map<String, String> jarHomeFolders = new HashMap<>();
-    private final Map<String, String> autoGenerateFiles = new HashMap<>();
-    private final Map<Files, FileConfiguration> configurations = new HashMap<>();
+    private final Map<String, String> jarHomeFolders = new ConcurrentHashMap<>();
+    private final Map<String, String> autoGenerateFiles = new ConcurrentHashMap<>();
+    private final Map<Files, FileConfiguration> configurations = new ConcurrentHashMap<>();
     private final Logger logger = this.plugin.getLogger();
     private final boolean isLogging = this.plugin.isLogging();
 
@@ -343,7 +343,7 @@ public class FileManager {
      * @return A list of crate names.
      */
     public List<String> getAllCratesNames() {
-        List<String> files = new ArrayList<>();
+        List<String> fileList = new ArrayList<>();
 
         File crateDirectory = new File(this.plugin.getDataFolder(), "/crates");
 
@@ -361,7 +361,7 @@ public class FileManager {
                             for (String name : folder) {
                                 if (!name.endsWith(".yml")) continue;
 
-                                files.add(name.replaceAll(".yml", ""));
+                                fileList.add(name.replaceAll(".yml", ""));
                             }
                         }
                     }
@@ -371,11 +371,11 @@ public class FileManager {
             for (String name : file) {
                 if (!name.endsWith(".yml")) continue;
 
-                files.add(name.replaceAll(".yml", ""));
+                fileList.add(name.replaceAll(".yml", ""));
             }
         }
 
-        return Collections.unmodifiableList(files);
+        return Collections.unmodifiableList(fileList);
     }
 
     /**
@@ -473,14 +473,16 @@ public class FileManager {
          * Saves the file from the loaded state to the file system.
          */
         public void saveFile() {
-            this.fileManager.saveFile(this);
+            Bukkit.getAsyncScheduler().runNow(this.plugin, task -> this.fileManager.saveFile(this));
         }
 
         /**
          * Overrides the loaded state file and loads the file systems file.
          */
         public void reloadFile() {
-            if (getFileName().endsWith(".yml")) this.fileManager.reloadFile(this);
+            if (getFileName().endsWith(".yml")) {
+                this.fileManager.reloadFile(this);
+            }
         }
     }
 
