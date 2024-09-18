@@ -1,12 +1,17 @@
 package com.badbones69.crazycrates.support;
 
 import com.badbones69.crazycrates.CrazyCrates;
+import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
+import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBTCompoundList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -99,15 +104,28 @@ public class SkullCreator {
      * @param base64 The base64 string containing the texture
      * @return The head with a custom texture
      */
-    public static ItemStack itemWithBase64(ItemStack item, String base64) {
+    @Contract("_, _ -> param1")
+    public static @NotNull ItemStack itemWithBase64(ItemStack item, String base64) {
         notNull(item, "item");
         notNull(base64, "base64");
 
         UUID hashAsId = new UUID(base64.hashCode(), base64.hashCode());
-        return plugin.getServer().getUnsafe().modifyItemStack(item,
-                "{SkullOwner:{Id:\"" + hashAsId + "\",Properties:{textures:[{Value:\"" + base64 + "\"}]}}}"
-        );
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(hashAsId));
+        item.setItemMeta(meta);
+
+        NBT.modify(item, nbtItem -> {
+            ReadWriteNBT skullOwnerCompound = nbtItem.getOrCreateCompound("SkullOwner");
+            skullOwnerCompound.setString("Id", hashAsId.toString());
+            ReadWriteNBT propertiesCompound = skullOwnerCompound.getOrCreateCompound("Properties");
+            ReadWriteNBTCompoundList texturesList = propertiesCompound.getCompoundList("textures");
+            ReadWriteNBT textureCompound = texturesList.addCompound();
+            textureCompound.setString("Value", base64);
+        });
+
+        return item;
     }
+
 
     /**
      * Sets the block to a skull with the given UUID.

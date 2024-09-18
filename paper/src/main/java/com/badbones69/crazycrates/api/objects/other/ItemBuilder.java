@@ -874,7 +874,7 @@ public class ItemBuilder {
                     if (this.isURL) {
                         item = SkullCreator.itemWithUrl(item, this.player);
                     } else {
-                        item = SkullCreator.itemWithBase64(item, this.player);
+                        SkullCreator.itemWithBase64(item, this.player);
                     }
 
                     this.itemMeta = item.getItemMeta();
