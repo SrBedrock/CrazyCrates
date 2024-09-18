@@ -1,4 +1,5 @@
 plugins {
+    id("com.gradleup.shadow")
     `java-library`
     `maven-publish`
 }
@@ -22,6 +23,11 @@ tasks {
 
     processResources {
         filteringCharset = Charsets.UTF_8.name()
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
+        exclude("META-INF/**")
     }
 }
 

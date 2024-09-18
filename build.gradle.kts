@@ -2,7 +2,6 @@ import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
     id("root-plugin")
-    id("com.gradleup.shadow") version "8.3.1"
 }
 
 java {

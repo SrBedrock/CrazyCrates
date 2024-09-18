@@ -1,23 +1,15 @@
 plugins {
     id("paper-plugin")
-    id("com.gradleup.shadow") version "8.3.1"
 }
 
 dependencies {
     api(project(":common"))
-
     implementation(libs.cluster.paper)
-
     implementation(libs.triumphcmds)
-
     implementation(libs.nbtapi)
-
     compileOnly(libs.decentholograms)
-
     compileOnly(libs.placeholderapi)
-
     compileOnly(libs.oraxen)
-
     compileOnly(fileTree("libs").include("*.jar"))
 }
 
