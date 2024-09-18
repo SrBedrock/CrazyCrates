@@ -70,10 +70,10 @@ public class CrazyHandler extends CrazyCratesPlugin {
             Files.LOCATIONS.saveFile();
         }
 
-        if (!Files.DATA.getFile().contains("Players")) {
-            Files.DATA.getFile().set("Players.Clear", null);
-            Files.DATA.saveFile();
-        }
+//        if (!Files.DATA.getFile().contains("Players")) {
+//            Files.DATA.getFile().set("Players.Clear", null);
+//            Files.DATA.saveFile();
+//        }
     }
 
     @NotNull

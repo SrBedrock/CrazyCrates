@@ -170,10 +170,10 @@ public class CrateBaseCommand extends BaseCommand {
     public void onReload(CommandSender sender) {
         this.plugin.getConfigManager().reload();
 
-        this.fileManager.reloadAllFiles();
-        this.fileManager.setup();
-
-        FileUtils.loadFiles();
+//        this.fileManager.reloadAllFiles();
+//        this.fileManager.setup();
+//
+//        FileUtils.loadFiles();
 
         this.crazyHandler.cleanFiles();
 
