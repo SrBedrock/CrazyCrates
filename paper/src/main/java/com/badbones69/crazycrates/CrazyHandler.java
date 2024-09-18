@@ -16,6 +16,7 @@ public class CrazyHandler extends CrazyCratesPlugin {
     private BukkitUserManager userManager;
     private CrateManager crateManager;
     private FileManager fileManager;
+
     public CrazyHandler(CrazyCrates plugin) {
         super(plugin.getDataFolder());
     }

@@ -88,6 +88,7 @@ public enum Messages {
     private Property<List<String>> listProperty;
     private String message;
     private boolean isList = false;
+
     /**
      * Used for strings
      *
@@ -96,6 +97,7 @@ public enum Messages {
     Messages(Property<String> property) {
         this.property = property;
     }
+
     /**
      * Used for string lists
      *

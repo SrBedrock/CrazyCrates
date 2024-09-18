@@ -22,6 +22,7 @@ public class CasinoCrate extends CrateBuilder {
     private int counter = 0;
     private int time = 1;
     private int open = 0;
+
     public CasinoCrate(Crate crate, Player player, int size) {
         super(crate, player, size);
 

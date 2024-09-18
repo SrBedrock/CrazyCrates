@@ -26,6 +26,7 @@ public class StructureHandler {
     private final File file;
     private final List<Location> structureBlocks = new ArrayList<>();
     private final List<Location> preStructureBlocks = new ArrayList<>();
+
     public StructureHandler(File file) {
         this.file = file;
     }
