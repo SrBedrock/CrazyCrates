@@ -48,11 +48,11 @@ public class PlaceholderAPISupport extends PlaceholderExpansion {
             }
 
             if (identifier.equalsIgnoreCase(crate.getName() + "_opened")) {
-                return NumberFormat.getNumberInstance().format(this.userManager.getCrateOpened(human.getUniqueId(), crate.getName()));
+                return NumberFormat.getNumberInstance().format(0);
             }
 
             if (identifier.equalsIgnoreCase("crates_opened")) {
-                return NumberFormat.getNumberInstance().format(this.userManager.getTotalCratesOpened(human.getUniqueId()));
+                return NumberFormat.getNumberInstance().format(0);
             }
         }
 
@@ -78,9 +78,9 @@ public class PlaceholderAPISupport extends PlaceholderExpansion {
         return getKeys(target.getUniqueId(), identifier, crateName, value);
     }
 
-    private String getKeys(UUID uuid, String identifier, String crateName, String value) {
+    private @NotNull String getKeys(UUID uuid, String identifier, String crateName, String value) {
         if (this.plugin.getCrateManager().getCrateFromName(crateName) == null && identifier.endsWith("opened")) { // %crazycrates_<player>_opened%
-            return NumberFormat.getNumberInstance().format(this.userManager.getTotalCratesOpened(uuid));
+            return NumberFormat.getNumberInstance().format(0);
         }
 
         Crate crate = this.plugin.getCrateManager().getCrateFromName(crateName);
@@ -105,7 +105,7 @@ public class PlaceholderAPISupport extends PlaceholderExpansion {
         }
 
         if (result.endsWith("opened")) { // %crazycrates_<player>_<crate>_opened%
-            return NumberFormat.getNumberInstance().format(this.userManager.getCrateOpened(uuid, crate.getName()));
+            return NumberFormat.getNumberInstance().format(0);
         }
 
         return "N/A";

@@ -192,7 +192,6 @@ public class CrateBaseCommand extends BaseCommand {
 
         if (sender instanceof Player player) {
             player.sendMessage(Messages.reloaded_plugin.getMessage(player));
-
             return;
         }
 
@@ -659,9 +658,6 @@ public class CrateBaseCommand extends BaseCommand {
 
             keysUsed++;
         }
-
-        if (crate.getCrateType() != CrateType.cosmic)
-            this.userManager.addOpenedCrate(player.getUniqueId(), keysUsed, crate.getName());
 
         if (!this.userManager.takeKeys(keysUsed, player.getUniqueId(), crate.getName(), type, false)) {
             MiscUtils.failedToTakeKey(player, crate);

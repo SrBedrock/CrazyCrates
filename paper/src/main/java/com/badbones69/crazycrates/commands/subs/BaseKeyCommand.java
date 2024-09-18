@@ -51,7 +51,7 @@ public class BaseKeyCommand extends BaseCommand {
     public void viewPersonal(@NotNull Player player) {
         Map<String, String> placeholders = new HashMap<>();
 
-        placeholders.put("%crates_opened%", String.valueOf(this.userManager.getTotalCratesOpened(player.getUniqueId())));
+        placeholders.put("%crates_opened%", String.valueOf(0));
 
         getKeys(player, player, Messages.no_virtual_keys_header.getMessage(placeholders, player), Messages.no_virtual_keys.getMessage(player));
     }
@@ -72,7 +72,7 @@ public class BaseKeyCommand extends BaseCommand {
         Map<String, String> placeholders = new HashMap<>();
 
         placeholders.put("%player%", target.getName());
-        placeholders.put("%crates_opened%", String.valueOf(this.userManager.getTotalCratesOpened(target.getUniqueId())));
+        placeholders.put("%crates_opened%", String.valueOf(0));
 
         String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof Player player ? player : null);
 
@@ -158,7 +158,7 @@ public class BaseKeyCommand extends BaseCommand {
 
                 placeholders.put("%crate%", crate.getFile().getString("Crate.Name"));
                 placeholders.put("%keys%", String.valueOf(amount));
-                placeholders.put("%crate_opened%", String.valueOf(this.userManager.getCrateOpened(player.getUniqueId(), crate.getName())));
+                placeholders.put("%crate_opened%", String.valueOf(0));
 
                 message.add(Messages.per_crate.getMessage(placeholders, player));
             }

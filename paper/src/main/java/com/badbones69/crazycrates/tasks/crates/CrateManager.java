@@ -1067,7 +1067,7 @@ public class CrateManager {
                 return;
             }
 
-            Set<String> reservedNames = Set.of("Name", "tracking", "total-crates");
+            Set<String> reservedNames = Set.of("Name");
             Set<String> validCrateNames = new HashSet<>(getCrates().stream().map(Crate::getName).toList());
             List<String> removePlayers = new ArrayList<>();
 
@@ -1082,6 +1082,9 @@ public class CrateManager {
                 for (String crateName : playerSection.getKeys(false)) {
                     if (reservedNames.contains(crateName)) {
                         continue;
+                    }
+                    if (crateName.equals("tracking")) {
+                        data.set("Players." + uuid + ".tracking", null);
                     }
 
                     if (!validCrateNames.contains(crateName)) {
@@ -1098,10 +1101,7 @@ public class CrateManager {
                 }
 
                 // Remove invalid crates and tracking data
-                cratesToRemove.forEach(crate -> {
-                    data.set("Players." + uuid + "." + crate, null);
-                    data.set("Players." + uuid + ".tracking." + crate, null);
-                });
+                cratesToRemove.forEach(crate -> data.set("Players." + uuid + "." + crate, null));
 
                 if (!playerHasValidKeys) {
                     removePlayers.add(uuid);
