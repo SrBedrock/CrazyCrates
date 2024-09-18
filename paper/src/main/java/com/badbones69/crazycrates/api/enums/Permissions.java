@@ -85,7 +85,7 @@ public enum Permissions {
     /**
      * A constructor to build a permission
      *
-     * @param node the default permission
+     * @param node        the default permission
      * @param description the permission description
      */
     Permissions(String node, String description, PermissionDefault isDefault, HashMap<String, Boolean> children) {
@@ -100,7 +100,7 @@ public enum Permissions {
     /**
      * A constructor to build a permission
      *
-     * @param node the default permission
+     * @param node        the default permission
      * @param description the permission description
      */
     Permissions(String node, String description, PermissionDefault isDefault) {

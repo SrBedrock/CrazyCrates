@@ -175,14 +175,6 @@ public class CrateBaseCommand extends BaseCommand {
 
         FileUtils.loadFiles();
 
-        boolean isEnabled = this.crazyHandler.getConfigManager().getConfig().getProperty(ConfigKeys.toggle_metrics);
-
-        if (!isEnabled) {
-            this.crazyHandler.getMetrics().stop();
-        } else {
-            this.crazyHandler.getMetrics().start();
-        }
-
         this.crazyHandler.cleanFiles();
 
         // Close previews
@@ -726,20 +718,6 @@ public class CrateBaseCommand extends BaseCommand {
         onAdminCrateGive(sender, keyType, crate.getName(), amount, target);
     }
 
-    public record CustomPlayer(String name) {
-        private static final CrazyCrates plugin = CrazyCrates.getPlugin(CrazyCrates.class);
-
-        public @NotNull OfflinePlayer getOfflinePlayer() {
-            CompletableFuture<UUID> future = CompletableFuture.supplyAsync(() -> plugin.getServer().getOfflinePlayer(name)).thenApply(OfflinePlayer::getUniqueId);
-
-            return plugin.getServer().getOfflinePlayer(future.join());
-        }
-
-        public Player getPlayer() {
-            return plugin.getServer().getPlayer(name);
-        }
-    }
-
     @SubCommand("give")
     @Permission(value = "crazycrates.command.admin.givekey", def = PermissionDefault.OP)
     public void onAdminCrateGive(CommandSender sender, @Suggestion("key-types") String keyType, @Suggestion("crates") String crateName, @Suggestion("numbers") int amount, @Optional @Suggestion("online-players") CustomPlayer target) {
@@ -1060,6 +1038,20 @@ public class CrateBaseCommand extends BaseCommand {
             this.userManager.addKeys(amount, onlinePlayer.getUniqueId(), crate.getName(), type);
 
             EventManager.logKeyEvent(onlinePlayer, sender, crate, type, EventManager.KeyEventType.KEY_EVENT_GIVEN, this.config.getProperty(ConfigKeys.log_to_file), this.config.getProperty(ConfigKeys.log_to_console));
+        }
+    }
+
+    public record CustomPlayer(String name) {
+        private static final CrazyCrates plugin = CrazyCrates.getPlugin(CrazyCrates.class);
+
+        public @NotNull OfflinePlayer getOfflinePlayer() {
+            CompletableFuture<UUID> future = CompletableFuture.supplyAsync(() -> plugin.getServer().getOfflinePlayer(name)).thenApply(OfflinePlayer::getUniqueId);
+
+            return plugin.getServer().getOfflinePlayer(future.join());
+        }
+
+        public Player getPlayer() {
+            return plugin.getServer().getPlayer(name);
         }
     }
 }

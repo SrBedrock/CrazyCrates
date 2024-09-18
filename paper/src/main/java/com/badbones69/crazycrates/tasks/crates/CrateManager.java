@@ -1,6 +1,5 @@
 package com.badbones69.crazycrates.tasks.crates;
 
-import com.Zrips.CMI.Modules.ModuleHandling.CMIModule;
 import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.ChestManager;
 import com.badbones69.crazycrates.api.FileManager;
@@ -21,9 +20,7 @@ import com.badbones69.crazycrates.common.crates.CrateHologram;
 import com.badbones69.crazycrates.common.crates.quadcrates.CrateSchematic;
 import com.badbones69.crazycrates.support.PluginSupport;
 import com.badbones69.crazycrates.support.holograms.HologramManager;
-import com.badbones69.crazycrates.support.holograms.types.CMIHologramsSupport;
 import com.badbones69.crazycrates.support.holograms.types.DecentHologramsSupport;
-import com.badbones69.crazycrates.support.holograms.types.HolographicDisplaysSupport;
 import com.badbones69.crazycrates.tasks.crates.types.CasinoCrate;
 import com.badbones69.crazycrates.tasks.crates.types.CosmicCrate;
 import com.badbones69.crazycrates.tasks.crates.types.CrateOnTheGo;
@@ -82,9 +79,23 @@ public class CrateManager {
     private final HashMap<UUID, Location> cratesInUse = new HashMap<>();
     private final List<String> brokeCrates = new ArrayList<>();
     private final List<Crate> crates = new ArrayList<>();
-
+    // The crate that the player is opening.
+    private final HashMap<UUID, Crate> playerOpeningCrates = new HashMap<>();
+    // Keys that are being used in crates. Only needed in cosmic due to it taking the key after the player picks a prize and not in a start method.
+    private final HashMap<UUID, KeyType> playerKeys = new HashMap<>();
+    // A list of all current crate tasks that are running that a time. Used to force stop any crates it needs to.
+    private final HashMap<UUID, BukkitTask> currentTasks = new HashMap<>();
+    private final HashMap<UUID, TimerTask> timerTasks = new HashMap<>();
+    // A list of tasks being run by the QuadCrate type.
+    private final HashMap<UUID, List<BukkitTask>> currentQuadTasks = new HashMap<>();
+    // War Crate
+    private final HashMap<UUID, Boolean> canPick = new HashMap<>();
+    private final HashMap<UUID, Boolean> canClose = new HashMap<>();
+    private final HashMap<UUID, Boolean> checkHands = new HashMap<>();
+    // QuickCrate/FireCracker
+    private final List<Entity> allRewards = new ArrayList<>();
+    private final HashMap<UUID, Entity> rewards = new HashMap<>();
     private HologramManager holograms;
-
     private boolean giveNewPlayersKeys;
 
     /**
@@ -178,16 +189,9 @@ public class CrateManager {
         if (PluginSupport.DECENT_HOLOGRAMS.isPluginEnabled()) {
             this.holograms = new DecentHologramsSupport();
             this.plugin.debug(() -> "DecentHolograms support has been enabled.", Level.INFO);
-        } else if (PluginSupport.CMI.isPluginEnabled() && CMIModule.holograms.isEnabled()) {
-            this.holograms = new CMIHologramsSupport();
-            this.plugin.debug(() -> "CMI Hologram support has been enabled.", Level.INFO);
-        } else if (PluginSupport.HOLOGRAPHIC_DISPLAYS.isPluginEnabled()) {
-            this.holograms = new HolographicDisplaysSupport();
-            this.plugin.debug(() -> "Holographic Displays support has been enabled.", Level.INFO);
         } else {
             this.plugin.debug(() -> "No holograms plugin were found. If using CMI, make sure holograms module is enabled.", Level.WARNING);
         }
-
 
         this.plugin.debug(() -> "Loading all crate information...", Level.INFO);
 
@@ -369,20 +373,6 @@ public class CrateManager {
 
         this.plugin.getCrazyHandler().getInventoryManager().loadButtons();
     }
-
-    // The crate that the player is opening.
-    private final HashMap<UUID, Crate> playerOpeningCrates = new HashMap<>();
-
-    // Keys that are being used in crates. Only needed in cosmic due to it taking the key after the player picks a prize and not in a start method.
-    private final HashMap<UUID, KeyType> playerKeys = new HashMap<>();
-
-    // A list of all current crate tasks that are running that a time. Used to force stop any crates it needs to.
-    private final HashMap<UUID, BukkitTask> currentTasks = new HashMap<>();
-
-    private final HashMap<UUID, TimerTask> timerTasks = new HashMap<>();
-
-    // A list of tasks being run by the QuadCrate type.
-    private final HashMap<UUID, List<BukkitTask>> currentQuadTasks = new HashMap<>();
 
     /**
      * Opens a crate for a player.
@@ -1156,10 +1146,6 @@ public class CrateManager {
         }
     }
 
-    // War Crate
-    private final HashMap<UUID, Boolean> canPick = new HashMap<>();
-    private final HashMap<UUID, Boolean> canClose = new HashMap<>();
-
     public void addPicker(@NotNull Player player, boolean value) {
         this.canPick.put(player.getUniqueId(), value);
     }
@@ -1188,8 +1174,6 @@ public class CrateManager {
         this.canClose.remove(player.getUniqueId());
     }
 
-    private final HashMap<UUID, Boolean> checkHands = new HashMap<>();
-
     public void addHands(@NotNull Player player, boolean checkHand) {
         this.checkHands.put(player.getUniqueId(), checkHand);
     }
@@ -1201,10 +1185,6 @@ public class CrateManager {
     public boolean getHand(@NotNull Player player) {
         return this.checkHands.get(player.getUniqueId());
     }
-
-    // QuickCrate/FireCracker
-    private final List<Entity> allRewards = new ArrayList<>();
-    private final HashMap<UUID, Entity> rewards = new HashMap<>();
 
     public void addReward(@NotNull Player player, Entity entity) {
         this.allRewards.add(entity);

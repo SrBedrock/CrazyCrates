@@ -1,12 +1,12 @@
 package com.badbones69.crazycrates.common.crates.quadcrates;
 
 public enum CrateParticles {
-    
+
     flame("flame"),
     villager_happy("villager happy"),
     spell_witch("spell witch"),
     redstone("redstone");
-    
+
     private final String name;
 
     /**

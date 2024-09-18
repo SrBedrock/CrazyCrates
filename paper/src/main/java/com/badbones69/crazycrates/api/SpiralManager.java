@@ -24,7 +24,7 @@ public class SpiralManager {
 
         int nextLocation = 0;
 
-        double increment = (2*Math.PI) / particleAmount;
+        double increment = (2 * Math.PI) / particleAmount;
 
         List<Location> locations = new ArrayList<>();
 

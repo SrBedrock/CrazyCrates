@@ -100,7 +100,8 @@ public class CsgoCrate extends CrateBuilder {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory())) getPlayer().closeInventory();
+                                if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory()))
+                                    getPlayer().closeInventory();
                             }
                         }.runTaskLater(plugin, 40);
                     } else if (this.time > 60) { // Added this due reports of the prizes spamming when low tps.

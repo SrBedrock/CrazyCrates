@@ -39,47 +39,41 @@ import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
 
 public class Crate {
 
-    private AbstractCrateManager manager;
     private final String name;
     private final String keyName;
     private final ItemBuilder keyBuilder;
     private final ItemStack keyNoNBT;
-    private int maxPage = 1;
     private final int maxSlots;
     private final String previewName;
     private final boolean previewToggle;
     private final boolean borderToggle;
     private final ItemBuilder borderItem;
-
     private final boolean previewTierToggle;
     private final boolean previewTierBorderToggle;
     private final ItemBuilder previewTierBorderItem;
-    private int previewTierCrateRows;
     private final int previewTierMaxSlots;
-
     private final CrateType crateType;
     private final FileConfiguration file;
-    private List<Prize> prizes;
     private final String crateInventoryName;
     private final boolean giveNewPlayerKeys;
-    private int previewChestLines;
     private final int newPlayerKeys;
-    private List<ItemStack> preview;
     private final List<Tier> tiers;
     private final CrateHologram hologram;
-
     @NotNull
     private final CrazyCrates plugin = CrazyCrates.get();
-
     @NotNull
     private final InventoryManager inventoryManager = this.plugin.getCrazyHandler().getInventoryManager();
-
     @NotNull
     private final FileManager fileManager = this.plugin.getFileManager();
-
     private final int maxMassOpen;
     private final int requiredKeys;
     private final List<String> prizeMessage;
+    private AbstractCrateManager manager;
+    private int maxPage = 1;
+    private int previewTierCrateRows;
+    private List<Prize> prizes;
+    private int previewChestLines;
+    private List<ItemStack> preview;
 
     /**
      * @param name      The name of the crate.
@@ -115,7 +109,8 @@ public class Crate {
 
         this.maxSlots = this.previewChestLines * 9;
 
-        for (int amount = this.preview.size(); amount > this.maxSlots - (this.borderToggle ? 18 : this.maxSlots >= this.preview.size() ? 0 : this.maxSlots != 9 ? 9 : 0); amount -= this.maxSlots - (this.borderToggle ? 18 : this.maxSlots >= this.preview.size() ? 0 : this.maxSlots != 9 ? 9 : 0), this.maxPage++);
+        for (int amount = this.preview.size(); amount > this.maxSlots - (this.borderToggle ? 18 : this.maxSlots >= this.preview.size() ? 0 : this.maxSlots != 9 ? 9 : 0); amount -= this.maxSlots - (this.borderToggle ? 18 : this.maxSlots >= this.preview.size() ? 0 : this.maxSlots != 9 ? 9 : 0), this.maxPage++)
+            ;
 
         this.crateInventoryName = file != null ? MsgUtils.sanitizeColor(file.getString("Crate.CrateName")) : "";
 
@@ -175,21 +170,6 @@ public class Crate {
      *
      * @param amount the amount of lines the preview has.
      */
-    public void setPreviewChestLines(int amount) {
-        int finalAmount;
-
-        if (amount < 3 && this.borderToggle) {
-            finalAmount = 3;
-        } else finalAmount = Math.min(amount, 6);
-
-        this.previewChestLines = finalAmount;
-    }
-
-    /**
-     * Set the preview lines for a Crate.
-     *
-     * @param amount the amount of lines the preview has.
-     */
     public void setTierPreviewRows(int amount) {
         int finalAmount;
 
@@ -207,6 +187,21 @@ public class Crate {
      */
     public int getPreviewChestLines() {
         return this.previewChestLines;
+    }
+
+    /**
+     * Set the preview lines for a Crate.
+     *
+     * @param amount the amount of lines the preview has.
+     */
+    public void setPreviewChestLines(int amount) {
+        int finalAmount;
+
+        if (amount < 3 && this.borderToggle) {
+            finalAmount = 3;
+        } else finalAmount = Math.min(amount, 6);
+
+        this.previewChestLines = finalAmount;
     }
 
     /**
@@ -303,15 +298,6 @@ public class Crate {
     public void purge() {
         this.prizes.clear();
         this.preview.clear();
-    }
-
-    /**
-     * Overrides the preview items.
-     *
-     * @param itemStacks list of items
-     */
-    public void setPreviewItems(List<ItemStack> itemStacks) {
-        this.preview = itemStacks;
     }
 
     /**
@@ -462,7 +448,6 @@ public class Crate {
 
     /**
      * @param player The player getting the key.
-     *
      * @return the key as an item stack.
      */
     public ItemStack getKey(Player player) {
@@ -482,7 +467,6 @@ public class Crate {
     /**
      * @param amount The amount of keys you want.
      * @param player The player getting the key.
-     *
      * @return the key as an item stack.
      */
     public ItemStack getKey(int amount, Player player) {
@@ -490,7 +474,7 @@ public class Crate {
 
         return key.build();
     }
-    
+
     /**
      * @return the key as an item stack with no nbt tags.
      */
@@ -500,7 +484,6 @@ public class Crate {
 
     /**
      * @param amount the amount of keys you want.
-     *
      * @return the key as an item stack with no nbt tags.
      */
     public ItemStack getKeyNoNBT(int amount) {
@@ -751,7 +734,16 @@ public class Crate {
 
         return items;
     }
-    
+
+    /**
+     * Overrides the preview items.
+     *
+     * @param itemStacks list of items
+     */
+    public void setPreviewItems(List<ItemStack> itemStacks) {
+        this.preview = itemStacks;
+    }
+
     /**
      * Loads all the preview items and puts them into a list.
      *

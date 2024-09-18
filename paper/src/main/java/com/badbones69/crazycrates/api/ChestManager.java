@@ -11,7 +11,8 @@ import org.bukkit.block.data.Directional;
 public class ChestManager {
 
     public static void openChest(Block block, boolean forceUpdate) {
-        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST) return;
+        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST)
+            return;
 
         BlockState blockState = block.getState();
 
@@ -33,7 +34,8 @@ public class ChestManager {
     }
 
     public static void closeChest(Block block, boolean forceUpdate) {
-        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST) return;
+        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST)
+            return;
 
         BlockState blockState = block.getState();
 
@@ -83,7 +85,8 @@ public class ChestManager {
     }
 
     public static boolean isChestOpen(Block block) {
-        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST) return false;
+        if (block.getType() != Material.CHEST || block.getType() != Material.TRAPPED_CHEST || block.getType() != Material.ENDER_CHEST)
+            return false;
 
         BlockState blockState = block.getState();
 

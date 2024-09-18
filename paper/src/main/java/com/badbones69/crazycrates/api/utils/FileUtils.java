@@ -56,7 +56,8 @@ public class FileUtils {
 
         if (!dir.exists()) {
             if (dir.mkdirs()) {
-                if (plugin.isLogging()) plugin.getLogger().warning("Created " + dir.getName() + " because we couldn't find it.");
+                if (plugin.isLogging())
+                    plugin.getLogger().warning("Created " + dir.getName() + " because we couldn't find it.");
             }
         }
 

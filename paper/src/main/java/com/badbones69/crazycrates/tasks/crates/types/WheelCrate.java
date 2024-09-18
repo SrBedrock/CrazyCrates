@@ -21,11 +21,11 @@ import java.util.UUID;
 
 public class WheelCrate extends CrateBuilder {
 
+    private final HashMap<UUID, HashMap<Integer, ItemStack>> rewards = new HashMap<>();
+
     public WheelCrate(Crate crate, Player player, int size) {
         super(crate, player, size);
     }
-
-    private final HashMap<UUID, HashMap<Integer, ItemStack>> rewards = new HashMap<>();
 
     @Override
     public void open(KeyType type, boolean checkHand) {
@@ -46,7 +46,7 @@ public class WheelCrate extends CrateBuilder {
             return;
         }
 
-        for (int index = 0; index < getSize(); index ++) {
+        for (int index = 0; index < getSize(); index++) {
             setCustomGlassPane(index);
         }
 
@@ -64,14 +64,10 @@ public class WheelCrate extends CrateBuilder {
 
         addCrateTask(new BukkitRunnable() {
             final List<Integer> slots = getBorder();
-
+            final int timer = MiscUtils.randomNumber(42, 68);
             int uh = 0;
             int what = 17;
-
             int full = 0;
-
-            final int timer = MiscUtils.randomNumber(42, 68);
-
             int slower = 0;
             int open = 0;
             int slow = 0;

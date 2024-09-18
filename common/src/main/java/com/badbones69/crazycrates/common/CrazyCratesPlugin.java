@@ -9,12 +9,11 @@ import java.io.File;
 public abstract class CrazyCratesPlugin implements ICrazyCrates {
 
     private final File dataFolder;
+    private ConfigManager configManager;
 
     public CrazyCratesPlugin(File dataFolder) {
         this.dataFolder = dataFolder;
     }
-
-    private ConfigManager configManager;
 
     @Override
     public void enable() {

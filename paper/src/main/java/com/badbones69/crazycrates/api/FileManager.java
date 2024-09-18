@@ -97,7 +97,8 @@ public class FileManager {
                                     if (file.exists()) {
                                         this.customFiles.add(file);
 
-                                        if (this.isLogging) this.logger.info("Loaded new custom file: " + homeFolder + "/" + directory.getName() + "/" + name + ".");
+                                        if (this.isLogging)
+                                            this.logger.info("Loaded new custom file: " + homeFolder + "/" + directory.getName() + "/" + name + ".");
                                     }
                                 }
                             }
@@ -111,7 +112,8 @@ public class FileManager {
                             if (file.exists()) {
                                 this.customFiles.add(file);
 
-                                if (this.isLogging) this.logger.info("Loaded new custom file: " + homeFolder + "/" + name + ".");
+                                if (this.isLogging)
+                                    this.logger.info("Loaded new custom file: " + homeFolder + "/" + name + ".");
                             }
                         }
                     }
@@ -130,9 +132,11 @@ public class FileManager {
 
                             copyFile(jarFile, serverFile);
 
-                            if (fileName.toLowerCase().endsWith(".yml")) this.customFiles.add(new CustomFile(fileName, homeFolder));
+                            if (fileName.toLowerCase().endsWith(".yml"))
+                                this.customFiles.add(new CustomFile(fileName, homeFolder));
 
-                            if (this.isLogging) this.logger.info("Created new default file: " + homeFolder + "/" + fileName + ".");
+                            if (this.isLogging)
+                                this.logger.info("Created new default file: " + homeFolder + "/" + fileName + ".");
                         } catch (Exception exception) {
                             this.logger.log(Level.SEVERE, "Failed to create new default file: " + homeFolder + "/" + fileName + "!", exception);
                         }
@@ -491,10 +495,9 @@ public class FileManager {
         private final String name;
         private final String fileName;
         private final String homeFolder;
-        private FileConfiguration file;
-
         @NotNull
         private final CrazyCrates plugin = CrazyCrates.get();
+        private FileConfiguration file;
 
         /**
          * A custom file that is being made.
@@ -534,7 +537,7 @@ public class FileManager {
         /**
          * A custom file that is being made.
          *
-         * @param name name of the file.
+         * @param name       name of the file.
          * @param homeFolder the home folder of the file.
          */
         public CustomFile(String name, String homeFolder, String subFolder) {
@@ -605,7 +608,8 @@ public class FileManager {
          */
         private void saveFile() {
             if (this.file == null) {
-                if (this.plugin.isLogging()) this.plugin.getLogger().warning("There was a null custom file that could not be found!");
+                if (this.plugin.isLogging())
+                    this.plugin.getLogger().warning("There was a null custom file that could not be found!");
 
                 return;
             }
@@ -613,7 +617,8 @@ public class FileManager {
             try {
                 this.file.save(new File(this.plugin.getDataFolder(), this.homeFolder + "/" + this.fileName));
 
-                if (this.plugin.isLogging()) this.plugin.getLogger().info("Successfully saved the " + this.fileName + ".");
+                if (this.plugin.isLogging())
+                    this.plugin.getLogger().info("Successfully saved the " + this.fileName + ".");
             } catch (IOException exception) {
                 this.plugin.getLogger().log(Level.SEVERE, "Could not save " + this.fileName + "!", exception);
             }
@@ -624,7 +629,8 @@ public class FileManager {
          */
         public void reloadFile() {
             if (this.file == null) {
-                if (this.plugin.isLogging()) this.plugin.getLogger().warning("There was a null custom file that could not be found!");
+                if (this.plugin.isLogging())
+                    this.plugin.getLogger().warning("There was a null custom file that could not be found!");
 
                 return;
             }
@@ -632,7 +638,8 @@ public class FileManager {
             try {
                 this.file = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), "/" + this.homeFolder + "/" + this.fileName));
 
-                if (this.plugin.isLogging()) this.plugin.getLogger().info("Successfully reloaded the " + this.fileName + ".");
+                if (this.plugin.isLogging())
+                    this.plugin.getLogger().info("Successfully reloaded the " + this.fileName + ".");
             } catch (Exception exception) {
                 this.plugin.getLogger().log(Level.SEVERE, "Could not reload the " + this.fileName + "!", exception);
             }

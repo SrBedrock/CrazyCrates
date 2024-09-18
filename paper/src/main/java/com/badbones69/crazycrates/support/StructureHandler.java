@@ -24,13 +24,11 @@ public class StructureHandler {
     private final CrazyCrates plugin = CrazyCrates.get();
 
     private final File file;
-
+    private final List<Location> structureBlocks = new ArrayList<>();
+    private final List<Location> preStructureBlocks = new ArrayList<>();
     public StructureHandler(File file) {
         this.file = file;
     }
-
-    private final List<Location> structureBlocks = new ArrayList<>();
-    private final List<Location> preStructureBlocks = new ArrayList<>();
 
     private StructureManager getStructureManager() {
         return this.plugin.getServer().getStructureManager();

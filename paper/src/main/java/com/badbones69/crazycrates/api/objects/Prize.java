@@ -3,7 +3,6 @@ package com.badbones69.crazycrates.api.objects;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
-import com.google.common.base.MoreObjects;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -24,23 +23,20 @@ import java.util.List;
 public class Prize {
 
     private final List<ItemStack> items = new ArrayList<>();
-
-    private List<String> permissions = new ArrayList<>();
-    private ItemBuilder displayItem = new ItemBuilder();
     private final List<String> commands;
     private final List<String> messages;
+    private final String prizeName;
+    private final String prizeNumber;
+    private final List<ItemBuilder> builders;
+    private final ConfigurationSection section;
+    private List<String> permissions = new ArrayList<>();
+    private ItemBuilder displayItem = new ItemBuilder();
     private boolean firework = false;
     private String crateName = "";
-    private final String prizeName;
     private int maxRange = 100;
-    private final String prizeNumber;
     private int chance = 0;
-
     private List<Tier> tiers = new ArrayList<>();
-    private final List<ItemBuilder> builders;
     private Prize alternativePrize;
-
-    private final ConfigurationSection section;
 
     public Prize(ConfigurationSection section, List<Tier> tierPrizes, String crateName, Prize alternativePrize) {
         this.section = section;

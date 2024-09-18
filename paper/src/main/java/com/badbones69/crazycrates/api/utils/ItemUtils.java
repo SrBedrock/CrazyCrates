@@ -14,7 +14,8 @@ public class ItemUtils {
             } else {
                 item.setAmount(item.getAmount() - 1);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     public static boolean isSimilar(ItemStack itemStack, Crate crate) {

@@ -26,7 +26,9 @@ public class InventoryManager {
 
     @NotNull
     private final SettingsManager config = this.plugin.getConfigManager().getConfig();
-
+    private final HashMap<UUID, Crate> crateViewers = new HashMap<>();
+    private final HashMap<UUID, Integer> pageViewers = new HashMap<>();
+    private final List<UUID> viewers = new ArrayList<>();
     private ItemBuilder menuButton;
     private ItemBuilder nextButton;
     private ItemBuilder backButton;
@@ -102,8 +104,6 @@ public class InventoryManager {
         return button.setTarget(player).build();
     }
 
-    private final HashMap<UUID, Crate> crateViewers = new HashMap<>();
-
     public void openNewCratePreview(Player player, Crate crate, boolean isTierPreview) {
         this.crateViewers.put(player.getUniqueId(), crate);
 
@@ -150,8 +150,6 @@ public class InventoryManager {
         return this.crateViewers.containsKey(player.getUniqueId());
     }
 
-    private final HashMap<UUID, Integer> pageViewers = new HashMap<>();
-
     public void nextPage(Player player) {
         setPage(player, getPage(player) + 1);
     }
@@ -175,8 +173,6 @@ public class InventoryManager {
 
         this.pageViewers.put(player.getUniqueId(), page);
     }
-
-    private final List<UUID> viewers = new ArrayList<>();
 
     public void addViewer(Player player) {
         this.viewers.add(player.getUniqueId());

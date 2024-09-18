@@ -40,9 +40,9 @@ public class CosmicCrateManager extends AbstractCrateManager {
         this.totalPrizes = file.getInt(path + "Total-Prize-Amount", 4);
 
         this.mysteryCrate = new ItemBuilder()
-        .setMaterial(file.getString(path + "Mystery-Crate.Item", "CHEST"))
-        .setName(file.getString(path + "Mystery-Crate.Name", "&f&l???"))
-        .setLore(file.contains(path + "Mystery-Crate.Lore") ? file.getStringList(path + "Mystery-Crate.Lore") : Collections.singletonList("&7You may choose 4 crates."));
+                .setMaterial(file.getString(path + "Mystery-Crate.Item", "CHEST"))
+                .setName(file.getString(path + "Mystery-Crate.Name", "&f&l???"))
+                .setLore(file.contains(path + "Mystery-Crate.Lore") ? file.getStringList(path + "Mystery-Crate.Lore") : Collections.singletonList("&7You may choose 4 crates."));
 
         ItemMeta mysteryItemMeta = this.mysteryCrate.getItemMeta();
 
@@ -55,9 +55,9 @@ public class CosmicCrateManager extends AbstractCrateManager {
         this.mysteryCrate.setItemMeta(mysteryItemMeta);
 
         this.pickedCrate = new ItemBuilder()
-        .setMaterial(file.getString(path + "Picked-Crate.Item", Material.GLASS_PANE.toString()))
-        .setName(file.getString(path + "Picked-Crate.Name", "&f&l???"))
-        .setLore(file.contains(path + "Picked-Crate.Lore") ? file.getStringList(path + "Picked-Crate.Lore") : Collections.singletonList("&7You have chosen #%slot%."));
+                .setMaterial(file.getString(path + "Picked-Crate.Item", Material.GLASS_PANE.toString()))
+                .setName(file.getString(path + "Picked-Crate.Name", "&f&l???"))
+                .setLore(file.contains(path + "Picked-Crate.Lore") ? file.getStringList(path + "Picked-Crate.Lore") : Collections.singletonList("&7You have chosen #%slot%."));
 
         ItemMeta pickedCrateMeta = this.pickedCrate.getItemMeta();
 
@@ -122,7 +122,7 @@ public class CosmicCrateManager extends AbstractCrateManager {
      * It also adds the player if not found.
      *
      * @param player player to add
-     * @param slot slot to add.
+     * @param slot   slot to add.
      */
     public void addPickedPrize(Player player, int slot, Tier tier) {
         UUID uuid = player.getUniqueId();
@@ -143,7 +143,7 @@ public class CosmicCrateManager extends AbstractCrateManager {
      * It also removes the uuid if prizes arraylist is empty.
      *
      * @param player player to remove.
-     * @param slot slot to remove.
+     * @param slot   slot to remove.
      */
     public void removePickedPrize(Player player, int slot) {
         UUID uuid = player.getUniqueId();

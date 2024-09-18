@@ -97,7 +97,8 @@ public class RouletteCrate extends CrateBuilder {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory())) getPlayer().closeInventory(InventoryCloseEvent.Reason.UNLOADED);
+                                if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory()))
+                                    getPlayer().closeInventory(InventoryCloseEvent.Reason.UNLOADED);
                             }
                         }.runTaskLater(plugin, 40);
                     }

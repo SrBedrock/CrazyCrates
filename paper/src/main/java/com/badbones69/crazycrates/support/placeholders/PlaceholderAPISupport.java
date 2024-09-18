@@ -110,7 +110,7 @@ public class PlaceholderAPISupport extends PlaceholderExpansion {
 
         return "N/A";
     }
-    
+
     @Override
     public boolean persist() {
         return true;
@@ -126,13 +126,13 @@ public class PlaceholderAPISupport extends PlaceholderExpansion {
     public String getIdentifier() {
         return this.plugin.getName().toLowerCase();
     }
-    
+
     @Override
     @NotNull
     public String getAuthor() {
         return this.plugin.getDescription().getAuthors().toString();
     }
-    
+
     @Override
     @NotNull
     public String getVersion() {

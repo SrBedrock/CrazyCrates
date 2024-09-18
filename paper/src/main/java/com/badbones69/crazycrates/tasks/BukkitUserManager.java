@@ -500,7 +500,7 @@ public class BukkitUserManager extends UserManager {
                 while (keysGiven < amount) {
                     // If the inventory is full, drop the remaining keys then stop.
                     if (MiscUtils.isInventoryFull(player)) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), crate.getKey(amount-keysGiven, player));
+                        player.getWorld().dropItemNaturally(player.getLocation(), crate.getKey(amount - keysGiven, player));
                         break;
                     }
 

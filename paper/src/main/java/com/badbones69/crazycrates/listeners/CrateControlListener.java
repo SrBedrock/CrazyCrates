@@ -24,7 +24,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
@@ -45,7 +44,7 @@ public class CrateControlListener implements Listener {
 
     @NotNull
     private final CrateManager crateManager = this.plugin.getCrateManager();
-    
+
     // This must run as highest, so it doesn't cause other plugins to check
     // the items that were added to the players inventory and replaced the item in the player's hand.
     // This is only an issue with QuickCrate
@@ -199,7 +198,7 @@ public class CrateControlListener implements Listener {
 
                         this.crateManager.addPlayerToOpeningList(player, crate);
 
-                        this.crateManager.openCrate(player, crate, keyType, crateLocation.getLocation(), false,true);
+                        this.crateManager.openCrate(player, crate, keyType, crateLocation.getLocation(), false, true);
                     } else {
                         if (crate.getCrateType() != CrateType.crate_on_the_go) {
                             if (this.config.getProperty(ConfigKeys.knock_back)) {
@@ -217,7 +216,7 @@ public class CrateControlListener implements Listener {
             }
         }
     }
-    
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
@@ -234,7 +233,7 @@ public class CrateControlListener implements Listener {
             this.crateManager.removePlayerFromOpeningList(player);
         }
     }
-    
+
     private void knockBack(Player player, Location location) {
         Vector vector = player.getLocation().toVector().subtract(location.toVector()).normalize().multiply(1).setY(.1);
 

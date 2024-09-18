@@ -33,8 +33,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MiscUtils {
 
-    private static final CrazyCrates plugin = CrazyCrates.get();
     public static final Random RANDOM = new Random();
+    private static final CrazyCrates plugin = CrazyCrates.get();
 
     public static void sendCommand(String command) {
         Server server = plugin.getServer();
@@ -45,7 +45,7 @@ public class MiscUtils {
     }
 
     public static void spawnFirework(Location location, Color color) {
-        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK_ROCKET);
 
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
 

@@ -32,14 +32,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class QuadCrateManager {
 
+    private static final List<QuadCrateManager> crateSessions = new ArrayList<>();
     @NotNull
     private final CrazyCrates plugin = CrazyCrates.get();
-
     @NotNull
     private final CrateManager crateManager = this.plugin.getCrateManager();
-
-    private static final List<QuadCrateManager> crateSessions = new ArrayList<>();
-
     private final QuadCrateManager instance;
 
     // Get the player.
@@ -115,6 +112,15 @@ public class QuadCrateManager {
         this.particleColor = getColors().get(ThreadLocalRandom.current().nextInt(getColors().size()));
 
         crateSessions.add(this.instance);
+    }
+
+    /**
+     * Get the crate sessions
+     *
+     * @return list of crate sessions.
+     */
+    public static List<QuadCrateManager> getCrateSessions() {
+        return crateSessions;
     }
 
     /**
@@ -349,27 +355,18 @@ public class QuadCrateManager {
     private void spawnParticles(CrateParticles quadCrateParticle, Color particleColor, Location location1, Location location2) {
         Particle particle = switch (quadCrateParticle) {
             case flame -> Particle.FLAME;
-            case villager_happy -> Particle.VILLAGER_HAPPY;
-            case spell_witch -> Particle.SPELL_WITCH;
-            default -> Particle.REDSTONE;
+            case villager_happy -> Particle.HAPPY_VILLAGER;
+            case spell_witch -> Particle.WITCH;
+            default -> Particle.DUST;
         };
 
-        if (particle == Particle.REDSTONE) {
+        if (particle == Particle.DUST) {
             location1.getWorld().spawnParticle(particle, location1, 0, new Particle.DustOptions(particleColor, 1));
             location2.getWorld().spawnParticle(particle, location2, 0, new Particle.DustOptions(particleColor, 1));
         } else {
             location1.getWorld().spawnParticle(particle, location1, 0);
             location2.getWorld().spawnParticle(particle, location2, 0);
         }
-    }
-
-    /**
-     * Get the crate sessions
-     *
-     * @return list of crate sessions.
-     */
-    public static List<QuadCrateManager> getCrateSessions() {
-        return crateSessions;
     }
 
     /**

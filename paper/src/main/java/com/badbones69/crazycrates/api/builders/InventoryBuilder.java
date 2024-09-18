@@ -99,7 +99,8 @@ public abstract class InventoryBuilder implements InventoryHolder {
                 return true;
             }
 
-            if (plugin.isLogging()) plugin.getLogger().warning("The property " + ConfigKeys.menu_button_command_list.getPath() + " is empty so no commands were run.");
+            if (plugin.isLogging())
+                plugin.getLogger().warning("The property " + ConfigKeys.menu_button_command_list.getPath() + " is empty so no commands were run.");
 
             return true;
         }
@@ -117,12 +118,12 @@ public abstract class InventoryBuilder implements InventoryHolder {
         return this.size;
     }
 
-    public void setPage(int page) {
-        this.page = page;
-    }
-
     public int getPage() {
         return this.page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public Crate getCrate() {

@@ -25,16 +25,16 @@ public class MobileCrateListener implements Listener {
 
     @NotNull
     private final CrateManager crateManager = this.plugin.getCrateManager();
-    
+
     @EventHandler
     public void onCrateOpen(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            
+
             if (item.getType() == Material.AIR) return;
-            
+
             for (Crate crate : this.crateManager.getUsableCrates()) {
                 if (crate.getCrateType() == CrateType.crate_on_the_go && ItemUtils.isSimilar(item, crate)) {
                     event.setCancelled(true);

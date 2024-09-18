@@ -19,15 +19,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CasinoCrate extends CrateBuilder {
 
+    private int counter = 0;
+    private int time = 1;
+    private int open = 0;
     public CasinoCrate(Crate crate, Player player, int size) {
         super(crate, player, size);
 
         runTaskTimer(CrazyCrates.get(), 1, 1);
     }
-
-    private int counter = 0;
-    private int time = 1;
-    private int open = 0;
 
     @Override
     public void run() {
@@ -74,7 +73,8 @@ public class CasinoCrate extends CrateBuilder {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory())) getPlayer().closeInventory();
+                        if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory()))
+                            getPlayer().closeInventory();
                     }
                 }.runTaskLater(this.plugin, 40);
 

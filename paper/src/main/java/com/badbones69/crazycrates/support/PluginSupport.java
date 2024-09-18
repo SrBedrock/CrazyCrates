@@ -6,13 +6,10 @@ import org.jetbrains.annotations.NotNull;
 public enum PluginSupport {
 
     DECENT_HOLOGRAMS("DecentHolograms"),
-    HOLOGRAPHIC_DISPLAYS("HolographicDisplays"),
-    CMI("CMI"),
     PLACEHOLDERAPI("PlaceholderAPI"),
     ORAXEN("Oraxen"),
-    ITEMS_ADDER("ItemsAdder"),
     ITEM_EDIT("ItemEdit");
-    
+
     private final String name;
 
     @NotNull

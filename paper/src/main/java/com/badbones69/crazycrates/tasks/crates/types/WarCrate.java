@@ -78,7 +78,8 @@ public class WarCrate extends CrateBuilder {
     }
 
     private void setRandomPrizes() {
-        if (!this.plugin.getCrateManager().isInOpeningList(getPlayer()) && !(getInventory().getHolder(false) instanceof CratePrizeMenu)) return;
+        if (!this.plugin.getCrateManager().isInOpeningList(getPlayer()) && !(getInventory().getHolder(false) instanceof CratePrizeMenu))
+            return;
 
         for (int index = 0; index < 9; index++) {
             setItem(index, getCrate().pickPrize(getPlayer()).getDisplayItem(getPlayer()));
@@ -86,7 +87,8 @@ public class WarCrate extends CrateBuilder {
     }
 
     private void setRandomGlass() {
-        if (!this.plugin.getCrateManager().isInOpeningList(getPlayer()) && !(getInventory().getHolder(false) instanceof CratePrizeMenu)) return;
+        if (!this.plugin.getCrateManager().isInOpeningList(getPlayer()) && !(getInventory().getHolder(false) instanceof CratePrizeMenu))
+            return;
 
         if (this.colorCodes.isEmpty()) getColorCode();
 

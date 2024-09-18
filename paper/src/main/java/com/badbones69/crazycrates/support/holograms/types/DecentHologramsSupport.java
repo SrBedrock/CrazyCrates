@@ -7,6 +7,7 @@ import com.badbones69.crazycrates.support.holograms.HologramManager;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class DecentHologramsSupport extends HologramManager {
     private final Map<Block, Hologram> holograms = new HashMap<>();
 
     @Override
-    public void createHologram(Block block, Crate crate) {
+    public void createHologram(Block block, @NotNull Crate crate) {
         CrateHologram crateHologram = crate.getHologram();
 
         if (!crateHologram.isEnabled()) {

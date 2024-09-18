@@ -226,14 +226,14 @@ Crate:
       # Messages: []
 
       #This allows for one time winnable prizes. If a player has one of the permissions then they will not be able to win it.
-      BlackListed-Permissions: []
+      BlackListed-Permissions: [ ]
       #This allows users who have won the same prize before to get alternative prizes. They must have a BlackListed-Permission to get an alternative prize.
       Alternative-Prize:
         #Toggle if the prize will use alternative prizes for the blacklisted permission.
         Toggle: false
-        Messages: []
-        Commands: []
-        Items: []
+        Messages: [ ]
+        Commands: [ ]
+        Items: [ ]
     2:
       DisplayName: '&b&lCheap Helmet'
       DisplayItem: 'GOLDEN_HELMET'

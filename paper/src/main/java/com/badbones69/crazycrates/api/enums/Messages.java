@@ -78,14 +78,16 @@ public enum Messages {
     admin_help(MessageKeys.admin_help, true),
     cleared_player_keys(MessageKeys.cleared_player_keys);
 
+    @NotNull
+    private final CrazyCrates plugin = CrazyCrates.get();
+    @NotNull
+    private final ConfigManager configManager = this.plugin.getCrazyHandler().getConfigManager();
+    @NotNull
+    private final SettingsManager configuration = this.configManager.getMessages();
     private Property<String> property;
-
     private Property<List<String>> listProperty;
-
     private String message;
-
     private boolean isList = false;
-
     /**
      * Used for strings
      *
@@ -94,25 +96,17 @@ public enum Messages {
     Messages(Property<String> property) {
         this.property = property;
     }
-
     /**
      * Used for string lists
      *
      * @param listProperty the list property
-     * @param isList Defines if it's a list or not.
+     * @param isList       Defines if it's a list or not.
      */
     Messages(Property<List<String>> listProperty, boolean isList) {
         this.listProperty = listProperty;
 
         this.isList = isList;
     }
-
-    @NotNull
-    private final CrazyCrates plugin = CrazyCrates.get();
-    @NotNull
-    private final ConfigManager configManager = this.plugin.getCrazyHandler().getConfigManager();
-    @NotNull
-    private final SettingsManager configuration = this.configManager.getMessages();
 
     private boolean isList() {
         return this.isList;

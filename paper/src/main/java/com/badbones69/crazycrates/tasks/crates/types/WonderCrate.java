@@ -55,14 +55,11 @@ public class WonderCrate extends CrateBuilder {
         getPlayer().openInventory(getInventory());
 
         addCrateTask(new BukkitRunnable() {
+            final List<Integer> other = new ArrayList<>();
             int time = 0;
             int full = 0;
-
             int slot1 = 0;
             int slot2 = 44;
-
-            final List<Integer> other = new ArrayList<>();
-
             Prize prize = null;
 
             @Override
@@ -105,7 +102,8 @@ public class WonderCrate extends CrateBuilder {
 
                     playSound("stop-sound", SoundCategory.PLAYERS, "ENTITY_PLAYER_LEVELUP");
 
-                    if (this.prize.useFireworks()) MiscUtils.spawnFirework(getPlayer().getLocation().add(0, 1, 0), null);
+                    if (this.prize.useFireworks())
+                        MiscUtils.spawnFirework(getPlayer().getLocation().add(0, 1, 0), null);
 
                     plugin.getServer().getPluginManager().callEvent(new PlayerPrizeEvent(getPlayer(), getCrate(), getCrate().getName(), this.prize));
                     plugin.getCrateManager().removePlayerFromOpeningList(getPlayer());

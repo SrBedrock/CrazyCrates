@@ -39,15 +39,14 @@ import java.util.logging.Level;
 public class CrazyCrates extends JavaPlugin {
 
     @NotNull
+    private final BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this);
+    private CrazyHandler crazyHandler;
+    private Timer timer;
+
+    @NotNull
     public static CrazyCrates get() {
         return JavaPlugin.getPlugin(CrazyCrates.class);
     }
-
-    @NotNull
-    private final BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this);
-
-    private CrazyHandler crazyHandler;
-    private Timer timer;
 
     @Override
     public void onEnable() {
@@ -116,7 +115,8 @@ public class CrazyCrates extends JavaPlugin {
             this.crazyHandler.getCrateManager().purgeRewards();
 
             // Purge holograms.
-            if (this.crazyHandler.getCrateManager().getHolograms() != null) this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
+            if (this.crazyHandler.getCrateManager().getHolograms() != null)
+                this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
 
             // Unload the plugin.
             this.crazyHandler.unload();

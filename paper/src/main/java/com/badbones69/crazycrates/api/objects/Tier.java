@@ -34,7 +34,7 @@ public class Tier {
 
         this.slot = section.getInt("Slot");
     }
-    
+
     /**
      * @return name of the tier.
      */
@@ -55,14 +55,14 @@ public class Tier {
     public ItemBuilder getItem() {
         return this.item;
     }
-    
+
     /**
      * @return the chance of being picked.
      */
     public int getChance() {
         return this.chance;
     }
-    
+
     /**
      * @return the range of max possible chances.
      */
