@@ -1,5 +1,6 @@
 plugins {
     id("paper-plugin")
+    id("com.gradleup.shadow") version "8.3.1"
 }
 
 dependencies {
@@ -9,19 +10,11 @@ dependencies {
 
     implementation(libs.triumphcmds)
 
-    //implementation(libs.triumphgui)
-
-    implementation(libs.metrics)
-
     implementation(libs.nbtapi)
-
-    compileOnly(libs.holographicdisplays)
 
     compileOnly(libs.decentholograms)
 
     compileOnly(libs.placeholderapi)
-
-    compileOnly(libs.itemsadder)
 
     compileOnly(libs.oraxen)
 

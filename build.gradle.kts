@@ -2,6 +2,12 @@ import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
     id("root-plugin")
+    id("com.gradleup.shadow") version "8.3.1"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks {
