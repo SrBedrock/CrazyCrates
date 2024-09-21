@@ -513,7 +513,6 @@ public class BukkitUserManager extends UserManager {
     }
 
 
-
     private boolean isCrateInvalid(String crateName) {
         return crateName.isBlank() || this.plugin.getCrateManager().getCrateFromName(crateName) == null;
     }
