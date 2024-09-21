@@ -1368,7 +1368,7 @@ public class ItemBuilder {
     private void addGlow() {
         if (this.glowing) {
             try {
-                this.itemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
+                this.itemMeta.addEnchant(Enchantment.LUCK, 1, false);
                 this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 this.itemStack.setItemMeta(this.itemMeta);
             } catch (NoClassDefFoundError ignored) {
@@ -1384,38 +1384,38 @@ public class ItemBuilder {
      */
     @Contract("null -> null")
     private PotionType getPotionType(PotionEffectType type) {
-        if (type != null) {
-            if (type.equals(PotionEffectType.FIRE_RESISTANCE)) {
-                return PotionType.FIRE_RESISTANCE;
-            } else if (type.equals(PotionEffectType.INSTANT_DAMAGE)) {
-                return PotionType.HARMING;
-            } else if (type.equals(PotionEffectType.INSTANT_HEALTH)) {
-                return PotionType.HEALING;
-            } else if (type.equals(PotionEffectType.INVISIBILITY)) {
-                return PotionType.INVISIBILITY;
-            } else if (type.equals(PotionEffectType.JUMP_BOOST)) {
-                return PotionType.LEAPING;
-            } else if (type.equals(PotionEffectType.LUCK)) {
-                return PotionType.LUCK;
-            } else if (type.equals(PotionEffectType.NIGHT_VISION)) {
-                return PotionType.NIGHT_VISION;
-            } else if (type.equals(PotionEffectType.POISON)) {
-                return PotionType.POISON;
-            } else if (type.equals(PotionEffectType.REGENERATION)) {
-                return PotionType.REGENERATION;
-            } else if (type.equals(PotionEffectType.SLOWNESS)) {
-                return PotionType.SLOWNESS;
-            } else if (type.equals(PotionEffectType.SPEED)) {
-                return PotionType.SWIFTNESS;
-            } else if (type.equals(PotionEffectType.STRENGTH)) {
-                return PotionType.STRENGTH;
-            } else if (type.equals(PotionEffectType.WATER_BREATHING)) {
-                return PotionType.WATER_BREATHING;
-            } else if (type.equals(PotionEffectType.WEAKNESS)) {
-                return PotionType.WEAKNESS;
-            }
+        if (type == null) return null;
+
+        // Manual mapping of PotionEffectType to PotionType
+        if (type.equals(PotionEffectType.SPEED)) {
+            return PotionType.SPEED;
+        } else if (type.equals(PotionEffectType.SLOW)) {
+            return PotionType.SLOWNESS;
+        } else if (type.equals(PotionEffectType.FIRE_RESISTANCE)) {
+            return PotionType.FIRE_RESISTANCE;
+        } else if (type.equals(PotionEffectType.HEAL)) {
+            return PotionType.INSTANT_HEAL;
+        } else if (type.equals(PotionEffectType.HARM)) {
+            return PotionType.INSTANT_DAMAGE;
+        } else if (type.equals(PotionEffectType.INCREASE_DAMAGE)) {
+            return PotionType.STRENGTH;
+        } else if (type.equals(PotionEffectType.JUMP)) {
+            return PotionType.JUMP;
+        } else if (type.equals(PotionEffectType.REGENERATION)) {
+            return PotionType.REGEN;
+        } else if (type.equals(PotionEffectType.POISON)) {
+            return PotionType.POISON;
+        } else if (type.equals(PotionEffectType.WEAKNESS)) {
+            return PotionType.WEAKNESS;
+        } else if (type.equals(PotionEffectType.WATER_BREATHING)) {
+            return PotionType.WATER_BREATHING;
+        } else if (type.equals(PotionEffectType.INVISIBILITY)) {
+            return PotionType.INVISIBILITY;
+        } else if (type.equals(PotionEffectType.NIGHT_VISION)) {
+            return PotionType.NIGHT_VISION;
         }
 
+        // Return null if no match is found
         return null;
     }
 
