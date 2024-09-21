@@ -19,7 +19,7 @@ dependencyResolutionManagement {
         create("libs") {
             version("cluster", "6.4")
 
-            library("decentholograms", "com.github.decentsoftware-eu", "decentholograms").version("2.8.6")
+            library("decentholograms", "com.github.decentsoftware-eu", "decentholograms").version("2.8.11")
 
             library("triumphcmds", "dev.triumphteam", "triumph-cmd-bukkit").version("2.0.0-SNAPSHOT")
 
