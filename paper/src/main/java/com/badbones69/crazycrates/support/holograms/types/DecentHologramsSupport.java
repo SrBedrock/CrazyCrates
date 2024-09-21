@@ -20,14 +20,10 @@ public class DecentHologramsSupport extends HologramManager {
     @Override
     public void createHologram(Block block, @NotNull Crate crate) {
         CrateHologram crateHologram = crate.getHologram();
+        if (!crateHologram.isEnabled()) return;
 
-        if (!crateHologram.isEnabled()) {
-            return;
-        }
-
-        double height = crateHologram.getHeight();
-
-        Hologram hologram = DHAPI.createHologram("CrazyCrates-" + UUID.randomUUID(), block.getLocation().add(.5, height, .5));
+        Hologram hologram = DHAPI.createHologram("CrazyCrates-" + UUID.randomUUID(), block.getLocation().add(.5, crateHologram.getHeight(), .5));
+        hologram.setDownOrigin(true);
 
         hologram.setDisplayRange(crateHologram.getRange());
 
