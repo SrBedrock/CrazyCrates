@@ -355,12 +355,12 @@ public class QuadCrateManager {
     private void spawnParticles(CrateParticles quadCrateParticle, Color particleColor, Location location1, Location location2) {
         Particle particle = switch (quadCrateParticle) {
             case flame -> Particle.FLAME;
-            case villager_happy -> Particle.HAPPY_VILLAGER;
-            case spell_witch -> Particle.WITCH;
-            default -> Particle.DUST;
+            case villager_happy -> Particle.VILLAGER_HAPPY;
+            case spell_witch -> Particle.SPELL_WITCH;
+            default -> Particle.REDSTONE;
         };
 
-        if (particle == Particle.DUST) {
+        if (particle == Particle.REDSTONE) {
             location1.getWorld().spawnParticle(particle, location1, 0, new Particle.DustOptions(particleColor, 1));
             location2.getWorld().spawnParticle(particle, location2, 0, new Particle.DustOptions(particleColor, 1));
         } else {
