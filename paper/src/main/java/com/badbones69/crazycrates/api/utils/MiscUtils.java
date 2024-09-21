@@ -45,7 +45,7 @@ public class MiscUtils {
     }
 
     public static void spawnFirework(Location location, Color color) {
-        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK_ROCKET);
+        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
 
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
 
