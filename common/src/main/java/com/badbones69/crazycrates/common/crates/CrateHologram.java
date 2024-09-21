@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CrateHologram {
-    
+
     private final boolean enabled;
     private final double height;
     private final int range;
@@ -23,8 +23,8 @@ public class CrateHologram {
     /**
      * A secondary constructor to build a hologram.
      *
-     * @param enabled if the hologram enabled or not
-     * @param height of the hologram from the ground
+     * @param enabled  if the hologram enabled or not
+     * @param height   of the hologram from the ground
      * @param messages the hologram will display
      */
     public CrateHologram(boolean enabled, double height, int range, List<String> messages) {

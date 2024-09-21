@@ -7,27 +7,26 @@ import org.jetbrains.annotations.NotNull;
 
 public class BrokeLocation {
 
+    private final String locationName;
+    @NotNull
+    private final CrazyCrates plugin = CrazyCrates.get();
     /**
      * Empty values that get instantiated below.
      */
     private int x, y, z;
     private String world;
-    private final String locationName;
     private Crate crate;
-
-    @NotNull
-    private final CrazyCrates plugin = CrazyCrates.get();
 
     /**
      * Builds a location that represents a broken crate.
      * Usually never activates.......
      *
      * @param locationName the location name
-     * @param crate the crate object
-     * @param x the X coordinate
-     * @param y the Y coordinate
-     * @param z the Z coordinate
-     * @param world the world name
+     * @param crate        the crate object
+     * @param x            the X coordinate
+     * @param y            the Y coordinate
+     * @param z            the Z coordinate
+     * @param world        the world name
      */
     public BrokeLocation(String locationName, Crate crate, int x, int y, int z, String world) {
         this.x = x;

@@ -1,14 +1,21 @@
 package com.badbones69.crazycrates.listeners.crates;
 
+import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.PrizeManager;
+import com.badbones69.crazycrates.api.builders.types.CratePrizeMenu;
+import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
 import com.badbones69.crazycrates.api.events.PlayerReceiveKeyEvent;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
-import com.badbones69.crazycrates.api.PrizeManager;
-import com.badbones69.crazycrates.tasks.crates.other.CosmicCrateManager;
 import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.objects.Prize;
 import com.badbones69.crazycrates.api.objects.Tier;
+import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+import com.badbones69.crazycrates.tasks.crates.CrateManager;
+import com.badbones69.crazycrates.tasks.crates.other.CosmicCrateManager;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -25,13 +32,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.builders.types.CratePrizeMenu;
-import com.badbones69.crazycrates.api.enums.PersistentKeys;
-import com.badbones69.crazycrates.api.enums.Messages;
-import com.badbones69.crazycrates.tasks.crates.CrateManager;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
+
 import java.util.List;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -87,7 +88,8 @@ public class CosmicCrateListener implements Listener {
         }
 
         // Play sound.
-        if (playSound) holder.getCrate().playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+        if (playSound)
+            holder.getCrate().playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
 
         // Remove opening stuff.
         this.crateManager.removePlayerFromOpeningList(player);
@@ -108,6 +110,7 @@ public class CosmicCrateListener implements Listener {
         // Get the inventory.
         Inventory inventory = event.getInventory();
 
+        if (inventory.getHolder() == null) return;
         if (!(inventory.getHolder(false) instanceof CratePrizeMenu holder)) return;
 
         Player player = holder.getPlayer();
@@ -160,7 +163,7 @@ public class CosmicCrateListener implements Listener {
 
         event.setCurrentItem(prize.getDisplayItem(player));
 
-        holder.getCrate().playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+        holder.getCrate().playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
 
         if (prize.useFireworks()) MiscUtils.spawnFirework(player.getLocation().add(0, 1, 0), null);
     }
@@ -170,6 +173,7 @@ public class CosmicCrateListener implements Listener {
         // Get the inventory.
         Inventory inventory = event.getInventory();
 
+        if (inventory.getHolder() == null) return;
         if (!(inventory.getHolder(false) instanceof CratePrizeMenu holder)) return;
 
         Player player = holder.getPlayer();
@@ -211,7 +215,7 @@ public class CosmicCrateListener implements Listener {
         int totalPrizes = cosmicCrateManager.getTotalPrizes();
 
         // Get picked slot.
-        int pickedSlot = slot+1;
+        int pickedSlot = slot + 1;
 
         // Get clicked item's item meta.
         ItemMeta itemMeta = itemStack.getItemMeta();
@@ -246,7 +250,7 @@ public class CosmicCrateListener implements Listener {
                 cosmicCrateManager.addPickedPrize(player, slot, crate.getTier(tierName));
 
                 // Play a sound to indicate they clicked a chest.
-                holder.getCrate().playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+                holder.getCrate().playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
             }
         } else if (container.has(PersistentKeys.cosmic_picked_crate.getNamespacedKey())) {
             // Gets the tier name from the pdc.
@@ -270,7 +274,7 @@ public class CosmicCrateListener implements Listener {
             cosmicCrateManager.removePickedPrize(player, slot);
 
             // Play a sound to indicate they clicked a chest.
-            holder.getCrate().playSound(player, player.getLocation(), "click-sound","UI_BUTTON_CLICK", SoundCategory.PLAYERS);
+            holder.getCrate().playSound(player, player.getLocation(), "click-sound", "UI_BUTTON_CLICK", SoundCategory.PLAYERS);
         }
 
         // Get the crate name.

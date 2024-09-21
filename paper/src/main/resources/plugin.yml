@@ -1,11 +1,11 @@
-name: '${name}'
-main: '${group}.${name}'
+name: "${name}"
+main: "${group}.${name}"
 
 authors: ${authors}
 
-version: '${version}'
-api-version: '${apiVersion}'
-description: '${description}'
-website: '${website}'
+version: "${version}"
+api-version: "${apiVersion}"
+description: "${description}"
+website: "${website}"
 
-softdepend: [CMI, DecentHolograms, HolographicDisplays, PlaceholderAPI, ItemsAdder, Oraxen]
+softdepend: [ DecentHolograms, PlaceholderAPI, Oraxen, ItemEdit ]

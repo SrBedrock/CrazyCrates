@@ -4,27 +4,12 @@ plugins {
 
 dependencies {
     api(project(":common"))
-
     implementation(libs.cluster.paper)
-
     implementation(libs.triumphcmds)
-
-    //implementation(libs.triumphgui)
-
-    implementation(libs.metrics)
-
     implementation(libs.nbtapi)
-
-    compileOnly(libs.holographicdisplays)
-
     compileOnly(libs.decentholograms)
-
     compileOnly(libs.placeholderapi)
-
-    compileOnly(libs.itemsadder)
-
     compileOnly(libs.oraxen)
-
     compileOnly(fileTree("libs").include("*.jar"))
 }
 

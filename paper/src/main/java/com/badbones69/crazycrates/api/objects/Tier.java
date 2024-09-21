@@ -2,14 +2,12 @@ package com.badbones69.crazycrates.api.objects;
 
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
-import java.util.Collections;
+
 import java.util.List;
 
 public class Tier {
@@ -27,7 +25,7 @@ public class Tier {
 
         this.coloredName = section.getString("Name", "");
 
-        this.lore = section.getStringList("Lore").isEmpty() ? Collections.emptyList() : section.getStringList("Lore");
+        this.lore = section.getStringList("Lore").isEmpty() ? List.of() : section.getStringList("Lore");
 
         this.item = new ItemBuilder().setMaterial(section.getString("Item", "CHEST"));
 
@@ -36,7 +34,7 @@ public class Tier {
 
         this.slot = section.getInt("Slot");
     }
-    
+
     /**
      * @return name of the tier.
      */
@@ -57,14 +55,14 @@ public class Tier {
     public ItemBuilder getItem() {
         return this.item;
     }
-    
+
     /**
      * @return the chance of being picked.
      */
     public int getChance() {
         return this.chance;
     }
-    
+
     /**
      * @return the range of max possible chances.
      */

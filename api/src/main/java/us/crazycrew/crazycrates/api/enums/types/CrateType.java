@@ -56,7 +56,7 @@ public enum CrateType {
      * Definitely going to war over what you win.
      */
     war("War");
-    
+
     private final String name;
 
     /**

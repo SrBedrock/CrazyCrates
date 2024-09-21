@@ -1,46 +1,52 @@
 package com.badbones69.crazycrates;
 
+import com.badbones69.crazycrates.api.FileManager;
 import com.badbones69.crazycrates.api.MigrateManager;
 import com.badbones69.crazycrates.api.builders.types.CrateAdminMenu;
 import com.badbones69.crazycrates.api.builders.types.CrateMainMenu;
 import com.badbones69.crazycrates.api.builders.types.CratePreviewMenu;
 import com.badbones69.crazycrates.api.builders.types.CrateTierMenu;
 import com.badbones69.crazycrates.api.enums.Permissions;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
+import com.badbones69.crazycrates.common.config.ConfigManager;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.listeners.BrokeLocationsListener;
 import com.badbones69.crazycrates.listeners.CrateControlListener;
 import com.badbones69.crazycrates.listeners.MiscListener;
-import com.badbones69.crazycrates.listeners.crates.*;
+import com.badbones69.crazycrates.listeners.crates.CosmicCrateListener;
+import com.badbones69.crazycrates.listeners.crates.CrateOpenListener;
+import com.badbones69.crazycrates.listeners.crates.MobileCrateListener;
+import com.badbones69.crazycrates.listeners.crates.QuadCrateListener;
+import com.badbones69.crazycrates.listeners.crates.WarCrateListener;
 import com.badbones69.crazycrates.listeners.other.EntityDamageListener;
+import com.badbones69.crazycrates.support.PluginSupport;
+import com.badbones69.crazycrates.support.placeholders.PlaceholderAPISupport;
 import com.badbones69.crazycrates.tasks.BukkitUserManager;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import com.badbones69.crazycrates.tasks.crates.other.quadcrates.SessionManager;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
-import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.java.JavaPlugin;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
-import com.badbones69.crazycrates.api.FileManager;
 import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.common.config.ConfigManager;
-import com.badbones69.crazycrates.support.placeholders.PlaceholderAPISupport;
-import com.badbones69.crazycrates.support.PluginSupport;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
+import java.util.function.Supplier;
+import java.util.logging.Level;
 
 public class CrazyCrates extends JavaPlugin {
+
+    @NotNull
+    private final BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this);
+    private CrazyHandler crazyHandler;
+    private Timer timer;
 
     @NotNull
     public static CrazyCrates get() {
         return JavaPlugin.getPlugin(CrazyCrates.class);
     }
-
-    @NotNull
-    private final BukkitCommandManager<CommandSender> commandManager = BukkitCommandManager.create(this);
-
-    private CrazyHandler crazyHandler;
-    private Timer timer;
 
     @Override
     public void onEnable() {
@@ -84,19 +90,19 @@ public class CrazyCrates extends JavaPlugin {
             // Print dependency garbage
             for (PluginSupport value : PluginSupport.values()) {
                 if (value.isPluginEnabled()) {
-                    getServer().getConsoleSender().sendMessage(MsgUtils.color(prefix + "&6&l" + value.name() + " &a&lFOUND"));
+                    getServer().getConsoleSender().sendMessage(MsgUtils.color(prefix + "&6&l " + value.name() + " &a&lFOUND"));
                 } else {
-                    getServer().getConsoleSender().sendMessage(MsgUtils.color(prefix + "&6&l" + value.name() + " &c&lNOT FOUND"));
+                    getServer().getConsoleSender().sendMessage(MsgUtils.color(prefix + "&6&l " + value.name() + " &c&lNOT FOUND"));
                 }
             }
         }
 
         if (PluginSupport.PLACEHOLDERAPI.isPluginEnabled()) {
-            if (isLogging()) getLogger().info("PlaceholderAPI support is enabled!");
+            debug(() -> "PlaceholderAPI support is enabled!", Level.INFO);
             new PlaceholderAPISupport().register();
         }
 
-        if (isLogging()) getLogger().info("You can disable logging by going to the plugin-config.yml and setting verbose to false.");
+        debug(() -> "You can disable logging by going to the plugin-config.yml and setting verbose to false.", Level.INFO);
     }
 
     @Override
@@ -109,7 +115,8 @@ public class CrazyCrates extends JavaPlugin {
             this.crazyHandler.getCrateManager().purgeRewards();
 
             // Purge holograms.
-            if (this.crazyHandler.getCrateManager().getHolograms() != null) this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
+            if (this.crazyHandler.getCrateManager().getHolograms() != null)
+                this.crazyHandler.getCrateManager().getHolograms().removeAllHolograms();
 
             // Unload the plugin.
             this.crazyHandler.unload();
@@ -168,5 +175,9 @@ public class CrazyCrates extends JavaPlugin {
 
             getServer().getPluginManager().addPermission(newPermission);
         });
+    }
+
+    public void debug(Supplier<String> message, Level level) {
+        if (isLogging()) getLogger().log(level, message.get());
     }
 }

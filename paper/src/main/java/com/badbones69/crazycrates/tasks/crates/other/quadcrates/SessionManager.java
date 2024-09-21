@@ -5,6 +5,16 @@ import org.bukkit.entity.Player;
 public class SessionManager {
 
     /**
+     * End all crates.
+     */
+    public static void endCrates() {
+        if (!QuadCrateManager.getCrateSessions().isEmpty()) {
+            QuadCrateManager.getCrateSessions().forEach(session -> session.endCrateForce(false));
+            QuadCrateManager.getCrateSessions().clear();
+        }
+    }
+
+    /**
      * Check if player is in session.
      *
      * @param player player to check.
@@ -32,15 +42,5 @@ public class SessionManager {
         }
 
         return null;
-    }
-
-    /**
-     * End all crates.
-     */
-    public static void endCrates() {
-        if (!QuadCrateManager.getCrateSessions().isEmpty()) {
-            QuadCrateManager.getCrateSessions().forEach(session -> session.endCrateForce(false));
-            QuadCrateManager.getCrateSessions().clear();
-        }
     }
 }

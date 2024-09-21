@@ -3,6 +3,7 @@ package com.badbones69.crazycrates.api;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class SpiralManager {
 
         int nextLocation = 0;
 
-        double increment = (2*Math.PI) / particleAmount;
+        double increment = (2 * Math.PI) / particleAmount;
 
         List<Location> locations = new ArrayList<>();
 

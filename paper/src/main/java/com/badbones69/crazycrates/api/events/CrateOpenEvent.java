@@ -11,12 +11,12 @@ import us.crazycrew.crazycrates.api.enums.types.KeyType;
 
 public class CrateOpenEvent extends Event implements Cancellable {
 
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final Crate crate;
     private final KeyType keyType;
     private final boolean checkHand;
     private final FileConfiguration configuration;
-
     private boolean isCancelled;
 
     public CrateOpenEvent(Player player, Crate crate, KeyType keyType, boolean checkHand, FileConfiguration configuration) {
@@ -30,8 +30,6 @@ public class CrateOpenEvent extends Event implements Cancellable {
 
         this.isCancelled = false;
     }
-
-    private static final HandlerList handlers = new HandlerList();
 
     public static HandlerList getHandlerList() {
         return handlers;

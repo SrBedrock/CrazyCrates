@@ -1,16 +1,16 @@
 package com.badbones69.crazycrates.tasks.crates.types;
 
 import com.badbones69.crazycrates.api.PrizeManager;
+import com.badbones69.crazycrates.api.builders.CrateBuilder;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
+import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.Tier;
 import com.badbones69.crazycrates.tasks.crates.other.CosmicCrateManager;
-import com.badbones69.crazycrates.api.objects.Crate;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import com.badbones69.crazycrates.api.builders.CrateBuilder;
 
 public class CosmicCrate extends CrateBuilder {
 

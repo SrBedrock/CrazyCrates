@@ -2,16 +2,17 @@ package com.badbones69.crazycrates.api.enums;
 
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.properties.Property;
+import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
-import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.common.config.types.MessageKeys;
 import com.badbones69.crazycrates.common.utils.StringUtils;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,14 +75,18 @@ public enum Messages {
     other_player_no_keys_header(MessageKeys.other_player_header, true),
     per_crate(MessageKeys.per_crate),
     help(MessageKeys.help, true),
-    admin_help(MessageKeys.admin_help, true);
+    admin_help(MessageKeys.admin_help, true),
+    cleared_player_keys(MessageKeys.cleared_player_keys);
 
+    @NotNull
+    private final CrazyCrates plugin = CrazyCrates.get();
+    @NotNull
+    private final ConfigManager configManager = this.plugin.getCrazyHandler().getConfigManager();
+    @NotNull
+    private final SettingsManager configuration = this.configManager.getMessages();
     private Property<String> property;
-
     private Property<List<String>> listProperty;
-
     private String message;
-
     private boolean isList = false;
 
     /**
@@ -97,20 +102,13 @@ public enum Messages {
      * Used for string lists
      *
      * @param listProperty the list property
-     * @param isList Defines if it's a list or not.
+     * @param isList       Defines if it's a list or not.
      */
     Messages(Property<List<String>> listProperty, boolean isList) {
         this.listProperty = listProperty;
 
         this.isList = isList;
     }
-
-    @NotNull
-    private final CrazyCrates plugin = CrazyCrates.get();
-    @NotNull
-    private final ConfigManager configManager = this.plugin.getCrazyHandler().getConfigManager();
-    @NotNull
-    private final SettingsManager configuration = this.configManager.getMessages();
 
     private boolean isList() {
         return this.isList;
@@ -159,7 +157,7 @@ public enum Messages {
 
         if (!placeholders.isEmpty()) {
             for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
-                message = message.replace(placeholder.getKey(), placeholder.getValue()).replace(placeholder.getKey().toLowerCase(), placeholder.getValue());
+                message = message.replace(placeholder.getKey(), placeholder.getValue());
             }
         }
 

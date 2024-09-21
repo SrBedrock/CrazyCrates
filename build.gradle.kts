@@ -4,6 +4,11 @@ plugins {
     id("root-plugin")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 tasks {
     assemble {
         val jarsDir = File("$rootDir/jars")

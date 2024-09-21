@@ -1,11 +1,28 @@
 package com.badbones69.crazycrates.api.objects.other;
 
+import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
+import com.badbones69.crazycrates.support.PluginSupport;
 import com.badbones69.crazycrates.support.SkullCreator;
 import com.ryderbelserion.cluster.utils.DyeUtils;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import emanondev.itemedit.ItemEdit;
+import io.th0rgal.oraxen.api.OraxenItems;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.block.Banner;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -14,65 +31,50 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.support.PluginSupport;
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import io.th0rgal.oraxen.api.OraxenItems;
-import org.bukkit.block.Banner;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.inventory.meta.trim.TrimMaterial;
 import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class ItemBuilder {
 
-    private Player target;
-
     private final NBTItem nbtItem;
-
+    private final List<String> itemLore;
+    // Entities
+    private final boolean isMobEgg;
+    private Player target;
     // Item Data
     private Material material;
     private TrimMaterial trimMaterial;
     private TrimPattern trimPattern;
     private int damage;
     private String itemName;
-    private final List<String> itemLore;
     private int itemAmount;
     private String customMaterial;
-
     // Player
     private String player;
-
     // Crates
     private String crateName;
-
     // Skulls
     private boolean isHash;
     private boolean isURL;
     private boolean isHead;
-
     // Enchantments/Flags
     private boolean unbreakable;
     private boolean hideItemFlags;
     private boolean glowing;
-
-    // Entities
-    private final boolean isMobEgg;
     private EntityType entityType;
 
     // Potions
@@ -85,7 +87,7 @@ public class ItemBuilder {
     private boolean isLeatherArmor;
 
     // Enchantments
-    private HashMap<Enchantment, Integer> enchantments;
+    private Map<Enchantment, Integer> enchantments;
 
     // Shields
     private boolean isShield;
@@ -229,6 +231,242 @@ public class ItemBuilder {
     }
 
     /**
+     * Convert an ItemStack to an ItemBuilder to allow easier editing of the ItemStack.
+     *
+     * @param item the ItemStack you wish to convert into an ItemBuilder.
+     * @return the ItemStack as an ItemBuilder with all the info from the item.
+     */
+    public static ItemBuilder convertItemStack(ItemStack item) {
+        ItemBuilder itemBuilder = new ItemBuilder().setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
+
+        return set(item, itemBuilder);
+    }
+
+    public static ItemBuilder convertItemStack(ItemStack item, Player player) {
+        ItemBuilder itemBuilder = new ItemBuilder().setTarget(player).setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
+
+        return set(item, itemBuilder);
+    }
+
+    private static ItemBuilder set(ItemStack item, ItemBuilder itemBuilder) {
+        if (item.hasItemMeta() && item.getItemMeta() != null) {
+            ItemMeta itemMeta = item.getItemMeta();
+
+            if (itemMeta.hasDisplayName()) itemBuilder.setName(itemMeta.getDisplayName());
+            if (itemMeta.hasLore()) itemBuilder.setLore(itemMeta.getLore());
+
+            itemMeta.setUnbreakable(itemMeta.isUnbreakable());
+
+            if (itemMeta instanceof Damageable damageable) itemBuilder.setDamage(damageable.getDamage());
+        }
+
+        return itemBuilder;
+    }
+
+    /**
+     * Converts a String to an ItemBuilder.
+     *
+     * @param itemString the string you wish to convert.
+     * @return the string as an ItemBuilder.
+     */
+    public static @NotNull ItemBuilder convertString(String itemString) {
+        return convertString(itemString, null);
+    }
+
+    /**
+     * Converts a string to an ItemBuilder with a placeholder for errors.
+     *
+     * @param itemString  the string you wish to convert.
+     * @param placeHolder the placeholder to use if there is an error.
+     * @return the string as an ItemBuilder.
+     */
+    public static @NotNull ItemBuilder convertString(String itemString, String placeHolder) {
+        ItemBuilder itemBuilder = new ItemBuilder();
+        try {
+            for (String optionString : itemString.split(", ")) {
+                String option = optionString.split(":")[0];
+                String value = optionString.replace(option + ":", "").replace(option, "");
+
+                switch (option.toLowerCase()) {
+                    case "item" -> itemBuilder.setMaterial(value);
+                    case "name" -> itemBuilder.setName(value);
+                    case "amount" -> {
+                        try {
+                            itemBuilder.setAmount(Integer.parseInt(value));
+                        } catch (NumberFormatException e) {
+                            itemBuilder.setAmount(1);
+                        }
+                    }
+                    case "damage" -> {
+                        try {
+                            itemBuilder.setDamage(Integer.parseInt(value));
+                        } catch (NumberFormatException e) {
+                            itemBuilder.setDamage(0);
+                        }
+                    }
+                    case "lore" -> itemBuilder.setLore(Arrays.asList(value.split(",")));
+                    case "player" -> itemBuilder.setPlayerName(value);
+                    case "unbreakable-item" -> {
+                        if (value.isEmpty() || value.equalsIgnoreCase("true")) itemBuilder.setUnbreakable(true);
+                    }
+                    case "trim-pattern" -> {
+                        if (!value.isEmpty())
+                            itemBuilder.setTrimPattern(Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(value.toLowerCase())));
+                    }
+                    case "trim-material" -> {
+                        if (!value.isEmpty())
+                            itemBuilder.setTrimMaterial(Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(value.toLowerCase())));
+                    }
+                    default -> {
+                        Enchantment enchantment = getEnchantment(option);
+
+                        if (enchantment != null) {
+                            try {
+                                itemBuilder.addEnchantments(enchantment, Integer.parseInt(value));
+                            } catch (NumberFormatException e) {
+                                itemBuilder.addEnchantments(enchantment, 1);
+                            }
+
+                            break;
+                        }
+
+                        for (ItemFlag itemFlag : ItemFlag.values()) {
+                            if (itemFlag.name().equalsIgnoreCase(option)) {
+                                itemBuilder.addItemFlag(itemFlag);
+                                break;
+                            }
+                        }
+
+                        try {
+                            for (PatternType pattern : PatternType.values()) {
+                                if (option.equalsIgnoreCase(pattern.name()) || value.equalsIgnoreCase(pattern.getIdentifier())) {
+                                    DyeColor color = DyeUtils.getDyeColor(value);
+                                    if (color != null) itemBuilder.addPattern(new Pattern(color, pattern));
+                                    break;
+                                }
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            itemBuilder.setMaterial(Material.RED_TERRACOTTA).setName("&c&lERROR").setLore(Arrays.asList("&cThere is an error", "&cFor : &c" + (placeHolder != null ? placeHolder : "")));
+
+            CrazyCrates plugin = CrazyCrates.get();
+            plugin.getLogger().log(Level.WARNING, "An error has occurred with the item builder: ", exception);
+        }
+
+        return itemBuilder;
+    }
+
+    /**
+     * Converts a list of Strings to a list of ItemBuilders.
+     *
+     * @param itemStrings the list of Strings.
+     * @return the list of ItemBuilders.
+     */
+    public static List<ItemBuilder> convertStringList(List<String> itemStrings) {
+        return convertStringList(itemStrings, null);
+    }
+
+    /**
+     * Converts a list of Strings to a list of ItemBuilders with a placeholder for errors.
+     *
+     * @param itemStrings the list of strings.
+     * @param placeholder the placeholder for errors.
+     * @return the list of ItemBuilders.
+     */
+    public static List<ItemBuilder> convertStringList(@NotNull List<String> itemStrings, String placeholder) {
+        return itemStrings.stream().map(itemString -> convertString(itemString, placeholder)).toList();
+    }
+
+    /**
+     * Get the enchantment from a string.
+     *
+     * @param enchantmentName the string of the enchantment.
+     * @return the enchantment from the string.
+     */
+    private static @Nullable Enchantment getEnchantment(String enchantmentName) {
+        if (enchantmentName == null || enchantmentName.isBlank()) {
+            return null;
+        }
+
+        enchantmentName = stripEnchantmentName(enchantmentName);
+        for (Enchantment enchantment : Enchantment.values()) {
+            try {
+                if (stripEnchantmentName(enchantment.getKey().getKey()).equalsIgnoreCase(enchantmentName))
+                    return enchantment;
+
+                HashMap<String, String> enchantments = getEnchantmentList();
+
+                if (stripEnchantmentName(enchantment.getName()).equalsIgnoreCase(enchantmentName) || (enchantments.get(enchantment.getName()) != null &&
+                        stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName)))
+                    return enchantment;
+            } catch (Exception ignore) {
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Strip extra characters from an enchantment name.
+     *
+     * @param enchantmentName the enchantment name.
+     * @return the stripped enchantment name.
+     */
+    @Contract("!null -> !null; null -> null")
+    private static String stripEnchantmentName(String enchantmentName) {
+        return enchantmentName != null ? enchantmentName.replace("-", "").replace("_", "").replace(" ", "") : null;
+    }
+
+    /**
+     * Get the list of enchantments and their in-Game names.
+     *
+     * @return the hashmap of enchantments and their in-game names.
+     */
+    private static @NotNull HashMap<String, String> getEnchantmentList() {
+        HashMap<String, String> enchantments = new HashMap<>();
+        enchantments.put("ARROW_DAMAGE", "Power");
+        enchantments.put("ARROW_FIRE", "Flame");
+        enchantments.put("ARROW_INFINITE", "Infinity");
+        enchantments.put("ARROW_KNOCKBACK", "Punch");
+        enchantments.put("DAMAGE_ALL", "Sharpness");
+        enchantments.put("DAMAGE_ARTHROPODS", "Bane_Of_Arthropods");
+        enchantments.put("DAMAGE_UNDEAD", "Smite");
+        enchantments.put("DEPTH_STRIDER", "Depth_Strider");
+        enchantments.put("DIG_SPEED", "Efficiency");
+        enchantments.put("DURABILITY", "Unbreaking");
+        enchantments.put("FIRE_ASPECT", "Fire_Aspect");
+        enchantments.put("KNOCKBACK", "KnockBack");
+        enchantments.put("LOOT_BONUS_BLOCKS", "Fortune");
+        enchantments.put("LOOT_BONUS_MOBS", "Looting");
+        enchantments.put("LUCK", "Luck_Of_The_Sea");
+        enchantments.put("LURE", "Lure");
+        enchantments.put("OXYGEN", "Respiration");
+        enchantments.put("PROTECTION_ENVIRONMENTAL", "Protection");
+        enchantments.put("PROTECTION_EXPLOSIONS", "Blast_Protection");
+        enchantments.put("PROTECTION_FALL", "Feather_Falling");
+        enchantments.put("PROTECTION_FIRE", "Fire_Protection");
+        enchantments.put("PROTECTION_PROJECTILE", "Projectile_Protection");
+        enchantments.put("SILK_TOUCH", "Silk_Touch");
+        enchantments.put("THORNS", "Thorns");
+        enchantments.put("WATER_WORKER", "Aqua_Affinity");
+        enchantments.put("BINDING_CURSE", "Curse_Of_Binding");
+        enchantments.put("MENDING", "Mending");
+        enchantments.put("FROST_WALKER", "Frost_Walker");
+        enchantments.put("VANISHING_CURSE", "Curse_Of_Vanishing");
+        enchantments.put("SWEEPING_EDGE", "Sweeping_Edge");
+        enchantments.put("RIPTIDE", "Riptide");
+        enchantments.put("CHANNELING", "Channeling");
+        enchantments.put("IMPALING", "Impaling");
+        enchantments.put("LOYALTY", "Loyalty");
+
+        return enchantments;
+    }
+
+    /**
      * Set a target player if using PlaceholderAPI
      *
      * @param target the target to set.
@@ -241,19 +479,19 @@ public class ItemBuilder {
     }
 
     /**
+     * @return the item meta
+     */
+    public ItemMeta getItemMeta() {
+        return this.itemMeta;
+    }
+
+    /**
      * Updates the item meta
      *
      * @param itemMeta the new item meta
      */
     public void setItemMeta(ItemMeta itemMeta) {
         this.itemMeta = itemMeta;
-    }
-
-    /**
-     * @return the item meta
-     */
-    public ItemMeta getItemMeta() {
-        return this.itemMeta;
     }
 
     /**
@@ -264,10 +502,111 @@ public class ItemBuilder {
     }
 
     /**
+     * Set the type of item the builder is set to.
+     *
+     * @param material the material you wish to set.
+     * @return the ItemBuilder with updated info.
+     */
+    public ItemBuilder setMaterial(Material material) {
+        this.material = material;
+
+        this.itemStack = new ItemStack(this.material);
+        this.itemMeta = this.itemStack.getItemMeta();
+
+        this.isHead = material == Material.PLAYER_HEAD;
+
+        return this;
+    }
+
+    /**
+     * Set the type of item and its metadata in the builder.
+     *
+     * @param material the string must be in this form: %Material% or %Material%:%MetaData%
+     * @return the ItemBuilder with updated info.
+     */
+    public ItemBuilder setMaterial(@NotNull String material) {
+        String metaData;
+        //Store material inside iaNamespace (e.g. ia:myblock)
+        this.customMaterial = material;
+
+        if (material.contains(":")) { // Sets the durability or another value option.
+            String[] b = material.split(":");
+            material = b[0];
+            metaData = b[1];
+
+            if (metaData.contains("#")) { // <ID>:<Durability>#<CustomModelData>
+                String modelData = metaData.split("#")[1];
+                if (isInt(modelData)) { // Value is a number.
+                    this.useCustomModelData = true;
+                    this.customModelData = Integer.parseInt(modelData);
+                }
+            }
+
+            metaData = metaData.replace("#" + this.customModelData, "");
+
+            if (isInt(metaData)) { // Value is durability.
+                this.damage = Integer.parseInt(metaData);
+            } else { // Value is something else.
+                try {
+                    this.potionType = getPotionType(PotionEffectType.getByName(metaData));
+                } catch (Exception ignored) {
+                }
+
+                this.potionColor = DyeUtils.getColor(metaData);
+                this.armorColor = DyeUtils.getColor(metaData);
+                this.mapColor = DyeUtils.getColor(metaData);
+            }
+        } else if (material.contains("#")) {
+            String[] b = material.split("#");
+            material = b[0];
+
+            if (isInt(b[1])) { // Value is a number.
+                this.useCustomModelData = true;
+                this.customModelData = Integer.parseInt(b[1]);
+            }
+        }
+
+        Material matchedMaterial = Material.matchMaterial(material);
+
+        if (matchedMaterial != null) this.material = matchedMaterial;
+
+        // If it's item, create itemstack.
+        if (this.material.isItem()) {
+            this.itemStack = new ItemStack(this.material);
+            this.itemMeta = this.itemStack.getItemMeta();
+        }
+
+        switch (this.material.name()) {
+            case "PLAYER_HEAD" -> this.isHead = true;
+            case "POTION", "SPLASH_POTION" -> this.isPotion = true;
+            case "LEATHER_HELMET", "LEATHER_CHESTPLATE", "LEATHER_LEGGINGS", "LEATHER_BOOTS", "LEATHER_HORSE_ARMOR" ->
+                    this.isLeatherArmor = true;
+            case "BANNER" -> this.isBanner = true;
+            case "SHIELD" -> this.isShield = true;
+            case "FILLED_MAP" -> this.isMap = true;
+        }
+
+        if (this.material.name().contains("BANNER")) {
+            this.isBanner = true;
+        }
+
+        return this;
+    }
+
+    /**
      * @return trim material
      */
     public TrimMaterial getTrimMaterial() {
         return this.trimMaterial;
+    }
+
+    /**
+     * Set trim material
+     *
+     * @param trimMaterial pattern to set.
+     */
+    public void setTrimMaterial(TrimMaterial trimMaterial) {
+        this.trimMaterial = trimMaterial;
     }
 
     /**
@@ -299,10 +638,36 @@ public class ItemBuilder {
     }
 
     /**
+     * Set the player that will be displayed on the head.
+     *
+     * @param playerName the player being displayed on the head.
+     * @return the ItemBuilder with an updated Player Name.
+     */
+    public ItemBuilder setPlayerName(String playerName) {
+        this.player = playerName;
+
+        if (this.player != null && this.player.length() > 16) {
+            this.isHash = true;
+            this.isURL = this.player.startsWith("http");
+        }
+
+        return this;
+    }
+
+    /**
      * @return the entity type of the spawn mob egg.
      */
     public EntityType getEntityType() {
         return this.entityType;
+    }
+
+    /**
+     * @param entityType the entity type the mob spawn egg will be.
+     * @return the ItemBuilder with an updated mob spawn egg.
+     */
+    public ItemBuilder setEntityType(EntityType entityType) {
+        this.entityType = entityType;
+        return this;
     }
 
     /**
@@ -313,11 +678,45 @@ public class ItemBuilder {
     }
 
     /**
+     * @param itemName the name of the item.
+     * @return the ItemBuilder with an updated name.
+     */
+    public ItemBuilder setName(String itemName) {
+        if (itemName != null) {
+            this.itemName = itemName;
+        }
+
+        return this;
+    }
+
+    /**
      * @return the lore on the item.
      */
     public List<String> getLore() {
         return this.itemLore;
     }
+
+    /**
+     * Set the lore of the item in the builder. This will auto force color in all the lores that contains color code. (&a, &c, &7, etc...)
+     *
+     * @param lore the lore of the item in the builder.
+     * @return the ItemBuilder with updated info.
+     */
+    public ItemBuilder setLore(List<String> lore) {
+        if (lore != null) {
+            this.itemLore.clear();
+
+            for (String line : lore) {
+                this.itemLore.add(MsgUtils.color(line));
+            }
+        }
+
+        return this;
+    }
+
+    /*
+      Class based extensions.
+     */
 
     /**
      * @return the crate name.
@@ -327,10 +726,35 @@ public class ItemBuilder {
     }
 
     /**
+     * Sets the crate name
+     *
+     * @param crateName the crate name to set.
+     * @return the ItemBuilder with updated info.
+     */
+    public ItemBuilder setCrateName(String crateName) {
+        this.crateName = crateName;
+        return this;
+    }
+
+    /**
      * @return the enchantments on the item.
      */
-    public HashMap<Enchantment, Integer> getEnchantments() {
+    public Map<Enchantment, Integer> getEnchantments() {
         return this.enchantments;
+    }
+
+    /**
+     * It will override any enchantments used in ItemBuilder.addEnchantment() below.
+     *
+     * @param enchantment a list of enchantments to add to the item.
+     * @return the ItemBuilder with a list of updated enchantments.
+     */
+    public ItemBuilder setEnchantments(HashMap<Enchantment, Integer> enchantment) {
+        if (enchantment != null) {
+            this.enchantments = enchantment;
+        }
+
+        return this;
     }
 
     /**
@@ -338,6 +762,17 @@ public class ItemBuilder {
      */
     public List<ItemFlag> getItemFlags() {
         return this.itemFlags;
+    }
+
+    /**
+     * Adds multiple ItemFlags in a list to a map which get added to an item.
+     *
+     * @param itemFlags the list of flags to add.
+     * @return the ItemBuilder with a list of ItemFlags.
+     */
+    public ItemBuilder setItemFlags(List<ItemFlag> itemFlags) {
+        this.itemFlags = itemFlags;
+        return this;
     }
 
     /**
@@ -369,10 +804,28 @@ public class ItemBuilder {
     }
 
     /**
+     * @param unbreakable sets the item to be unbreakable.
+     * @return the ItemBuilder with an updated Boolean.
+     */
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        this.unbreakable = unbreakable;
+        return this;
+    }
+
+    /**
      * @return the amount of the item stack.
      */
     public Integer getAmount() {
         return this.itemAmount;
+    }
+
+    /**
+     * @param amount the amount of the item stack.
+     * @return the ItemBuilder with an updated item count.
+     */
+    public ItemBuilder setAmount(Integer amount) {
+        this.itemAmount = amount;
+        return this;
     }
 
     /**
@@ -390,8 +843,10 @@ public class ItemBuilder {
     public String getUpdatedName() {
         String newName = this.itemName;
 
-        for (String placeholder : this.namePlaceholders.keySet()) {
-            newName = newName.replace(placeholder, this.namePlaceholders.get(placeholder)).replace(placeholder.toLowerCase(), this.namePlaceholders.get(placeholder));
+        for (Map.Entry<String, String> entry : this.namePlaceholders.entrySet()) {
+            String placeholder = entry.getKey();
+            String replacement = entry.getValue();
+            newName = newName.replace(placeholder, replacement).replace(placeholder.toLowerCase(), replacement);
         }
 
         return parse(newName);
@@ -412,71 +867,69 @@ public class ItemBuilder {
         if (this.nbtItem != null) this.itemStack = this.nbtItem.getItem();
 
         ItemStack item = this.itemStack;
-
-        if (PluginSupport.ORAXEN.isPluginEnabled()) {
-            io.th0rgal.oraxen.items.ItemBuilder oraxenItem = OraxenItems.getItemById(this.customMaterial);
-
-            if (oraxenItem != null && OraxenItems.exists(this.customMaterial)) {
-                item = oraxenItem.build();
-                this.itemMeta = item.getItemMeta();
-            }
-        }
-
+        setCustomItem();
         if (item.getType() != Material.AIR) {
             if (this.isHead) { // Has to go 1st due to it removing all data when finished.
                 if (this.isHash) { // Sauce: https://github.com/deanveloper/SkullCreator
                     if (this.isURL) {
                         item = SkullCreator.itemWithUrl(item, this.player);
                     } else {
-                        item = SkullCreator.itemWithBase64(item, this.player);
+                        SkullCreator.itemWithBase64(item, this.player);
                     }
 
                     this.itemMeta = item.getItemMeta();
                 }
+                this.itemMeta = item.getItemMeta();
             }
 
             item.setAmount(this.itemAmount);
 
-            if (this.itemMeta == null) this.itemMeta = item.getItemMeta();
+            if (this.itemMeta == null) {
+                this.itemMeta = item.getItemMeta();
+            }
 
             this.itemMeta.setDisplayName(getUpdatedName());
             this.itemMeta.setLore(getUpdatedLore());
 
-            if (isArmor()) {
-                if (this.trimPattern != null && this.trimMaterial != null) {
-                    ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
-                }
+            if (isArmor() && (this.trimPattern != null && this.trimMaterial != null)) {
+                ((ArmorMeta) this.itemMeta).setTrim(new ArmorTrim(this.trimMaterial, this.trimPattern));
             }
 
             if (this.isMap) {
                 MapMeta mapMeta = (MapMeta) this.itemMeta;
 
-                if (this.mapColor != null) mapMeta.setColor(this.mapColor);
+                if (this.mapColor != null) {
+                    mapMeta.setColor(this.mapColor);
+                }
             }
 
-            if (this.itemMeta instanceof Damageable damageable) {
-                if (this.damage >= 1) {
-                    if (this.damage >= item.getType().getMaxDurability()) {
-                        damageable.setDamage(item.getType().getMaxDurability());
-                    } else {
-                        damageable.setDamage(this.damage);
-                    }
+            if (this.itemMeta instanceof Damageable damageable && (this.damage >= 1)) {
+                if (this.damage >= item.getType().getMaxDurability()) {
+                    damageable.setDamage(item.getType().getMaxDurability());
+                } else {
+                    damageable.setDamage(this.damage);
                 }
             }
 
             if (this.isPotion && (this.potionType != null || this.potionColor != null)) {
                 PotionMeta potionMeta = (PotionMeta) this.itemMeta;
 
-                if (this.potionType != null) potionMeta.setBasePotionData(new PotionData(this.potionType));
+                if (this.potionType != null) {
+                    potionMeta.setBasePotionData(new PotionData(this.potionType));
+                }
 
-                if (this.potionColor != null) potionMeta.setColor(this.potionColor);
+                if (this.potionColor != null) {
+                    potionMeta.setColor(this.potionColor);
+                }
             }
 
             if (this.material == Material.TIPPED_ARROW && this.potionType != null) {
                 PotionMeta potionMeta = (PotionMeta) this.itemMeta;
                 potionMeta.setBasePotionData(new PotionData(this.potionType));
 
-                if (this.potionColor != null) potionMeta.setColor(this.potionColor);
+                if (this.potionColor != null) {
+                    potionMeta.setColor(this.potionColor);
+                }
             }
 
             if (this.isLeatherArmor && this.armorColor != null) {
@@ -517,34 +970,69 @@ public class ItemBuilder {
         }
     }
 
-    /*
-      Class based extensions.
-     */
-
     /**
-     * Set the type of item the builder is set to.
+     * Get the lore with all the placeholders added to it.
      *
-     * @param material the material you wish to set.
-     * @return the ItemBuilder with updated info.
+     * @return the lore with all placeholders in it.
      */
-    public ItemBuilder setMaterial(Material material) {
-        this.material = material;
 
-        this.itemStack = new ItemStack(this.material);
-        this.itemMeta = this.itemStack.getItemMeta();
+    public boolean isCustomItem() {
+        if (this.customMaterial == null || !this.customMaterial.contains(":")) {
+            return false;
+        }
 
-        this.isHead = material == Material.PLAYER_HEAD;
+        String[] split = this.customMaterial.split(":");
+        if (split.length < 2 || split[0].isBlank() || split[1].isBlank()) {
+            return false;
+        }
 
-        return this;
+        String identifier = split[0];
+        String id = split[1];
+
+        return (PluginSupport.ORAXEN.isPluginEnabled() && "or".equals(identifier) && OraxenItems.exists(id)) ||
+                (PluginSupport.ITEM_EDIT.isPluginEnabled() && "ie".equals(identifier) && ItemEdit.get().getServerStorage().getIds().contains(id));
     }
 
-    /**
-     * Set trim material
-     *
-     * @param trimMaterial pattern to set.
-     */
-    public void setTrimMaterial(TrimMaterial trimMaterial) {
-        this.trimMaterial = trimMaterial;
+    public void setCustomItem() {
+        if (!isCustomItem()) {
+            return;
+        }
+
+        String[] split = this.customMaterial.split(":");
+        String identifier = split[0];
+        String id = split[1];
+
+        if ("or".equals(identifier) && PluginSupport.ORAXEN.isPluginEnabled()) {
+            configureOraxenItem(id);
+            return;
+        }
+
+        if ("ie".equals(identifier) && PluginSupport.ITEM_EDIT.isPluginEnabled()) {
+            configureItemEditItem(id);
+        }
+    }
+
+    private void configureOraxenItem(String id) {
+        var oraxenItem = OraxenItems.getItemById(id);
+        if (oraxenItem != null) {
+            updateItemStack(oraxenItem.build());
+        }
+    }
+
+    private void configureItemEditItem(String id) {
+        var item = ItemEdit.get().getServerStorage().getItem(id);
+        if (item != null) {
+            updateItemStack(item);
+        }
+    }
+
+    private void updateItemStack(ItemStack item) {
+        if (item != null) {
+            this.itemStack = item;
+            this.itemMeta = item.getItemMeta();
+            this.itemName = item.getItemMeta().getDisplayName();
+            this.enchantments = item.getEnchantments();
+        }
     }
 
     /**
@@ -557,85 +1045,12 @@ public class ItemBuilder {
     }
 
     /**
-     * Set the type of item and its metadata in the builder.
+     * Get the damage to the item.
      *
-     * @param material the string must be in this form: %Material% or %Material%:%MetaData%
-     * @return the ItemBuilder with updated info.
+     * @return the damage to the item as an int.
      */
-    public ItemBuilder setMaterial(String material) {
-        String metaData;
-        //Store material inside iaNamespace (e.g. ia:myblock)
-        this.customMaterial = material;
-
-        if (material.contains(":")) { // Sets the durability or another value option.
-            String[] b = material.split(":");
-            material = b[0];
-            metaData = b[1];
-
-            if (metaData.contains("#")) { // <ID>:<Durability>#<CustomModelData>
-                String modelData = metaData.split("#")[1];
-                if (isInt(modelData)) { // Value is a number.
-                    this.useCustomModelData = true;
-                    this.customModelData = Integer.parseInt(modelData);
-                }
-            }
-
-            metaData = metaData.replace("#" + this.customModelData, "");
-
-            if (isInt(metaData)) { // Value is durability.
-                this.damage = Integer.parseInt(metaData);
-            } else { // Value is something else.
-                try {
-                    this.potionType = getPotionType(PotionEffectType.getByName(metaData));
-                } catch (Exception ignored) {}
-
-                this.potionColor = DyeUtils.getColor(metaData);
-                this.armorColor = DyeUtils.getColor(metaData);
-                this.mapColor = DyeUtils.getColor(metaData);
-            }
-        } else if (material.contains("#")) {
-            String[] b = material.split("#");
-            material = b[0];
-
-            if (isInt(b[1])) { // Value is a number.
-                this.useCustomModelData = true;
-                this.customModelData = Integer.parseInt(b[1]);
-            }
-        }
-
-        Material matchedMaterial = Material.matchMaterial(material);
-
-        if (matchedMaterial != null) this.material = matchedMaterial;
-
-        // If it's item, create itemstack.
-        if (this.material.isItem()) {
-            this.itemStack = new ItemStack(this.material);
-            this.itemMeta = this.itemStack.getItemMeta();
-        }
-
-        switch (this.material.name()) {
-            case "PLAYER_HEAD" -> this.isHead = true;
-            case "POTION", "SPLASH_POTION" -> this.isPotion = true;
-            case "LEATHER_HELMET", "LEATHER_CHESTPLATE", "LEATHER_LEGGINGS", "LEATHER_BOOTS", "LEATHER_HORSE_ARMOR" -> this.isLeatherArmor = true;
-            case "BANNER" -> this.isBanner = true;
-            case "SHIELD" -> this.isShield = true;
-            case "FILLED_MAP" -> this.isMap = true;
-        }
-
-        if (this.material.name().contains("BANNER")) this.isBanner = true;
-
-        return this;
-    }
-
-    /**
-     * Sets the crate name
-     *
-     * @param crateName the crate name to set.
-     * @return the ItemBuilder with updated info.
-     */
-    public ItemBuilder setCrateName(String crateName) {
-        this.crateName = crateName;
-        return this;
+    public int getDamage() {
+        return this.damage;
     }
 
     /**
@@ -645,33 +1060,12 @@ public class ItemBuilder {
         this.damage = damage;
     }
 
-    /**
-     * Get the damage to the item.
-     *
-     * @return the damage to the item as an int.
-     */
-    public int getDamage() {
-        return this.damage;
-    }
-
     private String parse(String value) {
         if (MiscUtils.isPapiActive() && this.target != null) {
             return MsgUtils.color(PlaceholderAPI.setPlaceholders(this.target, value));
         }
 
         return MsgUtils.color(value);
-    }
-
-    /**
-     * @param itemName the name of the item.
-     * @return the ItemBuilder with an updated name.
-     */
-    public ItemBuilder setName(String itemName) {
-        if (itemName != null) {
-            this.itemName = itemName;
-        }
-
-        return this;
     }
 
     /**
@@ -687,7 +1081,7 @@ public class ItemBuilder {
      * Add a placeholder to the name of the item.
      *
      * @param placeholder the placeholder that will be replaced.
-     * @param argument the argument you wish to replace the placeholder with.
+     * @param argument    the argument you wish to replace the placeholder with.
      * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addNamePlaceholder(String placeholder, String argument) {
@@ -707,28 +1101,10 @@ public class ItemBuilder {
     }
 
     /**
-     * Set the lore of the item in the builder. This will auto force color in all the lores that contains color code. (&a, &c, &7, etc...)
-     *
-     * @param lore the lore of the item in the builder.
-     * @return the ItemBuilder with updated info.
-     */
-    public ItemBuilder setLore(List<String> lore) {
-        if (lore != null) {
-            this.itemLore.clear();
-
-            for (String line : lore) {
-                this.itemLore.add(MsgUtils.color(line));
-            }
-        }
-
-        return this;
-    }
-
-    /**
      * Set the lore of the item with papi support in the builder. This will auto force color in all the lores that contains color code. (&a, &c, &7, etc...)
      *
      * @param player the player viewing the button.
-     * @param lore the lore of the item in the builder.
+     * @param lore   the lore of the item in the builder.
      * @return the ItemBuilder with updated info.
      */
     public ItemBuilder setLore(Player player, List<String> lore) {
@@ -769,7 +1145,7 @@ public class ItemBuilder {
      * Add a placeholder to the lore of the item.
      *
      * @param placeholder the placeholder you wish to replace.
-     * @param argument the argument that will replace the placeholder.
+     * @param argument    the argument that will replace the placeholder.
      * @return the ItemBuilder with updated info.
      */
     public ItemBuilder addLorePlaceholder(String placeholder, String argument) {
@@ -786,8 +1162,11 @@ public class ItemBuilder {
         List<String> newLore = new ArrayList<>();
 
         for (String item : this.itemLore) {
-            for (String placeholder : this.lorePlaceholders.keySet()) {
-                item = item.replace(placeholder, this.lorePlaceholders.get(placeholder)).replace(placeholder.toLowerCase(), this.lorePlaceholders.get(placeholder));
+            for (Map.Entry<String, String> entry : this.lorePlaceholders.entrySet()) {
+                String placeholder = entry.getKey();
+                String replacement = entry.getValue();
+
+                item = item.replace(placeholder, replacement).replace(placeholder.toLowerCase(), replacement);
             }
 
             newLore.add(parse(item));
@@ -804,15 +1183,6 @@ public class ItemBuilder {
      */
     public ItemBuilder removeLorePlaceholder(String placeholder) {
         this.lorePlaceholders.remove(placeholder);
-        return this;
-    }
-
-    /**
-     * @param entityType the entity type the mob spawn egg will be.
-     * @return the ItemBuilder with an updated mob spawn egg.
-     */
-    public ItemBuilder setEntityType(EntityType entityType) {
-        this.entityType = entityType;
         return this;
     }
 
@@ -835,7 +1205,8 @@ public class ItemBuilder {
                     break;
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -843,7 +1214,7 @@ public class ItemBuilder {
      * @return the ItemBuilder with updated patterns.
      */
     public ItemBuilder addPatterns(List<String> patterns) {
-        patterns.forEach(this :: addPatterns);
+        patterns.forEach(this::addPatterns);
         return this;
     }
 
@@ -866,48 +1237,10 @@ public class ItemBuilder {
     }
 
     /**
-     * @param amount the amount of the item stack.
-     * @return the ItemBuilder with an updated item count.
-     */
-    public ItemBuilder setAmount(Integer amount) {
-        this.itemAmount = amount;
-        return this;
-    }
-
-    /**
-     * Set the player that will be displayed on the head.
-     *
-     * @param playerName the player being displayed on the head.
-     * @return the ItemBuilder with an updated Player Name.
-     */
-    public ItemBuilder setPlayerName(String playerName) {
-        this.player = playerName;
-
-        if (this.player != null && this.player.length() > 16) {
-            this.isHash = true;
-            this.isURL = this.player.startsWith("http");
-        }
-
-        return this;
-    }
-
-    /**
-     * It will override any enchantments used in ItemBuilder.addEnchantment() below.
-     *
-     * @param enchantment a list of enchantments to add to the item.
-     * @return the ItemBuilder with a list of updated enchantments.
-     */
-    public ItemBuilder setEnchantments(HashMap<Enchantment, Integer> enchantment) {
-        if (enchantment != null) this.enchantments = enchantment;
-
-        return this;
-    }
-
-    /**
      * Adds an enchantment to the item.
      *
      * @param enchantment the enchantment you wish to add.
-     * @param level the level of the enchantment ( Unsafe levels included )
+     * @param level       the level of the enchantment ( Unsafe levels included )
      * @return the ItemBuilder with updated enchantments.
      */
     public ItemBuilder addEnchantments(Enchantment enchantment, int level) {
@@ -932,7 +1265,7 @@ public class ItemBuilder {
      * @param flagStrings the flag names as string you wish to add to the item in the builder.
      * @return the ItemBuilder with updated info.
      */
-    public ItemBuilder setFlagsFromStrings(List<String> flagStrings) {
+    public ItemBuilder setFlagsFromStrings(@NotNull List<String> flagStrings) {
         this.itemFlags.clear();
 
         for (String flagString : flagStrings) {
@@ -950,13 +1283,14 @@ public class ItemBuilder {
      * @param flagStrings list of items to add.
      * @return the ItemBuilder with updated info.
      */
-    public ItemBuilder addItemFlags(List<String> flagStrings) {
+    public ItemBuilder addItemFlags(@NotNull List<String> flagStrings) {
         for (String flagString : flagStrings) {
             try {
                 ItemFlag itemFlag = ItemFlag.valueOf(flagString.toUpperCase());
 
                 addItemFlag(itemFlag);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         return this;
@@ -988,17 +1322,6 @@ public class ItemBuilder {
     }
 
     /**
-     * Adds multiple ItemFlags in a list to a map which get added to an item.
-     *
-     * @param itemFlags the list of flags to add.
-     * @return the ItemBuilder with a list of ItemFlags.
-     */
-    public ItemBuilder setItemFlags(List<ItemFlag> itemFlags) {
-        this.itemFlags = itemFlags;
-        return this;
-    }
-
-    /**
      * @param hideItemFlags hide item flags based on a boolean.
      * @return the ItemBuilder with an updated Boolean.
      */
@@ -1023,18 +1346,10 @@ public class ItemBuilder {
      * @param referenceItem the item that is being referenced.
      * @return the ItemBuilder with updated info.
      */
+    @Contract("_ -> this")
     private ItemBuilder setReferenceItem(ItemStack referenceItem) {
         this.itemStack = referenceItem;
         this.itemMeta = this.itemStack.getItemMeta();
-        return this;
-    }
-
-    /**
-     * @param unbreakable sets the item to be unbreakable.
-     * @return the ItemBuilder with an updated Boolean.
-     */
-    public ItemBuilder setUnbreakable(boolean unbreakable) {
-        this.unbreakable = unbreakable;
         return this;
     }
 
@@ -1048,165 +1363,16 @@ public class ItemBuilder {
     }
 
     /**
-     * Convert an ItemStack to an ItemBuilder to allow easier editing of the ItemStack.
-     *
-     * @param item the ItemStack you wish to convert into an ItemBuilder.
-     * @return the ItemStack as an ItemBuilder with all the info from the item.
-     */
-    public static ItemBuilder convertItemStack(ItemStack item) {
-        ItemBuilder itemBuilder = new ItemBuilder().setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
-
-        return set(item, itemBuilder);
-    }
-
-    public static ItemBuilder convertItemStack(ItemStack item, Player player) {
-        ItemBuilder itemBuilder = new ItemBuilder().setTarget(player).setReferenceItem(item).setAmount(item.getAmount()).setEnchantments(new HashMap<>(item.getEnchantments()));
-
-        return set(item, itemBuilder);
-    }
-
-    private static ItemBuilder set(ItemStack item, ItemBuilder itemBuilder) {
-        if (item.hasItemMeta() && item.getItemMeta() != null) {
-            ItemMeta itemMeta = item.getItemMeta();
-
-            if (itemMeta.hasDisplayName()) itemBuilder.setName(itemMeta.getDisplayName());
-            if (itemMeta.hasLore()) itemBuilder.setLore(itemMeta.getLore());
-
-            itemMeta.setUnbreakable(itemMeta.isUnbreakable());
-
-            if (itemMeta instanceof Damageable) itemBuilder.setDamage(((Damageable) itemMeta).getDamage());
-        }
-
-        return itemBuilder;
-    }
-
-    /**
-     * Converts a String to an ItemBuilder.
-     *
-     * @param itemString the string you wish to convert.
-     * @return the string as an ItemBuilder.
-     */
-    public static ItemBuilder convertString(String itemString) {
-        return convertString(itemString, null);
-    }
-
-    /**
-     * Converts a string to an ItemBuilder with a placeholder for errors.
-     *
-     * @param itemString the string you wish to convert.
-     * @param placeHolder the placeholder to use if there is an error.
-     * @return the string as an ItemBuilder.
-     */
-    public static ItemBuilder convertString(String itemString, String placeHolder) {
-        ItemBuilder itemBuilder = new ItemBuilder();
-
-        try {
-            for (String optionString : itemString.split(", ")) {
-                String option = optionString.split(":")[0];
-                String value = optionString.replace(option + ":", "").replace(option, "");
-
-                switch (option.toLowerCase()) {
-                    case "item" -> itemBuilder.setMaterial(value);
-                    case "name" -> itemBuilder.setName(value);
-                    case "amount" -> {
-                        try {
-                            itemBuilder.setAmount(Integer.parseInt(value));
-                        } catch (NumberFormatException e) {
-                            itemBuilder.setAmount(1);
-                        }
-                    }
-                    case "damage" -> {
-                        try {
-                            itemBuilder.setDamage(Integer.parseInt(value));
-                        } catch (NumberFormatException e) {
-                            itemBuilder.setDamage(0);
-                        }
-                    }
-                    case "lore" -> itemBuilder.setLore(Arrays.asList(value.split(",")));
-                    case "player" -> itemBuilder.setPlayerName(value);
-                    case "unbreakable-item" -> {
-                        if (value.isEmpty() || value.equalsIgnoreCase("true")) itemBuilder.setUnbreakable(true);
-                    }
-                    case "trim-pattern" -> {
-                        if (!value.isEmpty()) itemBuilder.setTrimPattern(Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(value.toLowerCase())));
-                    }
-                    case "trim-material" -> {
-                        if (!value.isEmpty()) itemBuilder.setTrimMaterial(Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(value.toLowerCase())));
-                    }
-                    default -> {
-                        Enchantment enchantment = getEnchantment(option);
-
-                        if (enchantment != null) {
-                            try {
-                                itemBuilder.addEnchantments(enchantment, Integer.parseInt(value));
-                            } catch (NumberFormatException e) {
-                                itemBuilder.addEnchantments(enchantment, 1);
-                            }
-
-                            break;
-                        }
-
-                        for (ItemFlag itemFlag : ItemFlag.values()) {
-                            if (itemFlag.name().equalsIgnoreCase(option)) {
-                                itemBuilder.addItemFlag(itemFlag);
-                                break;
-                            }
-                        }
-
-                        try {
-                            for (PatternType pattern : PatternType.values()) {
-                                if (option.equalsIgnoreCase(pattern.name()) || value.equalsIgnoreCase(pattern.getIdentifier())) {
-                                    DyeColor color = DyeUtils.getDyeColor(value);
-                                    if (color != null) itemBuilder.addPattern(new Pattern(color, pattern));
-                                    break;
-                                }
-                            }
-                        } catch (Exception ignored) {}
-                    }
-                }
-            }
-        } catch (Exception exception) {
-            itemBuilder.setMaterial(Material.RED_TERRACOTTA).setName("&c&lERROR").setLore(Arrays.asList("&cThere is an error", "&cFor : &c" + (placeHolder != null ? placeHolder : "")));
-
-            CrazyCrates plugin = CrazyCrates.get();
-            plugin.getLogger().log(Level.WARNING, "An error has occurred with the item builder: ", exception);
-        }
-
-        return itemBuilder;
-    }
-
-    /**
-     * Converts a list of Strings to a list of ItemBuilders.
-     *
-     * @param itemStrings the list of Strings.
-     * @return the list of ItemBuilders.
-     */
-    public static List<ItemBuilder> convertStringList(List<String> itemStrings) {
-        return convertStringList(itemStrings, null);
-    }
-
-    /**
-     * Converts a list of Strings to a list of ItemBuilders with a placeholder for errors.
-     *
-     * @param itemStrings the list of strings.
-     * @param placeholder the placeholder for errors.
-     * @return the list of ItemBuilders.
-     */
-    public static List<ItemBuilder> convertStringList(List<String> itemStrings, String placeholder) {
-        return itemStrings.stream().map(itemString -> convertString(itemString, placeholder)).collect(Collectors.toList());
-    }
-
-    /**
      * Add glow to an item.
-     *
      */
     private void addGlow() {
         if (this.glowing) {
             try {
-                this.itemMeta.addEnchant(Enchantment.LUCK, 1, false);
+                this.itemMeta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, false);
                 this.itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 this.itemStack.setItemMeta(this.itemMeta);
-            } catch (NoClassDefFoundError ignored) {}
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 
@@ -1216,31 +1382,32 @@ public class ItemBuilder {
      * @param type the type of the potion effect.
      * @return the potion type.
      */
+    @Contract("null -> null")
     private PotionType getPotionType(PotionEffectType type) {
         if (type != null) {
             if (type.equals(PotionEffectType.FIRE_RESISTANCE)) {
                 return PotionType.FIRE_RESISTANCE;
-            } else if (type.equals(PotionEffectType.HARM)) {
-                return PotionType.INSTANT_DAMAGE;
-            } else if (type.equals(PotionEffectType.HEAL)) {
-                return PotionType.INSTANT_HEAL;
+            } else if (type.equals(PotionEffectType.INSTANT_DAMAGE)) {
+                return PotionType.HARMING;
+            } else if (type.equals(PotionEffectType.INSTANT_HEALTH)) {
+                return PotionType.HEALING;
             } else if (type.equals(PotionEffectType.INVISIBILITY)) {
                 return PotionType.INVISIBILITY;
-            } else if (type.equals(PotionEffectType.JUMP)) {
-                return PotionType.JUMP;
-            } else if (type.equals(PotionEffectType.getByName("LUCK"))) {
-                return PotionType.valueOf("LUCK");
+            } else if (type.equals(PotionEffectType.JUMP_BOOST)) {
+                return PotionType.LEAPING;
+            } else if (type.equals(PotionEffectType.LUCK)) {
+                return PotionType.LUCK;
             } else if (type.equals(PotionEffectType.NIGHT_VISION)) {
                 return PotionType.NIGHT_VISION;
             } else if (type.equals(PotionEffectType.POISON)) {
                 return PotionType.POISON;
             } else if (type.equals(PotionEffectType.REGENERATION)) {
-                return PotionType.REGEN;
-            } else if (type.equals(PotionEffectType.SLOW)) {
+                return PotionType.REGENERATION;
+            } else if (type.equals(PotionEffectType.SLOWNESS)) {
                 return PotionType.SLOWNESS;
             } else if (type.equals(PotionEffectType.SPEED)) {
-                return PotionType.SPEED;
-            } else if (type.equals(PotionEffectType.INCREASE_DAMAGE)) {
+                return PotionType.SWIFTNESS;
+            } else if (type.equals(PotionEffectType.STRENGTH)) {
                 return PotionType.STRENGTH;
             } else if (type.equals(PotionEffectType.WATER_BREATHING)) {
                 return PotionType.WATER_BREATHING;
@@ -1250,83 +1417,6 @@ public class ItemBuilder {
         }
 
         return null;
-    }
-
-    /**
-     * Get the enchantment from a string.
-     *
-     * @param enchantmentName the string of the enchantment.
-     * @return the enchantment from the string.
-     */
-    private static Enchantment getEnchantment(String enchantmentName) {
-        enchantmentName = stripEnchantmentName(enchantmentName);
-        for (Enchantment enchantment : Enchantment.values()) {
-            try {
-                if (stripEnchantmentName(enchantment.getKey().getKey()).equalsIgnoreCase(enchantmentName)) return enchantment;
-
-                HashMap<String, String> enchantments = getEnchantmentList();
-
-                if (stripEnchantmentName(enchantment.getName()).equalsIgnoreCase(enchantmentName) || (enchantments.get(enchantment.getName()) != null &&
-                        stripEnchantmentName(enchantments.get(enchantment.getName())).equalsIgnoreCase(enchantmentName))) return enchantment;
-            } catch (Exception ignore) {}
-        }
-
-        return null;
-    }
-
-    /**
-     * Strip extra characters from an enchantment name.
-     *
-     * @param enchantmentName the enchantment name.
-     * @return the stripped enchantment name.
-     */
-    private static String stripEnchantmentName(String enchantmentName) {
-        return enchantmentName != null ? enchantmentName.replace("-", "").replace("_", "").replace(" ", "") : null;
-    }
-
-    /**
-     * Get the list of enchantments and their in-Game names.
-     *
-     * @return the hashmap of enchantments and their in-game names.
-     */
-    private static HashMap<String, String> getEnchantmentList() {
-        HashMap<String, String> enchantments = new HashMap<>();
-        enchantments.put("ARROW_DAMAGE", "Power");
-        enchantments.put("ARROW_FIRE", "Flame");
-        enchantments.put("ARROW_INFINITE", "Infinity");
-        enchantments.put("ARROW_KNOCKBACK", "Punch");
-        enchantments.put("DAMAGE_ALL", "Sharpness");
-        enchantments.put("DAMAGE_ARTHROPODS", "Bane_Of_Arthropods");
-        enchantments.put("DAMAGE_UNDEAD", "Smite");
-        enchantments.put("DEPTH_STRIDER", "Depth_Strider");
-        enchantments.put("DIG_SPEED", "Efficiency");
-        enchantments.put("DURABILITY", "Unbreaking");
-        enchantments.put("FIRE_ASPECT", "Fire_Aspect");
-        enchantments.put("KNOCKBACK", "KnockBack");
-        enchantments.put("LOOT_BONUS_BLOCKS", "Fortune");
-        enchantments.put("LOOT_BONUS_MOBS", "Looting");
-        enchantments.put("LUCK", "Luck_Of_The_Sea");
-        enchantments.put("LURE", "Lure");
-        enchantments.put("OXYGEN", "Respiration");
-        enchantments.put("PROTECTION_ENVIRONMENTAL", "Protection");
-        enchantments.put("PROTECTION_EXPLOSIONS", "Blast_Protection");
-        enchantments.put("PROTECTION_FALL", "Feather_Falling");
-        enchantments.put("PROTECTION_FIRE", "Fire_Protection");
-        enchantments.put("PROTECTION_PROJECTILE", "Projectile_Protection");
-        enchantments.put("SILK_TOUCH", "Silk_Touch");
-        enchantments.put("THORNS", "Thorns");
-        enchantments.put("WATER_WORKER", "Aqua_Affinity");
-        enchantments.put("BINDING_CURSE", "Curse_Of_Binding");
-        enchantments.put("MENDING", "Mending");
-        enchantments.put("FROST_WALKER", "Frost_Walker");
-        enchantments.put("VANISHING_CURSE", "Curse_Of_Vanishing");
-        enchantments.put("SWEEPING_EDGE", "Sweeping_Edge");
-        enchantments.put("RIPTIDE", "Riptide");
-        enchantments.put("CHANNELING", "Channeling");
-        enchantments.put("IMPALING", "Impaling");
-        enchantments.put("LOYALTY", "Loyalty");
-
-        return enchantments;
     }
 
     /**

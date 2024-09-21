@@ -1,18 +1,20 @@
 package com.badbones69.crazycrates.tasks.crates.other.quadcrates;
 
-import org.bukkit.SoundCategory;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.tasks.crates.CrateManager;
-import com.badbones69.crazycrates.api.enums.Messages;
-import com.badbones69.crazycrates.api.SpiralManager;
-import com.badbones69.crazycrates.support.StructureHandler;
 import com.badbones69.crazycrates.api.ChestManager;
+import com.badbones69.crazycrates.api.SpiralManager;
+import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.objects.Crate;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+import com.badbones69.crazycrates.common.crates.quadcrates.CrateParticles;
+import com.badbones69.crazycrates.support.StructureHandler;
+import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -20,26 +22,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import com.badbones69.crazycrates.common.crates.quadcrates.CrateParticles;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class QuadCrateManager {
 
+    private static final List<QuadCrateManager> crateSessions = new ArrayList<>();
     @NotNull
     private final CrazyCrates plugin = CrazyCrates.get();
-
     @NotNull
     private final CrateManager crateManager = this.plugin.getCrateManager();
-
-    private static final List<QuadCrateManager> crateSessions = new ArrayList<>();
-
     private final QuadCrateManager instance;
 
     // Get the player.
@@ -89,12 +86,12 @@ public class QuadCrateManager {
     /**
      * A constructor to build the quad crate session.
      *
-     * @param player player opening the crate.
-     * @param crate crate the player is opening.
-     * @param keyType key type the player has.
+     * @param player        player opening the crate.
+     * @param crate         crate the player is opening.
+     * @param keyType       key type the player has.
      * @param spawnLocation spawn location of the schematic.
-     * @param inHand checks the hand of the player.
-     * @param handler the structure handler instance.
+     * @param inHand        checks the hand of the player.
+     * @param handler       the structure handler instance.
      */
     public QuadCrateManager(Player player, Crate crate, KeyType keyType, Location spawnLocation, boolean inHand, StructureHandler handler) {
         this.instance = this;
@@ -115,6 +112,15 @@ public class QuadCrateManager {
         this.particleColor = getColors().get(ThreadLocalRandom.current().nextInt(getColors().size()));
 
         crateSessions.add(this.instance);
+    }
+
+    /**
+     * Get the crate sessions
+     *
+     * @return list of crate sessions.
+     */
+    public static List<QuadCrateManager> getCrateSessions() {
+        return crateSessions;
     }
 
     /**
@@ -153,7 +159,8 @@ public class QuadCrateManager {
                 crateSessions.remove(this.instance);
                 return;
             } else {
-                if (!loc.getBlock().getType().equals(Material.AIR)) this.oldBlocks.put(loc.getBlock().getLocation(), loc.getBlock().getState());
+                if (!loc.getBlock().getType().equals(Material.AIR))
+                    this.oldBlocks.put(loc.getBlock().getLocation(), loc.getBlock().getState());
             }
         }
 
@@ -182,7 +189,8 @@ public class QuadCrateManager {
             return;
         }
 
-        if (this.plugin.getCrateManager().getHolograms() != null) this.plugin.getCrateManager().getHolograms().removeHologram(this.spawnLocation.getBlock());
+        if (this.plugin.getCrateManager().getHolograms() != null)
+            this.plugin.getCrateManager().getHolograms().removeHologram(this.spawnLocation.getBlock());
 
         // Shove other players away from the player opening the crate.
         shovePlayers.forEach(entity -> entity.getLocation().toVector().subtract(this.spawnLocation.clone().toVector()).normalize().setY(1));
@@ -242,7 +250,7 @@ public class QuadCrateManager {
                     }
                 }
             }
-        }.runTaskTimer(this.plugin, 0,1));
+        }.runTaskTimer(this.plugin, 0, 1));
 
         this.crateManager.addCrateTask(this.player, new BukkitRunnable() {
             @Override
@@ -277,7 +285,9 @@ public class QuadCrateManager {
                 // Restore the old blocks.
                 oldBlocks.keySet().forEach(location -> oldBlocks.get(location).update(true, false));
 
-                if (crate.getHologram().isEnabled() && plugin.getCrateManager().getHolograms() != null) plugin.getCrateManager().getHolograms().createHologram(spawnLocation.getBlock(), crate);
+                if (crate.getHologram().isEnabled() && plugin.getCrateManager().getHolograms() != null) {
+                    plugin.getCrateManager().getHolograms().createHologram(spawnLocation.getBlock(), crate);
+                }
 
                 // End the crate.
                 crateManager.endCrate(player);
@@ -338,34 +348,25 @@ public class QuadCrateManager {
      * Spawn particles at 2 specific locations with a customizable color.
      *
      * @param quadCrateParticle the particle to spawn.
-     * @param particleColor the color of the particle.
-     * @param location1 the first location of the particle.
-     * @param location2 the second location of the particle.
+     * @param particleColor     the color of the particle.
+     * @param location1         the first location of the particle.
+     * @param location2         the second location of the particle.
      */
     private void spawnParticles(CrateParticles quadCrateParticle, Color particleColor, Location location1, Location location2) {
         Particle particle = switch (quadCrateParticle) {
             case flame -> Particle.FLAME;
-            case villager_happy -> Particle.VILLAGER_HAPPY;
-            case spell_witch -> Particle.SPELL_WITCH;
-            default -> Particle.REDSTONE;
+            case villager_happy -> Particle.HAPPY_VILLAGER;
+            case spell_witch -> Particle.WITCH;
+            default -> Particle.DUST;
         };
 
-        if (particle == Particle.REDSTONE) {
+        if (particle == Particle.DUST) {
             location1.getWorld().spawnParticle(particle, location1, 0, new Particle.DustOptions(particleColor, 1));
             location2.getWorld().spawnParticle(particle, location2, 0, new Particle.DustOptions(particleColor, 1));
         } else {
             location1.getWorld().spawnParticle(particle, location1, 0);
             location2.getWorld().spawnParticle(particle, location2, 0);
         }
-    }
-
-    /**
-     * Get the crate sessions
-     *
-     * @return list of crate sessions.
-     */
-    public static List<QuadCrateManager> getCrateSessions() {
-        return crateSessions;
     }
 
     /**

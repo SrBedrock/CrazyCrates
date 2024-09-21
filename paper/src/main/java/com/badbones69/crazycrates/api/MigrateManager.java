@@ -4,10 +4,11 @@ import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.SettingsManagerBuilder;
 import ch.jalu.configme.resource.YamlFileResourceOptions;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;

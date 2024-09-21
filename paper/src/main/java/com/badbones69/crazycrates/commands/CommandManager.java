@@ -1,16 +1,17 @@
 package com.badbones69.crazycrates.commands;
 
+import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.objects.other.CrateLocation;
 import com.badbones69.crazycrates.commands.relations.ArgumentRelations;
 import com.badbones69.crazycrates.commands.relations.MiscRelations;
-import com.badbones69.crazycrates.commands.subs.CrateBaseCommand;
 import com.badbones69.crazycrates.commands.subs.BaseKeyCommand;
+import com.badbones69.crazycrates.commands.subs.CrateBaseCommand;
 import dev.triumphteam.cmd.bukkit.BukkitCommandManager;
 import dev.triumphteam.cmd.core.suggestion.SuggestionKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.CrazyCrates;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class CommandManager {
         this.bukkitCommandManager.registerSuggestion(SuggestionKey.of("prizes"), (sender, context) -> {
             List<String> numbers = new ArrayList<>();
 
-            this.plugin.getCrateManager().getCrateFromName(context.getArgs().get(0)).getPrizes().forEach(prize -> numbers.add(prize.getPrizeNumber()));
+            this.plugin.getCrateManager().getCrateFromName(context.getArgs().getFirst()).getPrizes().forEach(prize -> numbers.add(prize.getPrizeNumber()));
 
             return numbers;
         });
@@ -54,7 +55,7 @@ public class CommandManager {
         this.bukkitCommandManager.registerSuggestion(SuggestionKey.of("tiers"), (sender, context) -> {
             List<String> numbers = new ArrayList<>();
 
-            this.plugin.getCrateManager().getCrateFromName(context.getArgs().get(0)).getTiers().forEach(tier -> numbers.add(tier.getName()));
+            this.plugin.getCrateManager().getCrateFromName(context.getArgs().getFirst()).getTiers().forEach(tier -> numbers.add(tier.getName()));
 
             return numbers;
         });

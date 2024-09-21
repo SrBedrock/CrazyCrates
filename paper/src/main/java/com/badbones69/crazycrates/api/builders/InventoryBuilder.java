@@ -1,9 +1,11 @@
 package com.badbones69.crazycrates.api.builders;
 
 import ch.jalu.configme.SettingsManager;
+import com.badbones69.crazycrates.CrazyCrates;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.Tier;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
@@ -11,9 +13,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
+
 import java.util.List;
+
 import static java.util.regex.Matcher.quoteReplacement;
 
 @SuppressWarnings("ALL")
@@ -97,7 +99,8 @@ public abstract class InventoryBuilder implements InventoryHolder {
                 return true;
             }
 
-            if (plugin.isLogging()) plugin.getLogger().warning("The property " + ConfigKeys.menu_button_command_list.getPath() + " is empty so no commands were run.");
+            if (plugin.isLogging())
+                plugin.getLogger().warning("The property " + ConfigKeys.menu_button_command_list.getPath() + " is empty so no commands were run.");
 
             return true;
         }
@@ -115,12 +118,12 @@ public abstract class InventoryBuilder implements InventoryHolder {
         return this.size;
     }
 
-    public void setPage(int page) {
-        this.page = page;
-    }
-
     public int getPage() {
         return this.page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public Crate getCrate() {

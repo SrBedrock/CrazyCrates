@@ -7,7 +7,6 @@ import com.badbones69.crazycrates.api.builders.InventoryBuilder;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.Tier;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
 import com.badbones69.crazycrates.common.config.ConfigManager;
 import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.tasks.InventoryManager;
@@ -23,10 +22,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.List;
-
-import static java.util.regex.Matcher.quoteReplacement;
 
 public class CrateTierMenu extends InventoryBuilder {
 
@@ -86,6 +84,7 @@ public class CrateTierMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
+            if (inventory.getHolder() == null) return;
             if (!(inventory.getHolder(false) instanceof CrateTierMenu holder)) return;
 
             event.setCancelled(true);

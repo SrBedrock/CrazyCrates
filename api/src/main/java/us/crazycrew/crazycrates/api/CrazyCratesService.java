@@ -14,6 +14,14 @@ public class CrazyCratesService {
     private static ICrazyCrates plugin = null;
 
     /**
+     * Prevents creating an instance of this class.
+     */
+    @ApiStatus.Internal
+    private CrazyCratesService() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
+    }
+
+    /**
      * Fetches the instance of the interface for api use.
      *
      * @return the instance of ICrazyCrates
@@ -26,14 +34,6 @@ public class CrazyCratesService {
         }
 
         return plugin;
-    }
-
-    /**
-     * Prevents creating an instance of this class.
-     */
-    @ApiStatus.Internal
-    private CrazyCratesService() {
-        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
     /**

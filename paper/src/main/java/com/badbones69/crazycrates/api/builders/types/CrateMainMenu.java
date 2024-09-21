@@ -2,10 +2,14 @@ package com.badbones69.crazycrates.api.builders.types;
 
 import ch.jalu.configme.SettingsManager;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.CrazyHandler;
+import com.badbones69.crazycrates.api.builders.InventoryBuilder;
 import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.common.config.ConfigManager;
+import com.badbones69.crazycrates.common.config.types.ConfigKeys;
 import com.badbones69.crazycrates.tasks.InventoryManager;
 import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import de.tr7zw.changeme.nbtapi.NBTItem;
@@ -22,11 +26,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
-import com.badbones69.crazycrates.common.config.ConfigManager;
-import com.badbones69.crazycrates.common.config.types.ConfigKeys;
-import com.badbones69.crazycrates.CrazyHandler;
-import com.badbones69.crazycrates.api.builders.InventoryBuilder;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
+
 import java.text.NumberFormat;
 import java.util.List;
 
@@ -86,22 +87,26 @@ public class CrateMainMenu extends InventoryBuilder {
                             option = option.replace("Lore:", "");
                             String[] lore = option.split(",");
 
-                            for (String line : lore) {
+                            for (String ignored : lore) {
                                 option = getCrates(option);
 
                                 item.addLore(option.replaceAll("%player%", getPlayer().getName()));
                             }
                         }
 
-                        if (option.contains("Glowing:")) item.setGlow(Boolean.parseBoolean(option.replace("Glowing:", "")));
+                        if (option.contains("Glowing:"))
+                            item.setGlow(Boolean.parseBoolean(option.replace("Glowing:", "")));
 
-                        if (option.contains("Player:")) item.setPlayerName(option.replaceAll("%player%", getPlayer().getName()));
+                        if (option.contains("Player:"))
+                            item.setPlayerName(option.replaceAll("%player%", getPlayer().getName()));
 
                         if (option.contains("Slot:")) slot = Integer.parseInt(option.replace("Slot:", ""));
 
-                        if (option.contains("Unbreakable-Item")) item.setUnbreakable(Boolean.parseBoolean(option.replace("Unbreakable-Item:", "")));
+                        if (option.contains("Unbreakable-Item"))
+                            item.setUnbreakable(Boolean.parseBoolean(option.replace("Unbreakable-Item:", "")));
 
-                        if (option.contains("Hide-Item-Flags")) item.hideItemFlags(Boolean.parseBoolean(option.replace("Hide-Item-Flags:", "")));
+                        if (option.contains("Hide-Item-Flags"))
+                            item.hideItemFlags(Boolean.parseBoolean(option.replace("Hide-Item-Flags:", "")));
                     }
 
                     if (slot > getSize()) continue;
@@ -115,32 +120,30 @@ public class CrateMainMenu extends InventoryBuilder {
         for (Crate crate : this.plugin.getCrateManager().getUsableCrates()) {
             FileConfiguration file = crate.getFile();
 
-            if (file != null) {
-                if (file.getBoolean("Crate.InGUI", false)) {
-                    String path = "Crate.";
-                    int slot = file.getInt(path + "Slot");
+            if (file != null && (file.getBoolean("Crate.InGUI", false))) {
+                String path = "Crate.";
+                int slot = file.getInt(path + "Slot");
 
-                    if (slot > getSize()) continue;
+                if (slot > getSize()) continue;
 
-                    slot--;
+                slot--;
 
-                    String name = file.getString(path + "Name", path + "Name is missing in " + crate.getName() + ".yml");
+                String name = file.getString(path + "Name", path + "Name is missing in " + crate.getName() + ".yml");
 
-                    inventory.setItem(slot, new ItemBuilder()
-                            .setTarget(getPlayer())
-                            .setMaterial(file.getString(path + "Item", "CHEST"))
-                            .setName(name)
-                            .setLore(file.getStringList(path + "Lore"))
-                            .setCrateName(crate.getName())
-                            .setPlayerName(file.getString(path + "Player"))
-                            .setGlow(file.getBoolean(path + "Glowing"))
-                            .addLorePlaceholder("%Keys%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Keys_Physical%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName())))
-                            .addLorePlaceholder("%Player%", getPlayer().getName())
-                            .build());
-                }
+                inventory.setItem(slot, new ItemBuilder()
+                        .setTarget(getPlayer())
+                        .setMaterial(file.getString(path + "Item", "CHEST"))
+                        .setName(name)
+                        .setLore(file.getStringList(path + "Lore"))
+                        .setCrateName(crate.getName())
+                        .setPlayerName(file.getString(path + "Player"))
+                        .setGlow(file.getBoolean(path + "Glowing"))
+                        .addLorePlaceholder("%Keys%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Keys_Physical%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%Keys_Total%", NumberFormat.getNumberInstance().format(this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName())))
+                        .addLorePlaceholder("%crate_opened%", NumberFormat.getNumberInstance().format(0))
+                        .addLorePlaceholder("%Player%", getPlayer().getName())
+                        .build());
             }
         }
 
@@ -152,7 +155,7 @@ public class CrateMainMenu extends InventoryBuilder {
             option = option.replaceAll("%" + crate.getName().toLowerCase() + "%", this.crazyHandler.getUserManager().getVirtualKeys(getPlayer().getUniqueId(), crate.getName()) + "")
                     .replaceAll("%" + crate.getName().toLowerCase() + "_physical%", this.crazyHandler.getUserManager().getPhysicalKeys(getPlayer().getUniqueId(), crate.getName()) + "")
                     .replaceAll("%" + crate.getName().toLowerCase() + "_total%", this.crazyHandler.getUserManager().getTotalKeys(getPlayer().getUniqueId(), crate.getName()) + "")
-                    .replaceAll("%" + crate.getName().toLowerCase() + "_opened%", this.crazyHandler.getUserManager().getCrateOpened(getPlayer().getUniqueId(), crate.getName()) + "");
+                    .replaceAll("%" + crate.getName().toLowerCase() + "_opened%", 0 + "");
         }
 
         return option;
@@ -179,6 +182,7 @@ public class CrateMainMenu extends InventoryBuilder {
         public void onInventoryClick(InventoryClickEvent event) {
             Inventory inventory = event.getInventory();
 
+            if (inventory.getHolder() == null) return;
             if (!(inventory.getHolder(false) instanceof CrateMainMenu holder)) return;
 
             event.setCancelled(true);

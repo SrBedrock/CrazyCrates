@@ -1,11 +1,11 @@
 package com.badbones69.crazycrates.tasks.crates.types;
 
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.PrizeManager;
 import com.badbones69.crazycrates.api.builders.CrateBuilder;
 import com.badbones69.crazycrates.api.enums.PersistentKeys;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.utils.MiscUtils;
-import com.badbones69.crazycrates.api.PrizeManager;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -14,20 +14,20 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import java.util.Random;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CasinoCrate extends CrateBuilder {
+
+    private int counter = 0;
+    private int time = 1;
+    private int open = 0;
 
     public CasinoCrate(Crate crate, Player player, int size) {
         super(crate, player, size);
 
         runTaskTimer(CrazyCrates.get(), 1, 1);
     }
-
-    private int counter = 0;
-    private int time = 1;
-    private int open = 0;
 
     @Override
     public void run() {
@@ -74,7 +74,8 @@ public class CasinoCrate extends CrateBuilder {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory())) getPlayer().closeInventory();
+                        if (getPlayer().getOpenInventory().getTopInventory().equals(getInventory()))
+                            getPlayer().closeInventory();
                     }
                 }.runTaskLater(this.plugin, 40);
 

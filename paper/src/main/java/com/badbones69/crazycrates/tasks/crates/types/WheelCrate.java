@@ -1,8 +1,10 @@
 package com.badbones69.crazycrates.tasks.crates.types;
 
+import com.badbones69.crazycrates.api.PrizeManager;
+import com.badbones69.crazycrates.api.builders.CrateBuilder;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.Prize;
-import com.badbones69.crazycrates.api.PrizeManager;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -11,8 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import us.crazycrew.crazycrates.api.enums.types.KeyType;
-import com.badbones69.crazycrates.api.builders.CrateBuilder;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,11 @@ import java.util.UUID;
 
 public class WheelCrate extends CrateBuilder {
 
+    private final HashMap<UUID, HashMap<Integer, ItemStack>> rewards = new HashMap<>();
+
     public WheelCrate(Crate crate, Player player, int size) {
         super(crate, player, size);
     }
-
-    private final HashMap<UUID, HashMap<Integer, ItemStack>> rewards = new HashMap<>();
 
     @Override
     public void open(KeyType type, boolean checkHand) {
@@ -45,7 +46,7 @@ public class WheelCrate extends CrateBuilder {
             return;
         }
 
-        for (int index = 0; index < getSize(); index ++) {
+        for (int index = 0; index < getSize(); index++) {
             setCustomGlassPane(index);
         }
 
@@ -63,14 +64,10 @@ public class WheelCrate extends CrateBuilder {
 
         addCrateTask(new BukkitRunnable() {
             final List<Integer> slots = getBorder();
-
+            final int timer = MiscUtils.randomNumber(42, 68);
             int uh = 0;
             int what = 17;
-
             int full = 0;
-
-            final int timer = MiscUtils.randomNumber(42, 68);
-
             int slower = 0;
             int open = 0;
             int slow = 0;

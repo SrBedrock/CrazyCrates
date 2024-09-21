@@ -1,28 +1,30 @@
 package com.badbones69.crazycrates.api;
 
-import com.badbones69.crazycrates.api.objects.Tier;
-import org.apache.commons.lang.WordUtils;
 import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.enums.Messages;
 import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
-import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
 import com.badbones69.crazycrates.api.objects.Prize;
-import com.badbones69.crazycrates.api.enums.Messages;
+import com.badbones69.crazycrates.api.objects.Tier;
+import com.badbones69.crazycrates.api.objects.other.ItemBuilder;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.api.utils.MsgUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
-import com.badbones69.crazycrates.api.utils.MsgUtils;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
+import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+
+import static com.badbones69.crazycrates.api.utils.MiscUtils.RANDOM;
 import static java.util.regex.Matcher.quoteReplacement;
 
 public class PrizeManager {
-    
+
     @NotNull
     private static final CrazyCrates plugin = CrazyCrates.get();
 
@@ -30,12 +32,12 @@ public class PrizeManager {
      * Gets the prize for the player.
      *
      * @param player who the prize is for.
-     * @param crate the player is opening.
-     * @param prize the player is being given.
+     * @param crate  the player is opening.
+     * @param prize  the player is being given.
      */
     public static void givePrize(Player player, Prize prize, Crate crate) {
         if (prize == null) {
-            if (plugin.isLogging()) plugin.getLogger().warning("No prize was found when giving " + player.getName() + " a prize.");
+            plugin.debug(() -> "No prize was found when giving " + player.getName() + " a prize.", Level.WARNING);
             return;
         }
 
@@ -139,8 +141,8 @@ public class PrizeManager {
      * Gets the prize for the player.
      *
      * @param player who the prize is for.
-     * @param crate the player is opening.
-     * @param prize the player is being given.
+     * @param crate  the player is opening.
+     * @param prize  the player is being given.
      */
     public static void givePrize(Player player, Crate crate, Prize prize) {
         if (prize != null) {
@@ -170,7 +172,7 @@ public class PrizeManager {
                 for (Tier tier : crate.getTiers()) {
                     int chance = tier.getChance();
 
-                    int num = MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(tier.getMaxRange()) : new Random().nextInt(tier.getMaxRange());
+                    int num = MiscUtils.useOtherRandom() ? ThreadLocalRandom.current().nextInt(tier.getMaxRange()) : RANDOM.nextInt(tier.getMaxRange());
 
                     if (num >= 1 && num <= chance) {
                         return tier;

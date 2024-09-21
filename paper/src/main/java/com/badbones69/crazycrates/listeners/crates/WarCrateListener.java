@@ -1,9 +1,13 @@
 package com.badbones69.crazycrates.listeners.crates;
 
+import com.badbones69.crazycrates.CrazyCrates;
+import com.badbones69.crazycrates.api.PrizeManager;
+import com.badbones69.crazycrates.api.builders.types.CratePrizeMenu;
 import com.badbones69.crazycrates.api.events.PlayerPrizeEvent;
 import com.badbones69.crazycrates.api.objects.Crate;
 import com.badbones69.crazycrates.api.objects.Prize;
-import com.badbones69.crazycrates.api.PrizeManager;
+import com.badbones69.crazycrates.api.utils.MiscUtils;
+import com.badbones69.crazycrates.tasks.crates.CrateManager;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -16,10 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
-import com.badbones69.crazycrates.CrazyCrates;
-import com.badbones69.crazycrates.api.builders.types.CratePrizeMenu;
-import com.badbones69.crazycrates.tasks.crates.CrateManager;
-import com.badbones69.crazycrates.api.utils.MiscUtils;
 
 public class WarCrateListener implements Listener {
 
@@ -33,6 +33,7 @@ public class WarCrateListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
 
+        if (inventory.getHolder() == null) return;
         if (!(inventory.getHolder(false) instanceof CratePrizeMenu holder)) return;
 
         Player player = holder.getPlayer();

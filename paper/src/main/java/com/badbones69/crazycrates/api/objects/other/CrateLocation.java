@@ -5,17 +5,17 @@ import org.bukkit.Location;
 import us.crazycrew.crazycrates.api.enums.types.CrateType;
 
 public class CrateLocation {
-    
+
     private final String id;
-    private Crate crate;
     private final Location loc;
-    
+    private Crate crate;
+
     public CrateLocation(String id, Crate crate, Location loc) {
         this.id = id;
         this.crate = crate;
         this.loc = loc;
     }
-    
+
     /**
      * Get the ID of the location.
      *
@@ -24,7 +24,7 @@ public class CrateLocation {
     public String getID() {
         return this.id;
     }
-    
+
     /**
      * Get the crate that this location is set to.
      *
@@ -42,7 +42,7 @@ public class CrateLocation {
     public void setCrate(Crate crate) {
         this.crate = crate;
     }
-    
+
     /**
      * Get the crate type of the crate.
      *
@@ -51,7 +51,7 @@ public class CrateLocation {
     public CrateType getCrateType() {
         return this.crate.getCrateType();
     }
-    
+
     /**
      * Get the physical location of the crate.
      *
