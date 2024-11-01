@@ -19,18 +19,22 @@ import java.util.List;
 
 public class CsgoCrate extends CrateBuilder {
 
-    public CsgoCrate(Crate crate, Player player, int size) {
+    public CsgoCrate(final Crate crate, final Player player, final int size) {
         super(crate, player, size);
     }
 
     @Override
-    public void open(KeyType type, boolean checkHand) {
+    public void open(final KeyType type, final boolean checkHand) {
         // Crate event failed so we return.
         if (isCrateEventValid(type, checkHand)) {
             return;
         }
 
-        boolean keyCheck = this.plugin.getCrazyHandler().getUserManager().takeKeys(1, getPlayer().getUniqueId(), getCrate().getName(), type, checkHand);
+        // Check if the player has the required keys.
+        final int requiredKeys = getCrate().getRequiredKeys();
+        final int keyAmount = Math.max(1, requiredKeys);
+
+        final boolean keyCheck = this.plugin.getCrazyHandler().getUserManager().takeKeys(keyAmount, getPlayer().getUniqueId(), getCrate().getName(), type, checkHand);
 
         if (!keyCheck) {
             // Send the message about failing to take the key.
@@ -85,10 +89,10 @@ public class CsgoCrate extends CrateBuilder {
 
                         plugin.getCrateManager().endCrate(getPlayer());
 
-                        ItemStack item = getInventory().getItem(13);
+                        final ItemStack item = getInventory().getItem(13);
 
                         if (item != null) {
-                            Prize prize = getCrate().getPrize(item);
+                            final Prize prize = getCrate().getPrize(item);
 
                             PrizeManager.givePrize(getPlayer(), getCrate(), prize);
                         }
@@ -113,13 +117,13 @@ public class CsgoCrate extends CrateBuilder {
     }
 
     private void populate() {
-        HashMap<Integer, ItemStack> glass = new HashMap<>();
+        final HashMap<Integer, ItemStack> glass = new HashMap<>();
 
         for (int index = 0; index < 10; index++) {
             if (index < 9 && index != 3) glass.put(index, getInventory().getItem(index));
         }
 
-        for (int index : glass.keySet()) {
+        for (final int index : glass.keySet()) {
             if (getInventory().getItem(index) == null) {
                 setCustomGlassPane(index);
                 setCustomGlassPane(index + 18);
@@ -141,7 +145,7 @@ public class CsgoCrate extends CrateBuilder {
         setItem(3, glass.get(5));
         setItem(3 + 18, glass.get(5));
 
-        ItemStack itemStack = new ItemBuilder().setMaterial(Material.BLACK_STAINED_GLASS_PANE).setName(" ").build();
+        final ItemStack itemStack = new ItemBuilder().setMaterial(Material.BLACK_STAINED_GLASS_PANE).setName(" ").build();
         setItem(4, itemStack);
         setItem(4 + 18, itemStack);
 
@@ -164,7 +168,7 @@ public class CsgoCrate extends CrateBuilder {
     }
 
     private void moveItemsAndSetGlass() {
-        List<ItemStack> items = new ArrayList<>();
+        final List<ItemStack> items = new ArrayList<>();
 
         for (int i = 9; i > 8 && i < 17; i++) {
             items.add(getInventory().getItem(i));
