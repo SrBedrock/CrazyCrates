@@ -67,6 +67,7 @@ public enum Messages {
     transfer_not_enough_keys(MessageKeys.transfer_not_enough_keys),
     transfer_sent_keys(MessageKeys.transfer_sent_keys),
     transfer_received_keys(MessageKeys.transfer_received_keys),
+    transfer_invalid_amount(MessageKeys.transfer_invalid_amount),
     created_physical_crate(MessageKeys.created_physical_crate, true),
     removed_physical_crate(MessageKeys.removed_physical_crate),
     no_virtual_keys(MessageKeys.no_virtual_keys),
@@ -94,7 +95,7 @@ public enum Messages {
      *
      * @param property the property
      */
-    Messages(Property<String> property) {
+    Messages(final Property<String> property) {
         this.property = property;
     }
 
@@ -104,7 +105,7 @@ public enum Messages {
      * @param listProperty the list property
      * @param isList       Defines if it's a list or not.
      */
-    Messages(Property<List<String>> listProperty, boolean isList) {
+    Messages(final Property<List<String>> listProperty, final boolean isList) {
         this.listProperty = listProperty;
 
         this.isList = isList;
@@ -114,15 +115,15 @@ public enum Messages {
         return this.isList;
     }
 
-    private @NotNull List<String> getPropertyList(Property<List<String>> properties) {
+    private @NotNull List<String> getPropertyList(final Property<List<String>> properties) {
         return this.configuration.getProperty(properties);
     }
 
-    private @NotNull String getProperty(Property<String> property) {
+    private @NotNull String getProperty(final Property<String> property) {
         return this.configuration.getProperty(property);
     }
 
-    public String getMessage(Map<String, String> placeholders) {
+    public String getMessage(final Map<String, String> placeholders) {
         return getMessage(placeholders, null);
     }
 
@@ -130,22 +131,22 @@ public enum Messages {
         return getMessage(new HashMap<>(), null);
     }
 
-    public String getMessage(Player player) {
+    public String getMessage(final Player player) {
         return getMessage(new HashMap<>(), player);
     }
 
-    public String getMessage(String placeholder, String replacement, Player player) {
-        Map<String, String> placeholders = new HashMap<>();
+    public String getMessage(final String placeholder, final String replacement, final Player player) {
+        final Map<String, String> placeholders = new HashMap<>();
         placeholders.put(placeholder, replacement);
 
         return getMessage(placeholders, player);
     }
 
-    public String getMessage(String placeholder, String replacement) {
+    public String getMessage(final String placeholder, final String replacement) {
         return getMessage(placeholder, replacement, null);
     }
 
-    public String getMessage(Map<String, String> placeholders, Player player) {
+    public String getMessage(final Map<String, String> placeholders, final Player player) {
         // Get the string first.
         String message;
 
@@ -156,7 +157,7 @@ public enum Messages {
         }
 
         if (!placeholders.isEmpty()) {
-            for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
+            for (final Map.Entry<String, String> placeholder : placeholders.entrySet()) {
                 message = message.replace(placeholder.getKey(), placeholder.getValue());
             }
         }
@@ -166,10 +167,10 @@ public enum Messages {
         return asString(player);
     }
 
-    private String asString(Player player) {
-        String prefix = this.configManager.getConfig().getProperty(ConfigKeys.command_prefix);
+    private String asString(final Player player) {
+        final String prefix = this.configManager.getConfig().getProperty(ConfigKeys.command_prefix);
 
-        String message = this.message.replaceAll("%prefix%", prefix);
+        final String message = this.message.replaceAll("%prefix%", prefix);
 
         if (MiscUtils.isPapiActive() && player != null) {
             return PlaceholderAPI.setPlaceholders(player, MsgUtils.color(message));

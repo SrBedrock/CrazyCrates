@@ -48,8 +48,8 @@ public class BaseKeyCommand extends BaseCommand {
 
     @Default
     @Permission("crazycrates.command.player.key")
-    public void viewPersonal(@NotNull Player player) {
-        Map<String, String> placeholders = new HashMap<>();
+    public void viewPersonal(@NotNull final Player player) {
+        final Map<String, String> placeholders = new HashMap<>();
 
         placeholders.put("%crates_opened%", String.valueOf(0));
 
@@ -58,9 +58,9 @@ public class BaseKeyCommand extends BaseCommand {
 
     @SubCommand("ver")
     @Permission("crazycrates.command.player.key.others")
-    public void viewOthers(CommandSender sender, @Optional @Suggestion("online-players") Player target) {
+    public void viewOthers(final CommandSender sender, @Optional @Suggestion("online-players") final Player target) {
         if (target == sender || target == null) {
-            if (!(sender instanceof Player player)) {
+            if (!(sender instanceof final Player player)) {
                 sender.sendMessage(Messages.must_be_a_player.getMessage());
                 return;
             }
@@ -69,22 +69,22 @@ public class BaseKeyCommand extends BaseCommand {
             return;
         }
 
-        Map<String, String> placeholders = new HashMap<>();
+        final Map<String, String> placeholders = new HashMap<>();
 
         placeholders.put("%player%", target.getName());
         placeholders.put("%crates_opened%", String.valueOf(0));
 
-        String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof Player player ? player : null);
+        final String header = Messages.other_player_no_keys_header.getMessage(placeholders, sender instanceof final Player player ? player : null);
 
-        String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", target.getName(), sender instanceof Player player ? player : null);
+        final String otherPlayer = Messages.other_player_no_keys.getMessage("%player%", target.getName(), sender instanceof final Player player ? player : null);
 
         getKeys(target, sender, header, otherPlayer);
     }
 
     @SubCommand("transferir")
     @Permission(value = "crazycrates.command.player.key.transfer")
-    public void onPlayerTransferKeys(Player sender, @Suggestion("crates") String crateName, @Suggestion("online-players") Player player, @Suggestion("numbers") int amount) {
-        Crate crate = this.crateManager.getCrateFromName(crateName);
+    public void onPlayerTransferKeys(final Player sender, @Suggestion("crates") final String crateName, @Suggestion("online-players") final Player player, @Suggestion("numbers") final int amount) {
+        final Crate crate = this.crateManager.getCrateFromName(crateName);
 
         // If the crate is menu or null. we return
         if (crate == null || crate.getCrateType() == CrateType.menu) {
@@ -98,7 +98,13 @@ public class BaseKeyCommand extends BaseCommand {
             return;
         }
 
-        Map<String, String> placeholders = new HashMap<>();
+        // check if amount is positive
+        if (amount <= 0) {
+            sender.sendMessage(Messages.transfer_invalid_amount.getMessage(sender));
+            return;
+        }
+
+        final Map<String, String> placeholders = new HashMap<>();
 
         placeholders.put("%crate%", crate.getName());
         placeholders.put("%key%", crate.getKeyName());
@@ -111,7 +117,7 @@ public class BaseKeyCommand extends BaseCommand {
             return;
         }
 
-        PlayerReceiveKeyEvent event = new PlayerReceiveKeyEvent(player, crate, PlayerReceiveKeyEvent.KeyReceiveReason.TRANSFER, amount);
+        final PlayerReceiveKeyEvent event = new PlayerReceiveKeyEvent(player, crate, PlayerReceiveKeyEvent.KeyReceiveReason.TRANSFER, amount);
         this.plugin.getServer().getPluginManager().callEvent(event);
 
         // If the event is cancelled, We return.
@@ -137,22 +143,22 @@ public class BaseKeyCommand extends BaseCommand {
      * @param header         header of the message.
      * @param messageContent content of the message.
      */
-    private void getKeys(Player player, CommandSender sender, String header, String messageContent) {
-        List<String> message = Lists.newArrayList();
+    private void getKeys(final Player player, final CommandSender sender, final String header, final String messageContent) {
+        final List<String> message = Lists.newArrayList();
 
         message.add(header);
 
-        Map<Crate, Integer> keys = new HashMap<>();
+        final Map<Crate, Integer> keys = new HashMap<>();
 
         this.plugin.getCrateManager().getUsableCrates().forEach(crate -> keys.put(crate, this.userManager.getVirtualKeys(player.getUniqueId(), crate.getName())));
 
         boolean hasKeys = false;
 
-        for (Crate crate : keys.keySet()) {
-            int amount = keys.get(crate);
+        for (final Crate crate : keys.keySet()) {
+            final int amount = keys.get(crate);
 
             if (amount > 0) {
-                Map<String, String> placeholders = new HashMap<>();
+                final Map<String, String> placeholders = new HashMap<>();
 
                 hasKeys = true;
 
@@ -165,7 +171,7 @@ public class BaseKeyCommand extends BaseCommand {
         }
 
         if (MiscUtils.isPapiActive()) {
-            if (sender instanceof Player person) {
+            if (sender instanceof final Player person) {
                 if (hasKeys) {
                     message.forEach(line -> person.sendMessage(PlaceholderAPI.setPlaceholders(person, line)));
                     return;
