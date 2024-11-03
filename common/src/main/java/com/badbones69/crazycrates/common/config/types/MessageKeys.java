@@ -62,6 +62,7 @@ public class MessageKeys implements SettingsHolder {
     public static final Property<String> transfer_not_enough_keys = newProperty("Messages.Transfer-Keys.Not-Enough-Keys", "%prefix%&cYou do not have enough keys to transfer.");
     public static final Property<String> transfer_sent_keys = newProperty("Messages.Transfer-Keys.Transferred-Keys", "%prefix%&7You have transferred %amount% %crate% keys to %player%.");
     public static final Property<String> transfer_received_keys = newProperty("Messages.Transfer-Keys.Received-Transferred-Keys", "%prefix%&7You have received %amount% %crate% keys from %player%.");
+    public static Property<String> transfer_invalid_amount = newProperty("Messages.Transfer-Keys.Invalid-Amount", "%prefix%&cThe amount must be a positive number.");
     public static final Property<List<String>> created_physical_crate = newListProperty("Messages.Created-Physical-Crate", List.of(
             "%prefix%&7You have set that block to %crate%.",
             "&7To remove the crate shift break in creative to remove."
@@ -116,8 +117,8 @@ public class MessageKeys implements SettingsHolder {
     public static final Property<String> cleared_player_keys = newProperty("Messages.Cleared-Player-Keys", "%prefix%&cYou have cleared &e%amount%x %key% &cfrom &6%player%&c.");
 
     @Override
-    public void registerComments(CommentsConfiguration conf) {
-        String[] header = {
+    public void registerComments(final CommentsConfiguration conf) {
+        final String[] header = {
                 "Support: https://discord.gg/badbones-s-live-chat-182615261403283459",
                 "Github: https://github.com/Crazy-Crew",
                 "",
