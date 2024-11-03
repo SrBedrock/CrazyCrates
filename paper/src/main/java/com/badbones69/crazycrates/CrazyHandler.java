@@ -17,7 +17,7 @@ public class CrazyHandler extends CrazyCratesPlugin {
     private CrateManager crateManager;
     private FileManager fileManager;
 
-    public CrazyHandler(CrazyCrates plugin) {
+    public CrazyHandler(@NotNull final CrazyCrates plugin) {
         super(plugin.getDataFolder());
     }
 
@@ -56,7 +56,7 @@ public class CrazyHandler extends CrazyCratesPlugin {
         this.userManager = new BukkitUserManager();
 
         // Load commands.
-        CommandManager commandManager = new CommandManager();
+        final CommandManager commandManager = new CommandManager();
         commandManager.load();
     }
 
@@ -69,11 +69,6 @@ public class CrazyHandler extends CrazyCratesPlugin {
             Files.LOCATIONS.getFile().set("Locations.Clear", null);
             Files.LOCATIONS.saveFile();
         }
-
-//        if (!Files.DATA.getFile().contains("Players")) {
-//            Files.DATA.getFile().set("Players.Clear", null);
-//            Files.DATA.saveFile();
-//        }
     }
 
     @NotNull
